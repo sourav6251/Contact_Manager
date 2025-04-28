@@ -1,3 +1,37 @@
+// {
+//   "compilerOptions": {
+//     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+//     "target": "ES2020",
+//     "useDefineForClassFields": true,
+//     "lib": ["ES2020", "DOM", "DOM.Iterable"],
+//     "module": "ESNext",
+//     "skipLibCheck": true,
+
+//     /* Bundler mode */
+//     "moduleResolution": "bundler",
+//     "allowImportingTsExtensions": true,
+//     "isolatedModules": true,
+//     "moduleDetection": "force",
+//     "noEmit": true,
+//     "jsx": "react-jsx",
+
+//     /* Linting */
+//     "strict": true,
+//     "noUnusedLocals": true,
+//     "noUnusedParameters": true,
+//     "noFallthroughCasesInSwitch": true,
+//     "noUncheckedSideEffectImports": true,
+
+//     /*shadcn */
+//     "baseUrl": ".",
+//     "paths": {
+//       "@/*": [
+//         "./src/*"
+//       ]
+//     }
+//   },
+//   "include": ["src"]
+// }
 {
   "compilerOptions": {
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
@@ -7,28 +41,29 @@
     "module": "ESNext",
     "skipLibCheck": true,
 
-    /* Bundler mode */
+    /* Enable .js and .jsx files */
+    "allowJs": true,
+    "jsx": "react-jsx",
+
+    /* Module resolution */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "isolatedModules": true,
     "moduleDetection": "force",
     "noEmit": true,
-    "jsx": "react-jsx",
 
-    /* Linting */
+    /* Linting rules */
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
 
-    /*shadcn */
+    /* Path aliases */
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "./src/*"
-      ]
+      "@/*": ["./src/*"]
     }
   },
-  "include": ["src"]
+  "include": ["src", "**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx"]
 }
