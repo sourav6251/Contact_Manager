@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
-@CrossOrigin("*")
+@CrossOrigin("http://localhost:5236/")
 @RestController()
 @RequestMapping("/secure")
 public class SecureController {
@@ -39,6 +39,26 @@ public class SecureController {
         return ResponseEntity.status(httpStatus.statusCode()).body(httpStatus.data());
     }
 
+    @GetMapping("/login")
+    public ResponseEntity<Object> login(@RequestParam("email") String email, @RequestParam("password") String password) {
+        HttpStatus status = userService.login(email, password);
+        return ResponseEntity.status(status.statusCode()).body(status.data());
+
+    }
+
+    @GetMapping("/generateotp/{email}")
+    public ResponseEntity<Object> generateOTP(@PathVariable String email) {
+        HttpStatus status = userService.generateOTP(email);
+        return ResponseEntity.status(status.statusCode()).body(status.data());
+    }
+
+    @GetMapping("/verifyotp")
+    public ResponseEntity<Object> verifyOTP(@RequestParam("email") String email, @RequestParam("otp") long otp) {
+        HttpStatus status = userService.verifyOTP(email, otp);
+        return ResponseEntity.status(status.statusCode()).body(status.data());
+
+    }
+
     @GetMapping("showuser")
     public ResponseEntity<?> showUser() {
         HttpStatus httpStatus = userService.showUser();
@@ -53,14 +73,14 @@ public class SecureController {
     }
 
     @GetMapping("/showuserbyid/{userID}")
-    public ResponseEntity<Object> showUserByID(@PathVariable UUID userID){
-       HttpStatus httpStatus= userService.showUserByID(userID);
-       return ResponseEntity.status(httpStatus.statusCode()).body(httpStatus.data());
+    public ResponseEntity<Object> showUserByID(@PathVariable UUID userID) {
+        HttpStatus httpStatus = userService.showUserByID(userID);
+        return ResponseEntity.status(httpStatus.statusCode()).body(httpStatus.data());
     }
 
     @DeleteMapping("/deleteuser/{userID}")
-    public ResponseEntity<Object> deleteUser(@PathVariable UUID userID){
-        HttpStatus httpStatus=userService.deleteUser(userID);
+    public ResponseEntity<Object> deleteUser(@PathVariable UUID userID) {
+        HttpStatus httpStatus = userService.deleteUser(userID);
         return ResponseEntity.status(httpStatus.statusCode()).body(httpStatus.data());
     }
 
@@ -69,34 +89,35 @@ public class SecureController {
      * {@code Contact}
      */
     @PostMapping("/createcontact/{userID}")
-    public ResponseEntity<Object> createContact(@PathVariable UUID userID,@Validated(CreateContact.class) @RequestBody ContactDTO contactDTO) {
+    public ResponseEntity<Object> createContact(@PathVariable UUID userID, @Validated(CreateContact.class) @RequestBody ContactDTO contactDTO) {
+        System.out.println("data=>"+contactDTO);
         HttpStatus httpStatus = contactService.createContact(userID, contactDTO);
         return ResponseEntity.status(httpStatus.statusCode()).body(httpStatus.data());
     }
 
     @PutMapping("/updatecontact")
-    public ResponseEntity<Object> updateContact( @RequestParam("userid") UUID userID, @RequestParam("contactid") UUID contactID, @RequestBody ContactDTO contactDTO) {
-        HttpStatus httpStatus = contactService.updateContact(userID, contactID,contactDTO);
+    public ResponseEntity<Object> updateContact(@RequestParam("userid") UUID userID, @RequestParam("contactid") UUID contactID, @RequestBody ContactDTO contactDTO) {
+        HttpStatus httpStatus = contactService.updateContact(userID, contactID, contactDTO);
         return ResponseEntity.status(httpStatus.statusCode()).body(httpStatus.data());
     }
 
     @GetMapping("/showallcontact/{userID}")
-    public ResponseEntity<Object> showAllContact(@PathVariable UUID userID){
-        HttpStatus httpStatus=contactService.showAllContact(userID);
+    public ResponseEntity<Object> showAllContact(@PathVariable UUID userID) {
+        HttpStatus httpStatus = contactService.showAllContact(userID);
         return ResponseEntity.status(httpStatus.statusCode()).body(httpStatus.data());
 
     }
 
     @GetMapping("/showcontact/{contactID}")
-    public ResponseEntity<Object> showContact(@PathVariable UUID contactID){
-        HttpStatus httpStatus=contactService.showContacts(contactID);
+    public ResponseEntity<Object> showContact(@PathVariable UUID contactID) {
+        HttpStatus httpStatus = contactService.showContacts(contactID);
         return ResponseEntity.status(httpStatus.statusCode()).body(httpStatus.data());
 
     }
 
     @DeleteMapping("/deletecontact/{contactID}")
-    public ResponseEntity<Object> deleteContact(@PathVariable UUID contactID){
-        HttpStatus httpStatus=contactService.deleteContact(contactID);
+    public ResponseEntity<Object> deleteContact(@PathVariable UUID contactID) {
+        HttpStatus httpStatus = contactService.deleteContact(contactID);
         return ResponseEntity.status(httpStatus.statusCode()).body(httpStatus.data());
     }
 }

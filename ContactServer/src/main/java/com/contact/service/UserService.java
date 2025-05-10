@@ -5,11 +5,16 @@ import com.contact.dto.ContactDTO;
 import com.contact.dto.UserDTO;
 import com.contact.model.Users;
 import com.contact.util.HttpStatus;
+import com.contact.util.exception.LoginException;
+import com.contact.util.exception.OTPException;
 import org.springframework.stereotype.Service;
 
 
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 public class UserService {
@@ -29,6 +34,18 @@ public class UserService {
             case 400 -> new HttpStatus(400, "User already exist with this email");
             default -> new HttpStatus(500);
         };
+    }
+    public HttpStatus login(String email, String password) {
+        try {
+            Users users=userDAO.login(email, password);
+           return new HttpStatus(200,users);
+        }catch (NoSuchElementException e){
+            return new HttpStatus(404,"User doesn't exist");
+        }catch (LoginException e){
+            return new HttpStatus(400,"Enter valid password");
+        } catch (RuntimeException e) {
+            return new HttpStatus(500);
+        }
     }
 
     public HttpStatus showUser() {
@@ -54,6 +71,28 @@ public class UserService {
 
     public HttpStatus deleteUser(UUID uuid){
         return userDAO.deleteUser(uuid);
+    }
+
+    public HttpStatus generateOTP(String email){
+        long otp = ThreadLocalRandom.current().nextInt(100000, 999999);
+        try{
+            userDAO.generateOTP(otp, email);
+            return new HttpStatus(200,otp);
+        }catch (NoSuchElementException e){
+            return new HttpStatus(404,"User doesn't exist");
+        } catch (RuntimeException e) {
+            return new HttpStatus(500);
+        }
+    }
+    public HttpStatus verifyOTP(String email,long otp){
+        try{
+            userDAO.verifyOTP(email, otp);
+            return new HttpStatus(200,otp);
+        }catch (NoSuchElementException e){
+            return new HttpStatus(404,"User doesn't exist");
+        } catch (OTPException e) {
+            return new HttpStatus(400,e.getMessage());
+        }
     }
 
 }

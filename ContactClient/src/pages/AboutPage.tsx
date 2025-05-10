@@ -1,7 +1,11 @@
+import { PageWrapper } from "@/components/layout/PageWrapper"
 
 const AboutPage = () => {
   return (
-    <div>AboutPage</div>
+    <PageWrapper>
+    <div>
+      AboutPage</div>
+    </PageWrapper>
   )
 }
 

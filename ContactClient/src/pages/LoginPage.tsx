@@ -1,196 +1,213 @@
-// const LoginPage = () => {
-//     return (
-//         <div className="h-screen bg-[#68646434] w-full flex items-center justify-center"></div>
-//     );
-// };
+import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
+import { useState } from "react";
+import { PageWrapper } from "@/components/layout/PageWrapper";
 
-// export default LoginPage;
-import React, { useState } from "react";
+import DesktopRegister from "@/components/auth/DesktopRegister";
+import DesktopLogin from "@/components/auth/DesktopLogin";
+import MobileLogin from "@/components/auth/MobileLogin";
+import MobileRegister from "@/components/auth/MobileRegister";
 
-const LoginPage: React.FC = () => {
-  const [isLogin, setIsLogin] = useState(true);
+const LoginPage = () => {
+    const [moved, setMoved] = useState(false);
+    const [sign, setSign] = useState("signin");
 
-  const handleToggle = () => {
-    setIsLogin((prev) => !prev);
-  };
 
-  const handleLoginSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const username = (document.getElementById("loginUsername") as HTMLInputElement).value;
-    const password = (document.getElementById("loginPassword") as HTMLInputElement).value;
+    return (
+        <PageWrapper>
+            <div className="min-h-screen flex items-center justify-center bg-gray-100">
+                {/* Desktop View */}
+                <div className="dark:bg-green-950 min-h-screen hidden md:flex w-full items-center justify-center">
+                    <div className="dark:bg-[#848685] h-[26rem] hidden md:flex bg-white rounded-3xl shadow-xl overflow-hidden w-[50rem]">
+                        {/* Left Panel */}
+                        <motion.div
+                            initial={{ x: 0, opacity: 0 }}
+                            animate={{ x: moved ? "100%" : "0%", opacity: 1 }}
+                            transition={{ duration: 0.6, ease: "easeInOut" }}
+                            className="absolute self-center h-[26rem] w-[25rem] rounded-[5%_50%_0%_30%] bg-gradient-to-br from-[#7cffcb] to-[#089f90] dark:from-[#00C9A7] dark:to-[#045D5D] text-white flex-col justify-center items-center"
+                        >
+                            <div className="flex flex-col justify-between items-center pt-12 pb-10 h-full w-full text-white px-4">
+                                {/* Logo */}
+                                <div className="flex flex-col items-center gap-2">
+                                    <div className="h-20 w-20 bg-white rounded-full flex items-center justify-center">
+                                        <img
+                                            src="fire-svgrepo-com.svg"
+                                            alt="Logo"
+                                            className="p-3"
+                                        />
+                                    </div>
+                                    <span className="text-white text-lg font-semibold">
+                                        PhoneBook
+                                    </span>
+                                </div>
 
-    if (!username || !password) {
-      alert("Please fill in all fields.");
-      return;
-    }
-    alert(`Login attempted with Username: ${username}`);
-    // Reset form (optional in React, handled by state if using controlled inputs)
-  };
+                                {/* Welcome Text */}
+                                <div className="w-4/5 text-center mt-6 space-y-2">
+                                    <span className="block text-2xl font-bold">
+                                        {moved ? "Welcome" : "Welcome Back!"}
+                                    </span>
+                                    <span className="block text-sm">
+                                        {moved
+                                            ? "Don't have any account? Register now and start your journey with us."
+                                            : "To stay connected, log in with your personal info."}
+                                    </span>
+                                </div>
 
-  const handleRegisterSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const username = (document.getElementById("registerUsername") as HTMLInputElement).value;
-    const email = (document.getElementById("registerEmail") as HTMLInputElement).value;
-    const password = (document.getElementById("registerPassword") as HTMLInputElement).value;
-    const confirmPassword = (document.getElementById("confirmPassword") as HTMLInputElement).value;
+                                {/* Toggle Button */}
+                                <Button
+                                    onClick={() => setMoved(!moved)}
+                                    className="w-[60%] h-10 rounded-full border-2 border-white text-white hover:bg-white hover:text-green-700 transition"
+                                >
+                                    {moved ? "Sign In" : "Sign Up"}
+                                </Button>
+                            </div>
+                        </motion.div>
+                        {/* Sign Up */}
+                        <div className="w-1/2 bg-white dark:bg-[#848685] px-10 py-0 flex flex-col justify-center">
+                            <motion.div
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{
+                                    opacity: moved ? 1 : 0,
+                                    x: moved ? 0 : -20,
+                                    transition: { duration: 0.6 },
+                                    display: moved ? "block" : "none",
+                                }}
+                            >
+                                <DesktopRegister />
+                            </motion.div>
+                        </div>
+                        {/* Sign In */}
 
-    if (!username || !email || !password || !confirmPassword) {
-      alert("Please fill in all fields.");
-      return;
-    }
-    if (password !== confirmPassword) {
-      alert("Passwords do not match.");
-      return;
-    }
-    alert(`Registration attempted with Username: ${username}, Email: ${email}`);
-    // Reset form (optional in React)
-  };
+                        <div className="w-1/2 bg-white dark:bg-[#848685] p-10 flex flex-col justify-center">
+                            <motion.div
+                                initial={{ opacity: 1, x: 0 }}
+                                animate={{
+                                    opacity: moved ? 0 : 1,
+                                    x: moved ? 20 : 0,
+                                    transition: { duration: 0.3 },
+                                    display: moved ? "none" : "block",
+                                }}
+                            >
+                                <DesktopLogin />
+                            </motion.div>
+                        </div>
+                    </div>
+                </div>
 
-  return (
-    <div className="min-h-screen bg-blue-200 flex items-center justify-center p-4">
-      <div className="relative w-full max-w-4xl bg-white rounded-lg shadow-lg overflow-hidden">
-        {/* Toggle Buttons */}
-        <div className="flex justify-center mb-4 p-2 bg-blue-100">
-          <button
-            onClick={() => setIsLogin(true)}
-            className={`px-6 py-2 font-semibold rounded-l-lg ${
-              isLogin ? "bg-blue-300 text-white" : "bg-blue-100 text-blue-700"
-            } transition-colors duration-300`}
-          >
-            Login
-          </button>
-          <button
-            onClick={() => setIsLogin(false)}
-            className={`px-6 py-2 font-semibold rounded-r-lg ${
-              !isLogin ? "bg-blue-300 text-white" : "bg-blue-100 text-blue-700"
-            } transition-colors duration-300`}
-          >
-            Sign Up
-          </button>
-        </div>
+                {/* Mobile View */}
+                <div className="block md:hidden bg-gradient-to-t from-[#7CFFCBaa] to-[#089F8Fdd] dark:from-[#00C9A7] dark:to-[#045D5D] h-screen w-full">
+                    {/* First Panel - Slides Up */}
+                    <motion.div
+                        initial={{ y: 0 }}
+                        animate={{ y: moved ? -700 : 0 }}
+                        transition={{ duration: 0.6, ease: "easeInOut" }}
+                        className="absolute inset-0 text-white flex flex-col items-center justify-between py-20 md:hidden z-50"
+                    >
+                        {/* Logo and Brand */}
+                        <div className="flex flex-col items-center gap-2">
+                            <div className="h-20 w-20 bg-white rounded-full flex items-center justify-center shadow-lg">
+                                <img
+                                    src="fire-svgrepo-com.svg"
+                                    alt="Logo"
+                                    className="p-3"
+                                />
+                            </div>
+                            <span className="text-xl font-semibold">
+                                PhoneBook
+                            </span>
+                        </div>
 
-        {/* Forms Container with Transition */}
-        <div className="flex transition-transform duration-500 ease-in-out">
-          {/* Login Form */}
-          <form
-            onSubmit={handleLoginSubmit}
-            className={`w-full p-6 flex flex-col space-y-4 ${
-              isLogin ? "translate-x-0" : "translate-x-full"
-            } transition-transform duration-500 ease-in-out`}
-            style={{ minHeight: "300px" }}
-          >
-            <h2 className="text-2xl font-bold text-center text-blue-700 mb-4">LOGIN</h2>
-            <div className="flex items-center space-x-2 mb-2">
-              <span className="text-blue-500">👤</span>
-              <label htmlFor="loginUsername" className="text-sm text-blue-700">Username</label>
+                        {/* Welcome Message */}
+                        <div className="text-center space-y-2 mt-6">
+                            <h1 className="text-2xl font-bold">Welcome</h1>
+                            <p className="text-sm px-4">
+                                To stay connected, log in with your personal
+                                info.
+                            </p>
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="flex flex-col gap-4 w-full max-w-xs pb-10">
+                            <Button
+                                onClick={() => setMoved(true)}
+                                className="w-full h-11 rounded-full border-2 border-white text-white hover:bg-white hover:text-green-700 transition"
+                            >
+                                Sign In
+                            </Button>
+                        </div>
+                    </motion.div>
+
+                    {/* Second Panel - Fades/Slides In */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 50 }}
+                        animate={{ opacity: moved ? 1 : 0, y: moved ? 0 : 50 }}
+                        transition={{
+                            duration: 0.6,
+                            ease: "easeInOut",
+                            delay: 0.2,
+                        }}
+                        className={`${
+                            moved ? "flex" : "hidden"
+                        } bg-white dark:bg-gray-400 h-screen w-full flex-col items-center justify-center`}
+                    >
+                        <div className="h-full w-full flex flex-col justify-center items-center">
+                            <div className="bg-gradient-to-tl from-[#7CFFCBaa] to-[#089F8Fdd] dark:from-[#00C9A7] dark:to-[#045D5D] h-[35%] w-full flex flex-col justify-center items-center rounded-[0%_50%_0%_50%]">
+                                <div className="h-full flex justify-center items-center rounded-[60%] w-[18rem] bg-transparent">
+                                    <div className="flex flex-col items-center gap-2">
+                                        <div className="h-20 w-20 bg-white rounded-full flex items-center justify-center shadow-lg">
+                                            <img
+                                                src="fire-svgrepo-com.svg"
+                                                alt="Logo"
+                                                className="p-3"
+                                            />
+                                        </div>
+                                        <span className="text-xl font-semibold text-center">
+                                            PhoneBook
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="h-[65%] w-full  dark: rounded-xl shadow-md p-6 pt-0 flex flex-col justify-center gap-6 transition-colors">
+                                {sign === "signin" ? (
+                                    <>
+                                        <MobileLogin />
+
+                                        <p className="text-center text-sm text-gray-600 dark:text-black">
+                                            Don't have an account?{" "}
+                                            <span
+                                                onClick={() =>
+                                                    setSign("signup")
+                                                }
+                                                className="text-[#7CFFCBaa] dark:text-[#045D5D]   hover:underline cursor-pointer font-medium"
+                                            >
+                                                Sign Up
+                                            </span>
+                                        </p>
+                                    </>
+                                ) : (
+                                    <>
+                                    <MobileRegister/>
+                                       
+                                        <p className="text-center text-sm text-gray-600 dark:text-back">
+                                            Already have an account?{" "}
+                                            <span
+                                                onClick={() =>
+                                                    setSign("signin")
+                                                }
+                                                className="text-[#7CFFCBaa] dark:text-[#045D5D]   hover:underline cursor-pointer font-medium"
+                                            >
+                                                Sign In
+                                            </span>
+                                        </p>
+                                    </>
+                                )}
+                            </div>
+                        </div>
+                    </motion.div>
+                </div>
             </div>
-            <input
-              type="text"
-              id="loginUsername"
-              className="w-full px-4 py-2 bg-blue-50 border border-blue-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm"
-              placeholder="Enter your username"
-              required
-            />
-            <div className="flex items-center space-x-2 mb-2">
-              <span className="text-blue-500">🔒</span>
-              <label htmlFor="loginPassword" className="text-sm text-blue-700">Password</label>
-            </div>
-            <input
-              type="password"
-              id="loginPassword"
-              className="w-full px-4 py-2 bg-blue-50 border border-blue-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm"
-              placeholder="Enter your password"
-              required
-            />
-            <button
-              type="submit"
-              className="w-full px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-400 transition-colors duration-300 mt-4"
-            >
-              LOGIN
-            </button>
-            <p className="text-center text-blue-600 text-sm mt-2">
-              Forgot Password? <span className="underline cursor-pointer">Reset</span>
-            </p>
-          </form>
-
-          {/* Register Form */}
-          <form
-            onSubmit={handleRegisterSubmit}
-            className={`w-full p-6 flex flex-col space-y-4 ${
-              !isLogin ? "translate-x-0" : "-translate-x-full"
-            } transition-transform duration-500 ease-in-out`}
-            style={{ minHeight: "300px" }}
-          >
-            <h2 className="text-2xl font-bold text-center text-blue-700 mb-4">SIGN UP</h2>
-            <div className="flex items-center space-x-2 mb-2">
-              <span className="text-blue-500">👤</span>
-              <label htmlFor="registerUsername" className="text-sm text-blue-700">Username</label>
-            </div>
-            <input
-              type="text"
-              id="registerUsername"
-              className="w-full px-4 py-2 bg-blue-50 border border-blue-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm"
-              placeholder="Enter your username"
-              required
-            />
-            <div className="flex items-center space-x-2 mb-2">
-              <span className="text-blue-500">📧</span>
-              <label htmlFor="registerEmail" className="text-sm text-blue-700">Email</label>
-            </div>
-            <input
-              type="email"
-              id="registerEmail"
-              className="w-full px-4 py-2 bg-blue-50 border border-blue-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm"
-              placeholder="Enter your email"
-              required
-            />
-            <div className="flex items-center space-x-2 mb-2">
-              <span className="text-blue-500">🔒</span>
-              <label htmlFor="registerPassword" className="text-sm text-blue-700">Password</label>
-            </div>
-            <input
-              type="password"
-              id="registerPassword"
-              className="w-full px-4 py-2 bg-blue-50 border border-blue-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm"
-              placeholder="Enter your password"
-              required
-            />
-            <div className="flex items-center space-x-2 mb-2">
-              <span className="text-blue-500">🔐</span>
-              <label htmlFor="confirmPassword" className="text-sm text-blue-700">Confirm Password</label>
-            </div>
-            <input
-              type="password"
-              id="confirmPassword"
-              className="w-full px-4 py-2 bg-blue-50 border border-blue-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm"
-              placeholder="Confirm your password"
-              required
-            />
-            <button
-              type="submit"
-              className="w-full px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-400 transition-colors duration-300 mt-4"
-            >
-              CREATE ACCOUNT
-            </button>
-            <p className="text-center text-blue-600 text-sm mt-2">
-              Already have an account? <span onClick={handleToggle} className="underline cursor-pointer">Login here</span>
-            </p>
-          </form>
-        </div>
-      </div>
-
-      {/* Mobile Toggle (Optional) */}
-      <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 md:hidden">
-        <button
-          onClick={handleToggle}
-          className="px-6 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-400 transition-colors duration-300"
-        >
-          {isLogin ? "Switch to Sign Up" : "Switch to Login"}
-        </button>
-      </div>
-    </div>
-  );
-
+        </PageWrapper>
+    );
 };
 
 export default LoginPage;

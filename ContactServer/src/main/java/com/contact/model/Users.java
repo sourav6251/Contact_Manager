@@ -18,11 +18,15 @@ public class Users {
     private String name;
     @Column(unique = true, nullable = false)
     private String email;
+    @JsonIgnore
     private String password;
     @Column(columnDefinition = "boolean default false")
     private boolean isVerify;
+    @JsonIgnore
     private long otp;
+    @JsonIgnore
     private LocalDateTime otpCreate;
+    @JsonIgnore
     private LocalDateTime userCreate;
 
     private LocalDateTime lastLogin;
