@@ -7,7 +7,7 @@ import apiStore from "@/api/apiStore";
 import { Skeleton } from "../ui/skeleton";
 
 const ProfilePage = () => {
-    const userID = useSelector((state: RootState) => state.user.userID);
+    const userID:any = useSelector((state: RootState) => state.user.userID);
     const [userData, setUserData] = useState({
         name: "",
         email: "",
@@ -19,12 +19,14 @@ const ProfilePage = () => {
 
     const feathProfile = async () => {
         profile = await apiStore.featchProfile(userID);
+        console.log("profile=>",profile);
+        
         setUserData({
-            name: profile?.data.user.name,
-            email: profile?.data.user.email,
-            mediaUrl: profile?.data.user.mediaUrl,
-            isVerified: profile?.data.user.verify,
-            totalContact: profile?.data.totalContacts,
+            name: profile?.user.name,
+            email: profile?.user.email,
+            mediaUrl: profile?.user.mediaUrl,
+            isVerified: profile?.user.verify,
+            totalContact: profile?.totalContacts,
         });
         console.log("userData=>", userData);
     };

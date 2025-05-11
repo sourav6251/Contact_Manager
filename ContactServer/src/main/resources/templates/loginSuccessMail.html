@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Login Successful</title>
+    <style>
+        body {
+          background-color: #f4f4f4;
+          font-family: 'Segoe UI', sans-serif;
+          color: #333;
+          margin: 0;
+          padding: 0;
+        }
+        .container {
+          max-width: 600px;
+          margin: 40px auto;
+          background-color: #fff;
+          border-radius: 12px;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+          padding: 30px;
+        }
+        .header {
+          text-align: center;
+          padding-bottom: 20px;
+        }
+        .header h2 {
+          color: #16a34a;
+          margin: 0;
+        }
+        .content {
+          font-size: 16px;
+          line-height: 1.6;
+        }
+        .highlight {
+          background-color: #e0f2f1;
+          padding: 10px 15px;
+          border-radius: 6px;
+          font-weight: 500;
+          color: #065f46;
+        }
+        .footer {
+          text-align: center;
+          font-size: 14px;
+          color: #888;
+          margin-top: 30px;
+        }
+        a {
+          color: #2563eb;
+          text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h2>✅ Login Successful</h2>
+    </div>
+    <div class="content">
+        <p>Hi <strong>{{name}}</strong>,</p>
+        <p>We noticed a successful login to your account on <strong>{{date}}</strong> from the device
+<!--            <span class="highlight">{{deviceInfo}}</span>.-->
+        </p>
+        <p>If this was you, you’re good to go! 🎉</p>
+        <p>If you did not perform this login, please <a href="{{securityLink}}">secure your account immediately</a>.</p>
+    </div>
+    <div class="footer">
+        — The CollegeConnect Team<br/>
+        <span>© 2025 PhoneBook. All rights reserved.</span>
+    </div>
+</div>
+</body>
+</html>

@@ -34,11 +34,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
-        <!--		<dependency>-->
-        <!--			<groupId>org.springframework.boot</groupId>-->
-        <!--			<artifactId>spring-boot-starter-mail</artifactId>-->
-        <!--		</dependency>-->
-        <!--		<dependency>-->
+        		<dependency>
+        			<groupId>org.springframework.boot</groupId>
+        			<artifactId>spring-boot-starter-mail</artifactId>
+        		</dependency>
+<!--        		<dependency>-->
         <!--			<groupId>org.springframework.boot</groupId>-->
         <!--			<artifactId>spring-boot-starter-security</artifactId>-->
         <!--		</dependency>-->
@@ -104,6 +104,18 @@
             <artifactId>jjwt-jackson</artifactId>
             <version>0.11.5</version>
             <scope>runtime</scope>
+        </dependency>
+<!--        dotENV-->
+        <dependency>
+            <groupId>io.github.cdimascio</groupId>
+            <artifactId>dotenv-java</artifactId>
+            <version>2.2.4</version>
+        </dependency>
+<!--cloudinary-->
+        <dependency>
+            <groupId>com.cloudinary</groupId>
+            <artifactId>cloudinary-http5</artifactId>
+            <version>2.0.0</version>
         </dependency>
 
     </dependencies>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Failed Login Attempt</title>
+    <style>
+        body {
+          background-color: #f4f4f4;
+          font-family: 'Segoe UI', sans-serif;
+          color: #333;
+          margin: 0;
+          padding: 0;
+        }
+        .container {
+          max-width: 600px;
+          margin: 40px auto;
+          background-color: #fff;
+          border-radius: 12px;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+          padding: 30px;
+        }
+        .header {
+          text-align: center;
+          padding-bottom: 20px;
+        }
+        .header h2 {
+          color: #dc2626;
+          margin: 0;
+        }
+        .content {
+          font-size: 16px;
+          line-height: 1.6;
+        }
+        .highlight {
+          background-color: #fee2e2;
+          padding: 10px 15px;
+          border-radius: 6px;
+          font-weight: 500;
+          color: #991b1b;
+        }
+        .footer {
+          text-align: center;
+          font-size: 14px;
+          color: #888;
+          margin-top: 30px;
+        }
+        a {
+          color: #2563eb;
+          text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h2>⚠️ Failed Login Attempt</h2>
+    </div>
+    <div class="content">
+        <p>Hi <strong>{{name}}</strong>,</p>
+        <p>We detected a failed login attempt to your account on <strong>{{date}}</strong> from the following device:</p>
+        <p class="highlight">{{deviceInfo}}</p>
+        <p>If this was <strong>you</strong> and you just mistyped your password, no worries. But if this wasn’t you, we recommend you <a href="{{securityLink}}">change your password immediately</a>.</p>
+    </div>
+    <div class="footer">
+        — The CollegeConnect Team<br/>
+        <span>© 2025 CollegeConnect. All rights reserved.</span>
+    </div>
+</div>
+</body>
+</html>

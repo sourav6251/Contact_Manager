@@ -129,9 +129,10 @@ public class ContactDAO {
     }
 
     public HttpStatus deleteContact(UUID contactID) {
+        Contacts contacts=contactRepository.findById(contactID).orElseThrow(()->new NoSuchElementException("No element found"));
         try{
             contactRepository.deleteById(contactID);
-            return new HttpStatus(200);
+            return new HttpStatus(200,contacts.getMediaId());
         }catch (Exception e){
             return new HttpStatus(500);
         }
@@ -145,5 +146,7 @@ public class ContactDAO {
         return new Contacts(contactDTO.getMediaUrl(), contactDTO.getMediaId(), contactDTO.getName(), contactDTO.getEmail(), contactDTO.getPhone());
 
     }
+
+
 
 }

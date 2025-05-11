@@ -1,8 +1,8 @@
 package com.contact.service;
 
 import com.contact.dao.UserDAO;
-import com.contact.dto.ContactDTO;
 import com.contact.dto.UserDTO;
+import com.contact.util.exception.PasswordNotMatch;
 import com.contact.model.Users;
 import com.contact.util.HttpStatus;
 import com.contact.util.exception.LoginException;
@@ -10,18 +10,20 @@ import com.contact.util.exception.OTPException;
 import org.springframework.stereotype.Service;
 
 
+import java.io.IOException;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 public class UserService {
     private final UserDAO userDAO;
+    private final MailService mailService;
 
-    public UserService(UserDAO userDAO) {
+    public UserService(UserDAO userDAO, MailService mailService) {
         this.userDAO = userDAO;
+        this.mailService = mailService;
     }
 
     public HttpStatus register(UserDTO userDTO) {
@@ -73,20 +75,24 @@ public class UserService {
         return userDAO.deleteUser(uuid);
     }
 
-    public HttpStatus generateOTP(String email){
+    public HttpStatus generateOTP(UUID userID){
         long otp = ThreadLocalRandom.current().nextInt(100000, 999999);
         try{
-            userDAO.generateOTP(otp, email);
+            Users users=userDAO.generateOTP(otp, userID);
+            mailService.sendMail(users.getEmail(),users.getName(),String.valueOf(otp),"otp");
             return new HttpStatus(200,otp);
         }catch (NoSuchElementException e){
             return new HttpStatus(404,"User doesn't exist");
         } catch (RuntimeException e) {
             return new HttpStatus(500);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
-    public HttpStatus verifyOTP(String email,long otp){
+
+    public HttpStatus verifyOTP(UUID userID,long otp){
         try{
-            userDAO.verifyOTP(email, otp);
+            userDAO.verifyOTP(userID, otp);
             return new HttpStatus(200,otp);
         }catch (NoSuchElementException e){
             return new HttpStatus(404,"User doesn't exist");
@@ -94,6 +100,32 @@ public class UserService {
             return new HttpStatus(400,e.getMessage());
         }
     }
+
+    public HttpStatus updatePasswordWithOldPassword(UUID userID,UserDTO userDTO){
+        try{
+            userDAO.updatePasswordWithOldPassword(userID,userDTO);
+            return new HttpStatus(200);
+        }catch (PasswordNotMatch e){
+            return new HttpStatus(400,e);
+        }catch (NoSuchElementException e){
+            return new HttpStatus(400,e);
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public HttpStatus updatePasswordWithPassword(UUID userID,UserDTO userDTO){
+        try{
+            userDAO.updatePasswordWithPassword(userID,userDTO);
+            return new HttpStatus(200);
+        }catch (PasswordNotMatch e){
+            return new HttpStatus(400,e);
+        }catch (NoSuchElementException e){
+            return new HttpStatus(400,e);
+        } catch (RuntimeException e) {
+            return new HttpStatus(500,e);
+        }
+    }
+
 
 }
 

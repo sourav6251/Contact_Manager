@@ -46,15 +46,15 @@ public class SecureController {
 
     }
 
-    @GetMapping("/generateotp/{email}")
-    public ResponseEntity<Object> generateOTP(@PathVariable String email) {
-        HttpStatus status = userService.generateOTP(email);
+    @GetMapping("/generateotp/{userID}")
+    public ResponseEntity<Object> generateOTP(@PathVariable UUID userID) {
+        HttpStatus status = userService.generateOTP(userID);
         return ResponseEntity.status(status.statusCode()).body(status.data());
     }
 
     @GetMapping("/verifyotp")
-    public ResponseEntity<Object> verifyOTP(@RequestParam("email") String email, @RequestParam("otp") long otp) {
-        HttpStatus status = userService.verifyOTP(email, otp);
+    public ResponseEntity<Object> verifyOTP(@RequestParam("userID") UUID userID, @RequestParam("otp") long otp) {
+        HttpStatus status = userService.verifyOTP(userID, otp);
         return ResponseEntity.status(status.statusCode()).body(status.data());
 
     }
@@ -77,6 +77,20 @@ public class SecureController {
         HttpStatus httpStatus = userService.showUserByID(userID);
         return ResponseEntity.status(httpStatus.statusCode()).body(httpStatus.data());
     }
+
+    @PutMapping("/updateoldpassword/{userID}")
+    public ResponseEntity<Object> updateOldPassword(@PathVariable UUID userID, @RequestBody UserDTO userDTO){
+        HttpStatus httpStatus=userService.updatePasswordWithOldPassword(userID,userDTO);
+        return ResponseEntity.status(httpStatus.statusCode()).body(httpStatus.data());
+
+    }
+    @PutMapping("/updatepassword/{userID}")
+    public ResponseEntity<Object> updatePassword(@PathVariable UUID userID, @RequestBody UserDTO userDTO){
+        HttpStatus httpStatus=userService.updatePasswordWithPassword(userID,userDTO);
+        return ResponseEntity.status(httpStatus.statusCode()).body(httpStatus.data());
+
+    }
+
 
     @DeleteMapping("/deleteuser/{userID}")
     public ResponseEntity<Object> deleteUser(@PathVariable UUID userID) {

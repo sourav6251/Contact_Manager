@@ -8,7 +8,7 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { motion } from "framer-motion";
-import { Edit, Eye, Send, Trash, View } from "lucide-react";
+import { Edit, Eye, Send, Trash } from "lucide-react";
 import { Button } from "../ui/button";
 import { UUID } from "crypto";
 import {
@@ -29,53 +29,110 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useState, useEffect } from "react";
 import apiStore from "@/api/apiStore";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/SliceStore";
+import { toast } from "sonner";
 
 interface ContactProps {
     search: string;
     Contacts: any[];
+    onContactChange: () => void; 
 }
+
 interface ContactFormData {
-    id: UUID | any;
+    id: UUID | null;
     file: File | null;
     name: string;
     email: string;
     phone: string;
 }
 
-const Contact = ({ search, Contacts }: ContactProps) => {
-    // console.log("search=>", search);
+const Contact = ({ search, Contacts,onContactChange }: ContactProps) => {
+    const userID = useSelector((state: RootState) => state.user.userID);
     const [previewImage, setPreviewImage] = useState<string | null>(null);
+    const [isUpdating, setIsUpdating] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [contactDetails, setContactDetails] = useState<ContactFormData>({
+        id: null,
+        file: null,
+        name: "",
+        email: "",
+        phone: "",
+    });
+
+    // Clean up object URLs when component unmounts
+    useEffect(() => {
+        return () => {
+            if (previewImage) {
+                URL.revokeObjectURL(previewImage);
+            }
+        };
+    }, [previewImage]);
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
             const imageUrl = URL.createObjectURL(file);
             setPreviewImage(imageUrl);
+            setContactDetails(prev => ({
+                ...prev,
+                file
+            }));
         }
     };
 
-    const [contactDetails, setContactDetails] = useState<ContactFormData>({
-        id: "",
-        file: null,
-        name: "",
-        email: "",
-        phone: "",
-    });
-    const changes=(e: ChangeEvent<HTMLInputElement>)=>{
+    const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
         const { id, value } = e.target;
-        setContactDetails((prev) => ({
+        setContactDetails(prev => ({
             ...prev,
             [id]: value,
         }));
-    }
-    const updateContact=(contactId:any)=>{
-
-    }
-    const deleteContact = async (contactID: any) => {
-        await apiStore.deletecontact(contactID);
     };
+
+    const initializeFormData = (contact: any) => {
+        setContactDetails({
+            id: contact.contactId,
+            file: null,
+            name: contact.name,
+            email: contact.email,
+            phone: contact.phone,
+        });
+        setPreviewImage(contact.mediaUrl || null);
+    };
+
+    const updateContact = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!contactDetails.id) return;
+        
+        setIsUpdating(true);
+        try {
+            await apiStore.updateContact(contactDetails.id, contactDetails, userID);
+            toast.success("Contact updated successfully");
+            onContactChange();  // Call the refresh function
+        } catch (error) {
+            console.error("Failed to update contact:", error);
+            toast.error("Failed to update contact");
+        } finally {
+            setIsUpdating(false);
+        }
+    };
+    
+    const deleteContact = async (contactId: UUID) => {
+        setIsDeleting(true);
+        try {
+            await apiStore.deleteContact(contactId);
+            toast.success("Contact deleted successfully");
+            onContactChange();  // Call the refresh function
+        } catch (error) {
+            console.error("Failed to delete contact:", error);
+            toast.error("Failed to delete contact");
+        } finally {
+            setIsDeleting(false);
+        }
+    };
+
     return (
         <motion.div className="px-5 overflow-y-auto max-h-[80vh] bg-gray-50 dark:bg-gray-700 text-black dark:text-gray-200 transition-colors duration-300">
             <Table className="w-full">
@@ -100,7 +157,31 @@ const Contact = ({ search, Contacts }: ContactProps) => {
                 </TableHeader>
 
                 <TableBody>
-                    {Contacts.map((contact, index) => (
+                {Contacts.filter((contact) =>
+        contact.name.toLowerCase().includes(search.toLowerCase()) ||
+        contact.email.toLowerCase().includes(search.toLowerCase()) ||
+        contact.phone.includes(search)
+    ).length === 0 ? (
+        <TableRow>
+            <TableCell colSpan={5} className="text-center py-6 text-gray-500 dark:text-gray-300">
+                No contacts found
+            </TableCell>
+            {/* <TableCell colSpan={5} className="text-center py-6 text-gray-500 dark:text-gray-300">
+                <span>
+                <img
+                    className="h-[20rem] w-fit rounded-full"
+                    src="NotFound.png"
+                    alt="No contacts found"
+                /> 
+                </span>
+            </TableCell> */}
+        </TableRow>
+    ) : (
+        Contacts.filter((contact) =>
+            contact.name.toLowerCase().includes(search.toLowerCase()) ||
+            contact.email.toLowerCase().includes(search.toLowerCase()) ||
+            contact.phone.includes(search)
+        ).map((contact, index) => (
                         <motion.tr
                             key={contact.contactId}
                             initial={{ opacity: 0, x: -50 }}
@@ -128,7 +209,7 @@ const Contact = ({ search, Contacts }: ContactProps) => {
                             <TableCell className="text-center">
                                 {contact.phone}
                             </TableCell>
-                            <TableCell className="text-center">
+                            <TableCell className="text-center flex justify-center gap-1">
                                 {/* Delete Dialog */}
                                 <Dialog>
                                     <DialogTrigger asChild>
@@ -145,20 +226,24 @@ const Contact = ({ search, Contacts }: ContactProps) => {
                                             <DialogTitle className="dark:text-white">
                                                 Are you absolutely sure?
                                             </DialogTitle>
-                                            <DialogDescription asChild>
-                                                <div className="pt-3 flex justify-center">
-                                                    <Button
-                                                        className="bg-red-500 hover:bg-red-600 text-white"
-                                                        onClick={() =>
-                                                            deleteContact(
-                                                                contact.contactId
-                                                            )
-                                                        }
-                                                    >
-                                                        Delete
-                                                    </Button>
-                                                </div>
+                                            <DialogDescription>
+                                                This action cannot be undone. This will permanently delete the contact.
                                             </DialogDescription>
+                                            <div className="pt-3 flex justify-center gap-4">
+                                                <Button
+                                                    variant="outline"
+                                                    className="dark:text-white"
+                                                >
+                                                    Cancel
+                                                </Button>
+                                                <Button
+                                                    className="bg-red-500 hover:bg-red-600 text-white"
+                                                    onClick={() => deleteContact(contact.contactId)}
+                                                    disabled={isDeleting}
+                                                >
+                                                    {isDeleting ? "Deleting..." : "Delete"}
+                                                </Button>
+                                            </div>
                                         </DialogHeader>
                                     </DialogContent>
                                 </Dialog>
@@ -170,41 +255,38 @@ const Contact = ({ search, Contacts }: ContactProps) => {
                                             variant="ghost"
                                             size="icon"
                                             className="text-blue-500 hover:text-blue-700"
+                                            onClick={() => initializeFormData(contact)}
                                         >
                                             <Edit className="w-4 h-4" />
                                         </Button>
                                     </DialogTrigger>
-                                    <DialogContent className="bg-white dark:bg-gray-700">
+                                    <DialogContent className="bg-white dark:bg-gray-700 max-w-md">
                                         <DialogHeader>
                                             <DialogTitle className="dark:text-white">
                                                 Edit Contact
                                             </DialogTitle>
-                                            <DialogDescription asChild>
-                                                <form className="mt-4 space-y-4" onSubmit={()=>updateContact(contact.contactId)}>
+                                            <DialogDescription>
+                                                <form className="mt-4 space-y-4" onSubmit={updateContact}>
                                                     {/* Profile Image Upload */}
                                                     <div className="relative w-28 h-28 mx-auto">
                                                         {previewImage ? (
                                                             <img
-                                                                src={
-                                                                    previewImage
-                                                                }
+                                                                src={previewImage}
                                                                 alt="Preview"
                                                                 className="absolute top-0 left-0 w-28 h-28 rounded-full object-cover border border-gray-400 shadow-md z-0"
                                                             />
                                                         ) : (
-                                                            <img
-                                                                src={
-                                                                    contact.mediaURL
-                                                                }
-                                                                className="absolute top-0 left-0 w-28 h-28 rounded-full object-cover border border-gray-400 shadow-md z-0"
-                                                            />
+                                                            contact.mediaUrl && (
+                                                                <img
+                                                                    src={contact.mediaUrl}
+                                                                    className="absolute top-0 left-0 w-28 h-28 rounded-full object-cover border border-gray-400 shadow-md z-0"
+                                                                />
+                                                            )
                                                         )}
                                                         <Input
                                                             type="file"
                                                             accept="image/*"
-                                                            onChange={
-                                                                handleImageChange
-                                                            }
+                                                            onChange={handleImageChange}
                                                             className="absolute top-0 left-0 w-28 h-28 rounded-full opacity-0 z-10 cursor-pointer"
                                                         />
                                                         <div className="absolute top-0 left-0 w-28 h-28 rounded-full border-2 border-dashed border-gray-400 dark:border-gray-500 flex items-center justify-center z-5 text-xs text-gray-600 dark:text-gray-300 pointer-events-none">
@@ -223,11 +305,10 @@ const Contact = ({ search, Contacts }: ContactProps) => {
                                                         <Input
                                                             id="name"
                                                             type="text"
-                                                            value={contact.name}
+                                                            value={contactDetails.name}
+                                                            onChange={handleInputChange}
                                                             className="mt-1 block w-full px-3 py-2 bg-gray-100 dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded-md text-black dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400"
-                                                            onChange={changes}
-                                                    />
-                                                    
+                                                        />
                                                     </div>
 
                                                     {/* Email */}
@@ -241,10 +322,8 @@ const Contact = ({ search, Contacts }: ContactProps) => {
                                                         <Input
                                                             id="email"
                                                             type="email"
-                                                            value={
-                                                                contact.email
-                                                            }
-                                                            onChange={changes}
+                                                            value={contactDetails.email}
+                                                            onChange={handleInputChange}
                                                             className="mt-1 block w-full px-3 py-2 bg-gray-100 dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded-md text-black dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400"
                                                         />
                                                     </div>
@@ -260,23 +339,28 @@ const Contact = ({ search, Contacts }: ContactProps) => {
                                                         <Input
                                                             id="phone"
                                                             type="tel"
-                                                            value={
-                                                                contact.phone
-                                                            }
-                                                            onChange={changes}
+                                                            value={contactDetails.phone}
+                                                            onChange={handleInputChange}
                                                             className="mt-1 block w-full px-3 py-2 bg-gray-100 dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded-md text-black dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400"
                                                         />
                                                     </div>
 
                                                     {/* Submit */}
                                                     <div className="pt-4 text-center">
-                                                        <button
+                                                        <Button
                                                             type="submit"
-                                                            className="inline-flex items-center gap-2 bg-blue-600 text-white px-5 py-2 rounded-lg shadow-md hover:bg-blue-700 transition-all duration-200 active:scale-95"
+                                                            className="inline-flex items-center gap-2"
+                                                            disabled={isUpdating}
                                                         >
-                                                            <Send className="h-4 w-4" />
-                                                            Submit
-                                                        </button>
+                                                            {isUpdating ? (
+                                                                "Updating..."
+                                                            ) : (
+                                                                <>
+                                                                    <Send className="h-4 w-4" />
+                                                                    Update Contact
+                                                                </>
+                                                            )}
+                                                        </Button>
                                                     </div>
                                                 </form>
                                             </DialogDescription>
@@ -287,25 +371,52 @@ const Contact = ({ search, Contacts }: ContactProps) => {
                                 {/* View Sheet */}
                                 <Sheet>
                                     <SheetTrigger asChild>
-                                        <Button variant="ghost">
-                                            <Eye />
+                                        <Button variant="ghost" size="icon">
+                                            <Eye className="w-4 h-4" />
                                         </Button>
                                     </SheetTrigger>
                                     <SheetContent className="bg-white dark:bg-gray-700 border-0">
                                         <SheetHeader>
                                             <SheetTitle className="dark:text-white">
-                                                Contact Info
+                                                Contact Details
                                             </SheetTitle>
                                             <SheetDescription className="dark:text-gray-300">
-                                                This would contain more detailed
-                                                contact info and actions.
+                                                <div className="mt-6 space-y-4">
+                                                    <div className="flex justify-center">
+                                                        {contact.mediaUrl ? (
+                                                            <img
+                                                                src={contact.mediaUrl}
+                                                                alt={contact.name}
+                                                                className="w-24 h-24 rounded-full object-cover"
+                                                            />
+                                                        ) : (
+                                                            <div className="w-24 h-24 rounded-full bg-gray-200 dark:bg-gray-600" />
+                                                        )}
+                                                    </div>
+                                                    <div>
+                                                        <h3 className="text-lg font-medium text-center dark:text-white">
+                                                            {contact.name}
+                                                        </h3>
+                                                    </div>
+                                                    <div className="space-y-2">
+                                                        <div>
+                                                            <Label className="text-gray-600 dark:text-gray-400">Email</Label>
+                                                            <p className="dark:text-white">{contact.email}</p>
+                                                        </div>
+                                                        <div>
+                                                            <Label className="text-gray-600 dark:text-gray-400">Phone</Label>
+                                                            <p className="dark:text-white">{contact.phone}</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </SheetDescription>
                                         </SheetHeader>
                                     </SheetContent>
                                 </Sheet>
                             </TableCell>
                         </motion.tr>
-                    ))}
+                    ))
+                )}
                 </TableBody>
             </Table>
         </motion.div>

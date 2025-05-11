@@ -12,7 +12,10 @@ import Logout from "./components/auth/Logout";
 import ContactManager from "./pages/ContactManager";
 import Profile from "./components/profile/ProfilePage";
 import TagsContact from "./components/tags/TagsContact";
-import Settings from "./components/settings/Settings";
+import SettingsPages from "./pages/SettingsPages";
+// import Settings from "./pages/SettingsPages";
+// import SettingsPages from "./pages/SettingsPages";
+// import Settings from "./components/settings/Settings";
 function App() {
     return (
         <Provider store={store}>
@@ -44,7 +47,7 @@ function App() {
                                 />
                                 <Route
                                     path="/settings"
-                                    element={<Settings/>}
+                                    element={<SettingsPages/>}
                                 />
                             </Route>
 

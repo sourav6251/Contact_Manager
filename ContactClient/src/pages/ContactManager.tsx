@@ -35,6 +35,7 @@ interface Contact {
     mediaId?: string;
 }
 
+
 const ContactManager = () => {
     const userID = useSelector((state: RootState) => state.user.userID);
     const userName = useSelector((state: RootState) => state.user.userName);
@@ -46,6 +47,8 @@ const ContactManager = () => {
         email: "",
         phone: "",
     });
+    const [submitting, setSubmitting] = useState<boolean>(false);
+
     const [contacts, setContacts] = useState<Contact[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
 
@@ -65,34 +68,33 @@ const ContactManager = () => {
             [id]: value,
         }));
     };
+    const handleContactChange = () => {
+        fetchContacts();  // This will reload the contacts
+    };
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
+        if (!contactDetails.file) {
+            toast.warning("Please select a profile image");
+            return;
+        }
+    
+        setSubmitting(true);
         try {
-            if (!contactDetails.file) {
-                toast.warning("Please select a profile image");
-                return;
-            }
-
             await apiStore.saveContact(contactDetails, userID);
             toast.success("Contact saved successfully");
-            
-            // Reset form after successful submission
-            setContactDetails({
-                file: null,
-                name: "",
-                email: "",
-                phone: "",
-            });
+    
+            setContactDetails({ file: null, name: "", email: "", phone: "" });
             setPreviewImage(null);
-            
-            // Refresh contacts after adding new one
             fetchContacts();
         } catch (error) {
             console.error("Error saving contact:", error);
             toast.error("Failed to save contact");
+        } finally {
+            setSubmitting(false);
         }
     };
+    
 
     const fetchContacts = async () => {
         setLoading(true);
@@ -215,28 +217,74 @@ const ContactManager = () => {
               </div>
 
               <div className="pt-4 text-center">
-                <button
-                  type="submit"
-                  className="inline-flex items-center gap-2 bg-blue-600 text-white px-5 py-2 rounded-lg shadow-md hover:bg-blue-700 transition-all duration-200 active:scale-95"
-                >
-                  <Send className="h-4 w-4" />
-                  Submit
-                </button>
-              </div>
+  <button
+    type="submit"
+    disabled={submitting}
+    className={`inline-flex items-center gap-2 px-5 py-2 rounded-lg shadow-md transition-all duration-200 active:scale-95 ${
+      submitting
+        ? 'bg-blue-400 cursor-not-allowed'
+        : 'bg-blue-600 hover:bg-blue-700 text-white'
+    }`}
+  >
+    {submitting ? (
+      <>
+      <svg
+          className="animate-spin h-4 w-4 text-white"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <circle
+            className="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            strokeWidth="4"
+          />
+          <path
+            className="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+          />
+        </svg>
+      {/* <img
+      src="loading.svg"/> */}
+        Submitting...
+      </>
+    ) : (
+      <>
+        <Send className="h-4 w-4" />
+        Submit
+      </>
+    )}
+  </button>
+</div>
+
             </form>
           </DialogDescription>
         </DialogHeader>
       </DialogContent>
     </Dialog>
   </div>
-
   <div>
-    {loading ? (
-      <div className="text-center py-10 text-gray-700 dark:text-gray-300">
-        Loading contacts...
-      </div>
+  {loading ? (
+      <div className="text-center py-10">Loading...</div>
+    ) : contacts.length === 0 ? (
+      <div className="flex justify-center items-center py-10"> <img
+      className="h-[20rem] w-fit rounded-full bg-blend-color-burn"
+      style={{ mixBlendMode: 'luminosity' }}
+      src="NotFound.png"
+      alt="No contacts found"
+  /> </div>
     ) : (
-      <Contact Contacts={contacts} search={search} />
+      <>
+        <Contact
+          Contacts={contacts}
+          search={search}
+          onContactChange={handleContactChange}
+        />
+      </>
     )}
   </div>
 </div>

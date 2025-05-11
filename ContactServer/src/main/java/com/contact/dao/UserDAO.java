@@ -1,13 +1,18 @@
 package com.contact.dao;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import com.contact.dto.UserDTO;
+import com.contact.util.exception.PasswordNotMatch;
 import com.contact.model.Users;
 import com.contact.util.HttpStatus;
 import com.contact.util.exception.LoginException;
 import com.contact.util.exception.OTPException;
 import com.contact.util.reposetry.UserRepository;
+import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -15,9 +20,31 @@ import java.util.*;
 public class UserDAO {
 
     private final UserRepository userRepository;
+    private final Cloudinary cloudinary;
+
+    public void deleteFileFromCloudinary(String publicId) {
+        try {
+            Map result = cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
+            if ("ok".equals(result.get("result"))) {
+                System.out.println("File deleted successfully from Cloudinary.");
+            } else {
+//                System.errout.println("Cloudinary deletion failed: " + result);
+                System.err.println("Cloudinary deletion failed: " + result);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Exception occurred while deleting file from Cloudinary.");
+        }
+    }
 
     public UserDAO(UserRepository userRepository) {
         this.userRepository = userRepository;
+        Dotenv dotenv = Dotenv.load();
+        this.cloudinary = new Cloudinary(ObjectUtils.asMap(
+                "cloud_name", dotenv.get("CLOUDINARY_CLOUD_NAME"),
+                "api_key", dotenv.get("CLOUDINARY_API_KEY"),
+                "api_secret", dotenv.get("CLOUDINARY_API_SECRET")
+        ));
     }
 
     public int register(UserDTO userDTO) {
@@ -82,15 +109,19 @@ public class UserDAO {
 
     public int updateProfile(UserDTO userDTO, UUID userID) {
 
-        if (checkUser(userID)) {
-            try {
-                Users users = userRepository.findById(userID).orElseThrow();
 
-                if (userDTO.getMediaUrl() != null && !userDTO.getMediaUrl().isBlank()) {
-                    users.setMediaUrl(userDTO.getMediaUrl());
-                }
-                if (userDTO.getMediaId() != null && !userDTO.getMediaId().isBlank()) {
-                    users.setMediaId(userDTO.getMediaId());
+
+        if (checkUser(userID)) {
+//            try {
+                Users users = userRepository.findById(userID).orElseThrow(()->new RuntimeException("Internal Server Error"));
+                if (userDTO.getMediaUrl() !=null){
+                    deleteFileFromCloudinary(users.getMediaId());
+                    if (userDTO.getMediaUrl() != null && !userDTO.getMediaUrl().isBlank()) {
+                        users.setMediaUrl(userDTO.getMediaUrl());
+                    }
+                    if (userDTO.getMediaId() != null && !userDTO.getMediaId().isBlank()) {
+                        users.setMediaId(userDTO.getMediaId());
+                    }
                 }
                 if (userDTO.getName() != null && !userDTO.getName().isBlank()) {
                     users.setName(userDTO.getName());
@@ -101,9 +132,9 @@ public class UserDAO {
 
                 userRepository.save(users);
                 return 200;
-            } catch (Exception e) {
-                return 500;
-            }
+//            } catch (Exception e) {
+//                return 500;
+//            }
 
         } else {
             return 404;
@@ -175,25 +206,24 @@ public class UserDAO {
         }
     }
 
-    public void generateOTP(long otp, String email) {
+    public Users generateOTP(long otp, UUID userID) {
         try {
-            Users users = userRepository.findByEmail(email);
+            Users users = userRepository.findById(userID).orElseThrow(() -> new NoSuchElementException("User Not found"));
             users.setOtp(otp);
             users.setOtpCreate(LocalDateTime.now());
             userRepository.save(users);
-        } catch (NoSuchElementException e) {
-            throw new NoSuchElementException("User not found");
+            return users;
         } catch (RuntimeException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void verifyOTP(String email, long otp) {
+    public void verifyOTP(UUID userID, long otp) {
         Users users;
         try {
-            users = userRepository.findByEmail(email);
-        } catch (NoSuchElementException e) {
-            throw new NoSuchElementException("User not found");
+            users = userRepository.findById(userID).orElseThrow(() -> new NoSuchElementException("User not Found"));
+        } catch (RuntimeException e) {
+            throw new RuntimeException("User not found");
         }
 
         long existingOTP = users.getOtp();
@@ -214,6 +244,33 @@ public class UserDAO {
         } catch (RuntimeException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void updatePasswordWithOldPassword(UUID userID, UserDTO userDTO) {
+        Users users;
+        try {
+            users = userRepository.getReferenceById(userID);
+        } catch (NoSuchElementException e) {
+            throw new NoSuchElementException("No user exist");
+        }
+        if (users.getPassword().equals(userDTO.getCurrentPassword())) {
+            users.setPassword(userDTO.getNewPassword());
+        } else {
+            throw new PasswordNotMatch("Password is incorrect");
+        }
+        userRepository.save(users);
+    }
+
+    public void updatePasswordWithPassword(UUID userID, UserDTO userDTO) {
+        Users users;
+        try {
+            users = userRepository.getReferenceById(userID);
+        } catch (NoSuchElementException e) {
+            throw new NoSuchElementException("No user exist");
+        }
+        users.setPassword(userDTO.getNewPassword());
+
+        userRepository.save(users);
     }
 
 
