@@ -184,4 +184,22 @@ public class Users {
         this.lastLogin = lastLogin;
         this.contacts = contacts;
     }
+
+    @Override
+    public String toString() {
+        return "Users{" +
+                "userId=" + userId +
+                ", mediaUrl='" + mediaUrl + '\'' +
+                ", mediaId='" + mediaId + '\'' +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", isVerify=" + isVerify +
+                ", otp=" + otp +
+                ", otpCreate=" + otpCreate +
+                ", userCreate=" + userCreate +
+                ", lastLogin=" + lastLogin +
+                ", contacts=" + contacts +
+                '}';
+    }
 }

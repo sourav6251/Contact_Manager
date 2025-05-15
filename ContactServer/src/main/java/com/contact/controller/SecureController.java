@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
-@CrossOrigin("http://localhost:5236/")
+//@CrossOrigin("http://localhost:5236/")
 @RestController()
 @RequestMapping("/secure")
 public class SecureController {
@@ -33,21 +33,45 @@ public class SecureController {
      * {@code User}
      */
 
-    @PostMapping("/register")
-    public ResponseEntity<Object> register(@Validated(OnRegister.class) @RequestBody UserDTO userDTO) {
-        HttpStatus httpStatus = userService.register(userDTO);
-        return ResponseEntity.status(httpStatus.statusCode()).body(httpStatus.data());
-    }
+//    @PostMapping("/register")
+//    public ResponseEntity<Object> register(@Validated(OnRegister.class) @RequestBody UserDTO userDTO) {
+//        HttpStatus httpStatus = userService.register(userDTO);
+//        return ResponseEntity.status(httpStatus.statusCode()).body(httpStatus.data());
+//    }
 
-    @GetMapping("/login")
-    public ResponseEntity<Object> login(@RequestParam("email") String email, @RequestParam("password") String password) {
-        HttpStatus status = userService.login(email, password);
-        return ResponseEntity.status(status.statusCode()).body(status.data());
+//    @GetMapping("/login")
+//    public ResponseEntity<Object> login(@RequestParam("email") String email, @RequestParam("password") String password ,HttpServletResponse response) {
+//        HttpStatus status = userService.login(email, password);
+//        ResponseCookie cookie=ResponseCookie.from("AccessToken","hi")
+//                .httpOnly(true)
+//                .secure(false)
+//                .path("/")
+//                .maxAge(15*24*60*60)
+//                .sameSite("Lax")
+//                .build();
+//        response.setHeader("Set-Cookie",cookie.toString());
+//        return ResponseEntity.status(status.statusCode()).body(status.data());
+//    }
 
-    }
+//    @GetMapping("/logout")
+//    public ResponseEntity<Object> logout(HttpServletResponse response) {
+//        System.err.println("Enter into logout");
+//        ResponseCookie cookie = ResponseCookie.from("AccessToken", "")
+//                .httpOnly(true)
+//                .secure(false)
+//                .path("/")
+//                .maxAge(0) // <-- expire cookie
+//                .sameSite("Lax")
+//                .build();
+//
+//        response.setHeader("Set-Cookie", cookie.toString());
+//        return ResponseEntity.ok().body("Logged out successfully");
+//    }
+//
 
     @GetMapping("/generateotp/{userID}")
     public ResponseEntity<Object> generateOTP(@PathVariable UUID userID) {
+        System.err.println(userID);
         HttpStatus status = userService.generateOTP(userID);
         return ResponseEntity.status(status.statusCode()).body(status.data());
     }

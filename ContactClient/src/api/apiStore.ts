@@ -1,7 +1,8 @@
 import { toast } from "sonner";
-import axiosInstance from "./axiosInstance";
+// import axiosInstance from "./axiosInstance";
 import { UUID } from "crypto";
 import axios from "axios";
+import Axios from "./Axios";
 // import { v2 as cloudinary } from "cloudinary";
 // Cloudinary type declarations
 interface CloudinaryUploadResult {
@@ -55,12 +56,20 @@ interface profile {
     name: string;
     userId: UUID;
 }
+interface UserData {
+    email: string;
+    media: string;
+    name: string;
+    userId: string | null;
+    status: number;
+}
 
 // cloudinary.config({
 //     cloud_name: "dkxei4b5s",
 //     api_key: "156732394766315",
 //     api_secret: "nwkaLHN7giKg4rEVStTkUZW5918",
 // });
+
 class APIStore {
     private readonly cloudName: string;
     private readonly uploadPreset: string;
@@ -77,11 +86,19 @@ class APIStore {
             newPassword: password,
         };
         try {
-            const resonse = await axiosInstance.post("/register", data);
+            const resonse = await Axios.axiosInstance.post("/register", data);
             console.log(resonse);
-            toast.success("User create sucessfully");
 
-            return 200;
+            toast.success("User create sucessfully");
+            const userData: UserData = {
+                email: resonse.data.email,
+                media: resonse.data.mediaUrl,
+                name: resonse.data.name,
+                userId: resonse.data.userId,
+                status: resonse.status,
+            };
+
+            return userData;
         } catch (error: any) {
             if (error.response && error.response.status === 400) {
                 toast.error("User already exists");
@@ -93,39 +110,55 @@ class APIStore {
 
     public async login(email: String, password: String) {
         try {
-            const response = await axiosInstance.get("login", {
+            const response = await Axios.axiosInstance.get("login", {
                 params: {
                     email: email,
                     password: password,
                 },
             });
+            console.log("response=>",response);
+            
             return response;
         } catch (error) {
             toast.error("Try again");
         }
     }
 
+    public async logout() {
+        try {
+           const resonse= await Axios.axiosInstance.get("logout");
+           console.log("Logout call");
+           
+            toast.success("Logoout Successful");
+            return resonse.status;
+        } catch (error) {
+            toast.error("Something wrong");
+        }
+    }
     public async featchProfile(userID: UUID) {
         try {
-            const response = await axiosInstance.get(`showuserbyid/${userID}`);
+            const response = await Axios.axiosInstanceSecure.get(`showuserbyid/${userID}`);
             return response.data;
         } catch (error) {
             toast.error("Try again");
         }
     }
 
-    public async generateOTP(userID: UUID) {
+    public async generateOTP(userID: string) {
+        console.log("userID=>", userID);
+
         try {
-            axiosInstance.get(`generateotp/${userID}`);
+            await Axios.axiosInstanceSecure.get(`generateotp/${userID}`);
             toast.success("Otp send successfully");
         } catch (error) {
+            console.error("error=>", error);
             toast.error("Please try again");
         }
     }
 
-    public async verifyOTP(userID: UUID, otp: any) {
+    public async verifyOTP(userID: string, otp: any) {
         try {
-            const response = await axiosInstance.get(`verifyotp`, {
+            const response = await Axios.axiosInstanceSecure.get(`verifyotp`, {
                 params: {
                     userID: userID,
                     otp: otp,
@@ -143,7 +176,6 @@ class APIStore {
                 toast.error(error.response.data);
             }
             toast.error("Please try again");
-            // throw  error;
             return "error";
         }
     }
@@ -238,7 +270,7 @@ class APIStore {
                 };
             }
 
-            await axiosInstance.post(`createcontact/${userID}`, contactData);
+            await Axios.axiosInstanceSecure.post(`createcontact/${userID}`, contactData);
             toast.success("Contact saved successfully");
         } catch (error: any) {
             toast.error(
@@ -250,7 +282,7 @@ class APIStore {
 
     public async showallContact(userID: any) {
         try {
-            const response = await axiosInstance.get(
+            const response = await Axios.axiosInstanceSecure.get(
                 `showallcontact/${userID}`
             );
             toast.success("Contact save successfully");
@@ -267,7 +299,7 @@ class APIStore {
 
     public async deleteContact(contactID: any) {
         try {
-            const response = await axiosInstance.delete(
+            const response = await Axios.axiosInstanceSecure.delete(
                 `deletecontact/${contactID}`
             );
             toast.success("Contact delete successfully");
@@ -284,7 +316,7 @@ class APIStore {
         userID: any
     ) {
         try {
-            const response = await axiosInstance.put(
+            const response = await Axios.axiosInstanceSecure.put(
                 `/updatecontact`,
                 contactDetails, // This will be the request body
                 {
@@ -306,7 +338,7 @@ class APIStore {
 
     public async updateOldPassword(passwords: updatePassword, userID: any) {
         try {
-            await axiosInstance.put(`updateoldpassword/${userID}`, passwords);
+            await Axios.axiosInstanceSecure.put(`updateoldpassword/${userID}`, passwords);
             toast.success("password Change Successfully");
         } catch (error: any) {
             // const status =error.response.status;
@@ -324,7 +356,7 @@ class APIStore {
         };
 
         try {
-            await axiosInstance.put(`updatepassword/${userID}`, newPasswords);
+            await Axios.axiosInstanceSecure.put(`updatepassword/${userID}`, newPasswords);
             toast.success("password Change Successfully");
             //    console.log("response=>",response);
             return "success";
@@ -359,13 +391,13 @@ class APIStore {
         }
 
         try {
-            axiosInstance.put(`updateprofile/${profile.userId}`, profileData);
-            toast.success("Profile Update Successfully")
-            return "success"
+           await Axios.axiosInstanceSecure.put(`updateprofile/${profile.userId}`, profileData);
+            toast.success("Profile Update Successfully");
+            return "success";
         } catch (error) {
             console.error(error);
-            toast.error("Please try again")
-            return "error"
+            toast.error("Please try again");
+            return "error";
         }
     }
 }

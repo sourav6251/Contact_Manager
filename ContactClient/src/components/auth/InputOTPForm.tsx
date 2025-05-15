@@ -1,5 +1,3 @@
-"use client";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -20,6 +18,9 @@ import {
     InputOTPSlot,
 } from "@/components/ui/input-otp";
 import apiStore from "@/api/apiStore";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/SliceStore";
+import { log } from "util";
 
 // Define props interface
 interface InputOTPFormProps {
@@ -39,6 +40,7 @@ const FormSchema = z.object({
 });
 
 export function InputOTPForm({ email ,onSuccess}: InputOTPFormProps) {
+    const userID=useSelector((state:RootState)=>state.user.userID)
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
         defaultValues: { pin: "" },
@@ -46,7 +48,8 @@ export function InputOTPForm({ email ,onSuccess}: InputOTPFormProps) {
 
     async function onSubmit(data: z.infer<typeof FormSchema>) {
         try {
-            await apiStore.verifyOTP(email, data.pin);
+            console.log("userID=>",userID)
+            await apiStore.verifyOTP(userID, data.pin);
             onSuccess(); 
         } catch {
             toast.error("Enter valied otp");

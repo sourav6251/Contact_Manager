@@ -2,72 +2,116 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Welcome to CollegeConnect</title>
   <style>
     body {
-      background-color: #f9fafb;
-      font-family: 'Segoe UI', sans-serif;
+      background-color: #f3f4f6;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
       margin: 0;
       padding: 0;
-      color: #111827;
+      color: #1f2a44;
+    }
+    .wrapper {
+      width: 100%;
+      table-layout: fixed;
+      background-color: #f3f4f6;
+      padding: 20px;
     }
     .container {
       max-width: 600px;
-      margin: 40px auto;
+      width: 100%;
+      margin: 0 auto;
       background-color: #ffffff;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-      padding: 40px;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
     }
     .header {
+      background: linear-gradient(135deg, #3b82f6, #10b981);
+      padding: 30px 20px;
       text-align: center;
     }
     .header h1 {
-      color: #16a34a;
-      margin-bottom: 10px;
+      color: #ffffff;
+      font-size: 24px;
+      margin: 0;
+      font-weight: 700;
     }
     .content {
+      padding: 30px 20px;
       font-size: 16px;
-      line-height: 1.6;
-      margin-top: 20px;
+      line-height: 1.5;
+    }
+    .content p {
+      margin: 0 0 15px;
     }
     .button {
       display: inline-block;
-      background-color: #2563eb;
+      background-color: #3b82f6;
       color: #ffffff;
       padding: 12px 24px;
-      border-radius: 8px;
+      border-radius: 6px;
       text-decoration: none;
       font-weight: 600;
-      margin-top: 30px;
+      text-align: center;
+    }
+    .button:hover {
+      background-color: #2563eb;
     }
     .footer {
+      background-color: #f9fafb;
+      padding: 20px;
       text-align: center;
       font-size: 14px;
       color: #6b7280;
-      margin-top: 40px;
+    }
+    @media only screen and (max-width: 600px) {
+      .wrapper {
+        padding: 10px;
+      }
+      .header h1 {
+        font-size: 20px;
+      }
+      .content {
+        padding: 20px 15px;
+        font-size: 15px;
+      }
+      .button {
+        display: block;
+        padding: 10px;
+        font-size: 14px;
+      }
+      .footer {
+        font-size: 13px;
+        padding: 15px;
+      }
     }
   </style>
 </head>
 <body>
-<div class="container">
-  <div class="header">
-    <h1>🎉 Welcome to CollegeConnect!</h1>
-  </div>
-  <div class="content">
-    <p>Hi <strong>{{name}}</strong>,</p>
-    <p>Your account has been successfully created. We're thrilled to have you on board!</p>
-    <p>You can now log in and start exploring all the features CollegeConnect has to offer.</p>
-    <p style="text-align:center;">
-      <a class="button" href="http://127.0.0.1:5236">Login to Your Account</a>
-    </p>
-    <p>If you did not sign up for this account, please <a href="http://127.0.0.1:5236">contact support</a> immediately.</p>
-  </div>
-  <div class="footer">
-    — The PhoneBook Team<br/>
-    © 2025 CollegeConnect. All rights reserved.
-  </div>
-</div>
+<table class="wrapper" role="presentation" cellpadding="0" cellspacing="0">
+  <tr>
+    <td>
+      <div class="container">
+        <div class="header">
+          <h1>🎉 Welcome to CollegeConnect!</h1>
+        </div>
+        <div class="content">
+          <p>Hi <strong>{{name}}</strong>,</p>
+          <p>We're excited to welcome you to CollegeConnect! Your account is ready, and you can now dive in to explore all the amazing features waiting for you.</p>
+          <p style="text-align: center;">
+            <a class="button" href="http://127.0.0.1:5236">Log In to Your Account</a>
+          </p>
+          <p>If you didn’t create this account, please <a href="http://127.0.0.1:5236/support">contact our support team</a> right away.</p>
+        </div>
+        <div class="footer">
+          — The CollegeConnect Team<br />
+          © 2025 CollegeConnect. All rights reserved.
+        </div>
+      </div>
+    </td>
+  </tr>
+</table>
 </body>
 </html>

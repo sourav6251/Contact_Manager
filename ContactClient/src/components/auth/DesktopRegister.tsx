@@ -7,7 +7,12 @@ import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { InputOTPForm } from "./InputOTPForm";
 import apiStore from "@/api/apiStore";
+import { useDispatch, useSelector } from "react-redux";
+import { login, logout } from "@/redux/UserSlice";
+import { RootState } from "@/redux/SliceStore";
 
+
+  
 const DesktopRegister = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [showConformPassword, setShowConformPassword] = useState(false);
@@ -18,6 +23,8 @@ const DesktopRegister = () => {
         password: "",
         conformPassword: "",
     });
+    let userID=useSelector((state:RootState)=>state.user.userID)
+    const dispatch=useDispatch();
 
     const registerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setRegister({
@@ -39,15 +46,33 @@ const DesktopRegister = () => {
         }
 
         try {
-            const status = await apiStore.register(
+            const responses = await apiStore.register(
                 register.name,
                 register.email,
                 register.password
             );
-            if (status === 200) {
-                await apiStore.generateOTP(register.email);
-                setOTP(true);
-            }
+        //    await dispatch(logout())
+
+            // console.log("UserID=>",responses);
+            // const userID1=responses?.userId;
+            // const name=responses?.name;
+            // console.log("userID11=>",userID1);
+            // console.log("name=>",name);
+            
+            
+            dispatch(login({
+                login: false,
+                userID: responses?.userId,
+                darkmode: false, 
+                userName:responses?.name
+            }));
+            // console.log("userIDredux=>",userID);
+            
+            setOTP(true);
+            // if (status === 200) {
+                await apiStore.generateOTP(responses.userId);
+            //     setOTP(true);
+            // }
         } catch {
             toast.error("Something went wrong");
         }

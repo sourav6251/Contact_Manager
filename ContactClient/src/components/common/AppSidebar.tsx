@@ -51,7 +51,7 @@ const AppSidebar = ({
                     )}
                 >
                     <img
-                        src="/vite.svg"
+                        src="LOGO.png"
                         alt="logo"
                         className="w-3/4 h-3/4 object-contain"
                     />

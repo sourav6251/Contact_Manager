@@ -9,6 +9,7 @@ import { X } from "lucide-react";
 import { logout } from "@/redux/UserSlice";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import apiStore from "@/api/apiStore";
 
 interface LogoutPopupProps {
     onClose: () => void;
@@ -16,9 +17,9 @@ interface LogoutPopupProps {
 
 const LogoutPopup = ({ onClose }: LogoutPopupProps) => {
     const modalRef = useRef<HTMLDivElement>(null);
-    const userName=useSelector((state:RootState)=>state.user.userName)
-    const dispatch=useDispatch();
-const navigate=useNavigate();
+    const userName = useSelector((state: RootState) => state.user.userName);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (
@@ -48,15 +49,17 @@ const navigate=useNavigate();
     interface PageWrapperProps {
         children: React.ReactNode;
     }
-    const handleLogout=()=>{
-      setTimeout(() => {
-        toast.success(`${userName}, you logout successfully`);
-        navigate('/');
-    }, 1);
-      dispatch(logout())
-      onClose()
-    }
- 
+    const handleLogout = async () => {
+        const response = await apiStore.logout();
+        if (response === 200) {
+            setTimeout(() => {
+                toast.success(`${userName}, you logout successfully`);
+                navigate("/");
+            }, 1);
+            dispatch(logout());
+            onClose();
+        }
+    };
 
     return (
         <motion.div
@@ -67,19 +70,25 @@ const navigate=useNavigate();
             transition={pageTransition}
             className="fixed inset-0  backdrop-blur-sm  flex items-center justify-center h-full w-full"
         >
-          <div  onClick={onClose} className="cursor-pointer relative top-[-75px] right-[-250px] h-fit w-fit rounded-[50%] bg-white dark:bg-black"><X className="text-black dark:text-white" size={22}/></div>
+            <div
+                onClick={onClose}
+                className="cursor-pointer relative top-[-75px] right-[-250px] h-fit w-fit rounded-[50%] bg-white dark:bg-black"
+            >
+                <X className="text-black dark:text-white" size={22} />
+            </div>
             <div
                 ref={modalRef}
                 className="bg-slate-200  flex flex-col  justify-around items-center dark:bg-slate-600 p-4 rounded-md shadow-xl h-[10rem] w-[15rem]"
             >
                 <p className="text-black dark:text-white text-sm italic mt-2 place-self-center">
-                     See ya next time {userName}
+                    See ya next time {userName}
                 </p>
 
                 <div className="w-full flex justify-center items-center">
                     <Button
-                    onClick={handleLogout}
-                    className=" transform duration-150 bg-red-300 hover:bg-red-500  dark:bg-red-600 dark:hover:bg-red-800">
+                        onClick={handleLogout}
+                        className=" transform duration-150 bg-red-300 hover:bg-red-500  dark:bg-red-600 dark:hover:bg-red-800"
+                    >
                         Logout
                     </Button>
                 </div>

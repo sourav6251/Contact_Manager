@@ -1,70 +1,243 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Failed Login Attempt</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Alert: Failed Login Attempt</title>
     <style>
+        /* Base Styles */
         body {
-          background-color: #f4f4f4;
-          font-family: 'Segoe UI', sans-serif;
-          color: #333;
-          margin: 0;
-          padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #f5f5f5;
+            color: #1e293b;
+            margin: 0;
+            padding: 0;
+            line-height: 1.5;
         }
+
+        /* Container */
         .container {
-          max-width: 600px;
-          margin: 40px auto;
-          background-color: #fff;
-          border-radius: 12px;
-          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-          padding: 30px;
+            max-width: 640px;
+            margin: 0 auto;
+            padding: 24px;
         }
+
+        /* Card */
+        .card {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 2px 16px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            margin: 32px auto;
+        }
+
+        /* Header */
         .header {
-          text-align: center;
-          padding-bottom: 20px;
+            background: linear-gradient(135deg, #7c3aed, #4f46e5);
+            padding: 40px 24px;
+            text-align: center;
+            color: #ffffff;
         }
-        .header h2 {
-          color: #dc2626;
-          margin: 0;
+
+        .header img {
+            height: 36px;
+            margin-bottom: 16px;
         }
+
+        .header-icon {
+            font-size: 40px;
+            margin-bottom: 12px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        /* Content */
         .content {
-          font-size: 16px;
-          line-height: 1.6;
+            padding: 32px;
         }
-        .highlight {
-          background-color: #fee2e2;
-          padding: 10px 15px;
-          border-radius: 6px;
-          font-weight: 500;
-          color: #991b1b;
+
+        .greeting {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 20px;
         }
+
+        .alert-box {
+            background-color: #fef2f2;
+            border-left: 4px solid #ef4444;
+            padding: 16px 20px;
+            border-radius: 6px;
+            margin: 24px 0;
+        }
+
+        .alert-title {
+            font-weight: 600;
+            color: #b91c1c;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 16px;
+        }
+
+        .info-box {
+            background-color: #f9fafb;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 24px 0;
+        }
+
+        .info-item {
+            display: flex;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .info-label {
+            font-weight: 500;
+            min-width: 120px;
+            color: #475569;
+        }
+
+        .action-button {
+            display: block;
+            background: linear-gradient(90deg, #4f46e5, #7c3aed);
+            color: #ffffff !important;
+            text-decoration: none;
+            padding: 14px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            text-align: center;
+            margin: 24px 0;
+            transition: transform 0.2s;
+        }
+
+        .action-button:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Footer */
         .footer {
-          text-align: center;
-          font-size: 14px;
-          color: #888;
-          margin-top: 30px;
+            text-align: center;
+            padding: 24px;
+            color: #64748b;
+            font-size: 13px;
+            background-color: #f9fafb;
+            border-top: 1px solid #e5e7eb;
         }
-        a {
-          color: #2563eb;
-          text-decoration: none;
+
+        .footer a {
+            color: #4f46e5;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive Adjustments */
+        @media only screen and (max-width: 600px) {
+            .container {
+                padding: 16px;
+            }
+
+            .card {
+                margin: 16px auto;
+                border-radius: 8px;
+            }
+
+            .header {
+                padding: 24px 16px;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .content {
+                padding: 24px 16px;
+            }
+
+            .info-item {
+                flex-direction: column;
+                gap: 4px;
+            }
+
+            .info-label {
+                min-width: auto;
+            }
+
+            .action-button {
+                padding: 12px;
+                font-size: 15px;
+            }
+
+            .footer {
+                padding: 16px;
+            }
         }
     </style>
 </head>
 <body>
 <div class="container">
-    <div class="header">
-        <h2>⚠️ Failed Login Attempt</h2>
-    </div>
-    <div class="content">
-        <p>Hi <strong>{{name}}</strong>,</p>
-        <p>We detected a failed login attempt to your account on <strong>{{date}}</strong> from the following device:</p>
-        <p class="highlight">{{deviceInfo}}</p>
-        <p>If this was <strong>you</strong> and you just mistyped your password, no worries. But if this wasn’t you, we recommend you <a href="{{securityLink}}">change your password immediately</a>.</p>
-    </div>
-    <div class="footer">
-        — The CollegeConnect Team<br/>
-        <span>© 2025 CollegeConnect. All rights reserved.</span>
+    <div class="card">
+        <div class="header">
+            <img src="https://res.cloudinary.com/dkxei4b5s/image/upload/v1747053468/LOGO_tiknv0.png" alt="CollegeConnect Logo" />
+            <div class="header-icon">⚠️</div>
+            <h1>Security Alert: Failed Login Attempt</h1>
+        </div>
+
+        <div class="content">
+            <p class="greeting">Hello <strong>{{name}}</strong>,</p>
+
+            <div class="alert-box">
+                <div class="alert-title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 9V11M12 15H12.01M5.07183 19H18.9282C20.4678 19 21.4301 17.3333 20.6603 16L13.7321 4C12.9623 2.66667 11.0378 2.66667 10.268 4L3.33978 16C2.56998 17.3333 3.53223 19 5.07183 19Z"
+                              stroke="#b91c1c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Suspicious Login Attempt Detected
+                </div>
+                <p>We detected an unsuccessful attempt to access your CollegeConnect account. Please review the details below to ensure your account's security.</p>
+            </div>
+
+            <div class="info-box">
+                <div class="info-item">
+                    <span class="info-label">Date & Time:</span>
+                    <span>{{date}}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Device:</span>
+                    <span>{{deviceInfo}}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Location:</span>
+                    <span>{{location}} (approximate)</span>
+                </div>
+            </div>
+
+            <p>If this was you, no action is needed. If this activity seems unfamiliar, please take immediate steps to secure your account.</p>
+
+            <a href="{{securityLink}}" class="action-button">Protect Your Account</a>
+
+            <p>This link expires in 24 hours for your safety. Need assistance? Contact our <a href="{{supportLink}}">support team</a>.</p>
+        </div>
+
+        <div class="footer">
+            <p>© 2025 CollegeConnect. All rights reserved.</p>
+            <p>
+                <a href="{{privacyLink}}">Privacy Policy</a> |
+                <a href="{{termsLink}}">Terms of Service</a>
+            </p>
+            <p>PhoneBook, 123 Campus Drive, EduCity</p>
+        </div>
     </div>
 </div>
 </body>

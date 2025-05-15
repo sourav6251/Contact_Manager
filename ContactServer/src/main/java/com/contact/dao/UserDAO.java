@@ -8,6 +8,7 @@ import com.contact.model.Users;
 import com.contact.util.HttpStatus;
 import com.contact.util.exception.LoginException;
 import com.contact.util.exception.OTPException;
+import com.contact.util.exception.UserExistException;
 import com.contact.util.reposetry.UserRepository;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.stereotype.Component;
@@ -47,8 +48,8 @@ public class UserDAO {
         ));
     }
 
-    public int register(UserDTO userDTO) {
-        if (userDTO.getMediaUrl() == null && userDTO.getMediaUrl().isEmpty()) {
+    public Users register(UserDTO userDTO) {
+        if (userDTO.getMediaUrl() == null || userDTO.getMediaUrl().isBlank()) {
             Random random = new Random();
             int number = random.nextInt(10) + 1;
             switch (number) {
@@ -76,29 +77,47 @@ public class UserDAO {
 
 
         }
-        if (!checkUserByEmail(userDTO.getEmail())) {
-            Users users = userDtoToUsers(userDTO, LocalDateTime.now());
-
-            try {
-                userRepository.save(users);
-                return 200;
-            } catch (Exception e) {
-                return 500;
+         boolean status=userRepository.existsByEmail(userDTO.getEmail());
+        if (status) {
+            throw new UserExistException("User already exist");
+        }
+        else {
+            try{
+                Users users = userDtoToUsers(userDTO, LocalDateTime.now());
+                return userRepository.save(users);
+            } catch (RuntimeException e) {
+                throw new RuntimeException(e);
             }
         }
-        return 400;
+//        if (!checkUserByEmail(userDTO.getEmail())) {
+//            Users users = userDtoToUsers(userDTO, LocalDateTime.now());
+//
+//            try {
+//                return userRepository.save(users);
+//            } catch (Exception e) {
+//                return 500;
+//            }
+//        }
+//        return 400;
     }
 
     public Users login(String email, String password) {
         try {
             Users users = userRepository.findByEmail(email);
+            System.err.println("UserDAO=>"+users);
             if (users.getPassword().equals(password)) {
                 return users;
+            }else {
+                System.err.println("LoginException2=>"+email);
+                throw new LoginException(users.getName());
             }
-            throw new LoginException("Enter Correct Password");
         } catch (NoSuchElementException e) {
+            System.err.println("LoginException3=>"+email);
             throw new NoSuchElementException("User Doesn't exist ");
-        } catch (RuntimeException e) {
+        } catch (LoginException e) {
+            throw e; // Let it bubble up
+        } catch (Exception e) {
+            System.err.println("LoginException4=>"+email);
             throw new RuntimeException(e);
         }
     }
@@ -147,6 +166,14 @@ public class UserDAO {
 
     public boolean checkUserByEmail(String email) {
         return userRepository.existsByEmail(email);
+    }
+
+    public Users getByEmail(String email){
+//        try{
+            return userRepository.findByEmail(email);
+//        }catch (){
+//
+//        }
     }
 
     public Users findUserById(UUID userID) {
@@ -207,12 +234,14 @@ public class UserDAO {
     }
 
     public Users generateOTP(long otp, UUID userID) {
+        System.err.println("Enter into userID");
         try {
             Users users = userRepository.findById(userID).orElseThrow(() -> new NoSuchElementException("User Not found"));
             users.setOtp(otp);
             users.setOtpCreate(LocalDateTime.now());
-            userRepository.save(users);
-            return users;
+            Users users1=userRepository.save(users);
+            System.err.println("users=>"+users1);
+            return users1;
         } catch (RuntimeException e) {
             throw new RuntimeException(e);
         }
@@ -246,7 +275,7 @@ public class UserDAO {
         }
     }
 
-    public void updatePasswordWithOldPassword(UUID userID, UserDTO userDTO) {
+    public Users updatePasswordWithOldPassword(UUID userID, UserDTO userDTO) {
         Users users;
         try {
             users = userRepository.getReferenceById(userID);
@@ -256,9 +285,9 @@ public class UserDAO {
         if (users.getPassword().equals(userDTO.getCurrentPassword())) {
             users.setPassword(userDTO.getNewPassword());
         } else {
-            throw new PasswordNotMatch("Password is incorrect");
+            throw new PasswordNotMatch(users.getEmail()+"!"+users.getName());
         }
-        userRepository.save(users);
+      return  userRepository.save(users);
     }
 
     public void updatePasswordWithPassword(UUID userID, UserDTO userDTO) {

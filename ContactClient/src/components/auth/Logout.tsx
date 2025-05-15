@@ -5,16 +5,20 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useEffect } from "react";
 import { toast } from "sonner";
+import apiStore from "@/api/apiStore";
 
 const Logout = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
     useEffect(() => {
-        const handleLogout = () => {
-            dispatch(logout());
-            toast.success("Logged out successfully");
-            navigate("/login");
+        const handleLogout = async () => {
+            const response = await apiStore.logout();
+            if (response === 200) {
+                dispatch(logout());
+                toast.success("Logged out successfully");
+                navigate("/login");
+            }
         };
 
         const timer = setTimeout(handleLogout, 2000); // Auto-redirect after 2 seconds

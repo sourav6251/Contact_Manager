@@ -1,13 +1,12 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { UUID } from "crypto";
 const persistedUser = JSON.parse(localStorage.getItem("user") || "null");
 const persistedDarkmode = JSON.parse(localStorage.getItem("darkmode") || "false");
 
 interface UserState {
     login: boolean;
     darkmode: boolean;
-    userID: UUID|null ;
-    userName:String|null;
+    userID: null|string ;
+    userName:string|null|undefined;
 }
 
 
@@ -40,7 +39,10 @@ export const UserSlice = createSlice({
         logout: (state) => {
             state.login = false;
             state.userID =null;
+            state.userName=null;
             localStorage.removeItem("user");
+            console.log("Call");
+            
         },        
         darkmodeStatus: (state, action: PayloadAction<boolean>) => {
             state.darkmode = action.payload;

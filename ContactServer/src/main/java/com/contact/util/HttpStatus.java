@@ -1,6 +1,11 @@
 package com.contact.util;
 
-public record HttpStatus(Integer statusCode, Object data) {
+public record HttpStatus(Integer statusCode, Object data,String cookies) {
+
+    public HttpStatus( Integer statusCode,Object data) {
+        this(statusCode, data, "");
+    }
+
 
     public HttpStatus(Integer statusCode) {
         this(statusCode, defaultMessage(statusCode));

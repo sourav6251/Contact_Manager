@@ -17,6 +17,8 @@ const DesktopLogin = () => {
         email: "",
         password: "",
     });
+    const [loading,setLoading]=useState(false)
+
 
     const loginChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setLoginData({
@@ -26,6 +28,7 @@ const DesktopLogin = () => {
     };
 
     const submitLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+        setLoading(true)
         e.preventDefault();
         if (!loginData.email || !loginData.password) {
             toast.error("All fields are required");
@@ -33,14 +36,17 @@ const DesktopLogin = () => {
         }
         try {
             const response = await apiStore.login(loginData.email, loginData.password);
+            if (response?.status===200) {
+                dispatch(loginStatus(true));
+                dispatch(login({
+                    login: true,
+                    userID: response?.data.userId,
+                    darkmode: false, 
+                    userName:response?.data.name
+                }));
+            }
             console.log(response);
-            dispatch(loginStatus(true));
-            dispatch(login({
-                login: true,
-                userID: response?.data.userId,
-                darkmode: false, 
-                userName:response?.data.name
-            }));
+          
             console.log(`UseName=>`,response?.data.name);
             // console.log(response );
             
@@ -48,6 +54,7 @@ const DesktopLogin = () => {
         } catch {
             toast.error("Login failed");
         }
+        setLoading(false)
     };
 
     return (
@@ -106,7 +113,8 @@ const DesktopLogin = () => {
                     </span>
                 </div>
                 <Button className="w-full font-semibold rounded-md py-2 transition">
-                    LOG IN
+                {loading ? <> Loging ......</>:<>LOG IN</>}
+                    
                 </Button>
             </form>
         </>
