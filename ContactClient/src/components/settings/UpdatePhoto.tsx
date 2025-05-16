@@ -1,33 +1,43 @@
 import { Label } from "recharts";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
-import { toast } from "sonner";
 import apiStore from "@/api/apiStore";
 import { RootState } from "@/redux/SliceStore";
 import { useSelector } from "react-redux";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const UpdatePhoto = () => {
-    const userID: any = useSelector((state: RootState) => state.user.userID);
+    const userID: string | null = useSelector(
+        (state: RootState) => state.user.userID
+    );
     const [otp, setOtp] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [otpGenerate, setOTPGenerate] = useState(false);
     const [countdown, setCountdown] = useState(0);
-
+    const [sendOTP, setSendOTP] = useState(false);
+    const [isVerified, setIsVerfied] = useState(false);
     const generateOTP = async () => {
-        setOTPGenerate(true);
-        setCountdown(40);
-        await apiStore.generateOTP(userID);
-        const interval = setInterval(() => {
-            setCountdown((prev) => {
-                if (prev <= 1) {
-                    clearInterval(interval);
-                    setOTPGenerate(false);
-                    return 0;
-                }
-                return prev - 1;
-            });
-        }, 1000);
+        console.log("isVerified=> ",isVerified);
+        
+        if (isVerified) {
+            alert("You aready verified");
+        } else {
+            setSendOTP(true)
+            setOTPGenerate(true);
+            setCountdown(40);
+            await apiStore.generateOTP(userID, "verifyProfile");
+            const interval = setInterval(() => {
+                setCountdown((prev) => {
+                    if (prev <= 1) {
+                        clearInterval(interval);
+                        setOTPGenerate(false);
+                        return 0;
+                    }
+                    return prev - 1;
+                });
+            }, 1000);
+            // setSendOTP(false)
+        }
     };
 
     const handleVerifyOtp = async () => {
@@ -40,8 +50,19 @@ const UpdatePhoto = () => {
         }
     };
 
+    const checkIsVerified = async () => {
+        const response = await apiStore.isVerifiedUser(userID);
+        console.log("checkIsVerified=> ", response);
+
+        setIsVerfied(response);
+    };
+
+    useEffect(() => {
+        checkIsVerified();
+    }, []);
+
     return (
-        <div className="space-y-4">
+        <div className="space-y-4 pt-16">
             <div className="space-y-2">
                 <Label className="text-gray-700 dark:text-gray-300">
                     Enter OTP
@@ -59,7 +80,7 @@ const UpdatePhoto = () => {
                     />
                     <Button
                         onClick={generateOTP}
-                        disabled={true}
+                        // disabled={true}
                         // disabled={otpGenerate}
                         className="whitespace-nowrap text-sm font-semibold px-4 py-2 bg-gray-300 dark:bg-gray-700 hover:bg-gray-400 hover:dark:bg-gray-900"
                     >
@@ -74,7 +95,8 @@ const UpdatePhoto = () => {
                 <Button
                     onClick={handleVerifyOtp}
                     className="flex-1 bg-gray-300 dark:bg-gray-700 hover:bg-gray-400 hover:dark:bg-gray-900"
-                    disabled={otp.length !== 6 || isLoading}
+                    disabled={(otp.length !== 6 || isLoading)|| !sendOTP}
+                    
                 >
                     {isLoading ? "Verifying..." : "Verify"}
                 </Button>

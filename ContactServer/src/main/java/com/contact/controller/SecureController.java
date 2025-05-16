@@ -6,6 +6,8 @@ import com.contact.dto.imp.OnRegister;
 import com.contact.service.ContactService;
 import com.contact.service.UserService;
 import com.contact.util.HttpStatus;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -70,9 +72,9 @@ public class SecureController {
 //
 
     @GetMapping("/generateotp/{userID}")
-    public ResponseEntity<Object> generateOTP(@PathVariable UUID userID) {
+    public ResponseEntity<Object> generateOTP(@PathVariable UUID userID , @RequestParam("otpFor") String otpFor) {
         System.err.println(userID);
-        HttpStatus status = userService.generateOTP(userID);
+        HttpStatus status = userService.generateOTP(userID,otpFor);
         return ResponseEntity.status(status.statusCode()).body(status.data());
     }
 
@@ -117,10 +119,27 @@ public class SecureController {
 
 
     @DeleteMapping("/deleteuser/{userID}")
-    public ResponseEntity<Object> deleteUser(@PathVariable UUID userID) {
+    public ResponseEntity<Object> deleteUser(@PathVariable UUID userID, HttpServletResponse response) {
         HttpStatus httpStatus = userService.deleteUser(userID);
+        ResponseCookie cookie = ResponseCookie.from("AccessToken", "")
+                .httpOnly(true)
+                .secure(false)
+                .path("/")
+                .maxAge(0) // <-- expire cookie
+                .sameSite("Lax")
+                .build();
+
+        response.setHeader("Set-Cookie", cookie.toString());
         return ResponseEntity.status(httpStatus.statusCode()).body(httpStatus.data());
     }
+
+
+    @GetMapping("/isverified/{userID}")
+    public ResponseEntity<Object> isVerifiedProfile(@PathVariable UUID userID){
+       HttpStatus httpStatus= userService.isVerifiedProfile(userID);
+       return ResponseEntity.status(httpStatus.statusCode()).body(httpStatus.data());
+    }
+
 
 
     /**

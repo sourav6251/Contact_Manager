@@ -167,4 +167,21 @@ public class UserDTO {
     public static String removeAllSpace(String input){
         return input !=null ? input.replaceAll("\\s+",""):null;
     }
+
+    @Override
+    public String toString() {
+        return "UserDTO{" +
+                "userId=" + userId +
+                ", mediaUrl='" + mediaUrl + '\'' +
+                ", mediaId='" + mediaId + '\'' +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", currentPassword='" + currentPassword + '\'' +
+                ", newPassword='" + newPassword + '\'' +
+                ", otp=" + otp +
+                ", otpCreate=" + otpCreate +
+                ", userCreate=" + userCreate +
+                ", lastLogin=" + lastLogin +
+                '}';
+    }
 }

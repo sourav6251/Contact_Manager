@@ -6,14 +6,12 @@ import com.contact.dao.ContactDAO;
 import com.contact.dto.ContactDTO;
 import com.contact.model.Contacts;
 import com.contact.util.HttpStatus;
+import com.contact.util.exception.ContactExistException;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class ContactService {
@@ -48,38 +46,61 @@ public class ContactService {
     }
 
     public HttpStatus createContact(UUID userID, ContactDTO contactDTO) {
-        int status = contactDAO.createContact(userID, contactDTO);
-        return switch (status) {
-            case 201 -> new HttpStatus(200, "Contact saved successfully");
-            case 404 -> new HttpStatus(404, "User not found");
-            case 400 -> new HttpStatus(400, "Phone number already exists");
-            default -> new HttpStatus(500);
-        };
+        try {
+            Contacts contacts = contactDAO.createContact(userID, contactDTO);
+            return new HttpStatus(200, contacts);
+        } catch (NoSuchElementException e) {
+            return new HttpStatus(400, "User doesn't exist");
+        } catch (ContactExistException e) {
+            return new HttpStatus(400, e.getMessage());
+        } catch (RuntimeException e) {
+            return new HttpStatus(500);
+        }
     }
 
     public HttpStatus updateContact(UUID userID, UUID contactID, ContactDTO contactDTO) {
-        return contactDAO.updateContact(userID, contactID, contactDTO);
+        try{
+            Contacts contacts=contactDAO.updateContact(userID, contactID, contactDTO);
+            return new HttpStatus(200,contacts);
+
+        }catch (NoSuchElementException e){
+            return new HttpStatus(204,e);
+        } catch (RuntimeException e) {
+            return new HttpStatus(500);
+        }
     }
 
     public HttpStatus showAllContact(UUID userID) {
-        return contactDAO.showAllContact(userID);
+        try{
+            List<Contacts> contacts= contactDAO.showAllContact(userID);
+            return new HttpStatus(200,contacts);
+        }catch (NoSuchElementException e){
+            return new HttpStatus(204,"No data found");
+        } catch (RuntimeException e) {
+            return new HttpStatus(500);
+        }
     }
 
     public HttpStatus showContacts(UUID contactID) {
-        return contactDAO.showContacts(contactID);
+        try {
+           Contacts contacts= contactDAO.showContacts(contactID);
+            return new HttpStatus(200,contacts);
+        } catch (NoSuchElementException e) {
+            return new HttpStatus(204, e);
+        } catch (RuntimeException e) {
+            return new HttpStatus(500);
+        }
     }
 
     public HttpStatus deleteContact(UUID contactID) {
-        HttpStatus httpStatus = contactDAO.deleteContact(contactID);
-        if (httpStatus.statusCode() == 200) {
-            try {
-                deleteFileFromCloudinary(httpStatus.data().toString());
-            } catch (RuntimeException e) {
-                throw new RuntimeException(e);
-            }
-
+        try{
+            contactDAO.deleteContact(contactID);
+            return new HttpStatus(200);
+        }catch (NoSuchElementException e){
+            return new HttpStatus(400,e);
+        } catch (RuntimeException e) {
+            return new HttpStatus(500);
         }
-        return httpStatus;
     }
 
     // You can now use `cloudinary` to delete or upload images

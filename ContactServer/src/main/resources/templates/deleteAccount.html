@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Critical Alert: Account Deletion OTP</title>
+  <style>
+    /* Base Styles */
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        background-color: #fff5f5;
+        color: #1e293b;
+        margin: 0;
+        padding: 0;
+        line-height: 1.5;
+    }
+
+    /* Container */
+    .container {
+        max-width: 640px;
+        margin: 0 auto;
+        padding: 24px;
+    }
+
+    /* Card */
+    .card {
+        background-color: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 2px 16px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+        margin: 32px auto;
+        border: 2px solid #fee2e2;
+    }
+
+    /* Header */
+    .header {
+        background: linear-gradient(135deg, #dc2626, #b91c1c);
+        padding: 40px 24px;
+        text-align: center;
+        color: #ffffff;
+    }
+
+    .header img {
+        height: 36px;
+        margin-bottom: 16px;
+    }
+
+    .header h1 {
+        margin: 0;
+        font-size: 26px;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+    }
+
+    /* Content */
+    .content {
+        padding: 32px;
+    }
+
+    .warning-section {
+        background-color: #fef2f2;
+        border: 2px solid #fecaca;
+        border-radius: 8px;
+        padding: 20px;
+        margin: 24px 0;
+    }
+
+    .warning-icon {
+        color: #dc2626;
+        font-size: 24px;
+        margin-right: 8px;
+    }
+
+    .otp-box {
+        background-color: #fff7f7;
+        border: 2px dashed #f87171;
+        border-radius: 8px;
+        padding: 20px;
+        margin: 24px 0;
+        text-align: center;
+    }
+
+    .otp-code {
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 8px;
+        color: #dc2626;
+        margin: 20px 0;
+        padding: 15px;
+        background: #fee2e2;
+        border-radius: 8px;
+        font-family: monospace;
+    }
+
+    .consequences-list {
+        list-style: none;
+        padding: 0;
+        margin: 20px 0;
+    }
+
+    .consequences-list li {
+        padding: 8px 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .timer {
+        color: #dc2626;
+        font-weight: 700;
+        font-size: 16px;
+    }
+
+    /* Footer */
+    .footer {
+        text-align: center;
+        padding: 24px;
+        color: #64748b;
+        font-size: 13px;
+        background-color: #f9fafb;
+        border-top: 1px solid #e5e7eb;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="card">
+    <div class="header">
+      <img src="https://res.cloudinary.com/dkxei4b5s/image/upload/v1747053468/LOGO_tiknv0.png" alt="CollegeConnect Logo" />
+      <h1>⚠️ Critical Account Deletion Request</h1>
+    </div>
+
+    <div class="content">
+      <div class="warning-section">
+        <div style="display: flex; align-items: center; margin-bottom: 16px;">
+          <span class="warning-icon">❗</span>
+          <h2 style="margin: 0; color: #b91c1c;">Immediate Action Required</h2>
+        </div>
+        <p><strong>WARNING:</strong> This OTP will COMPLETELY DELETE your account and ALL ASSOCIATED DATA. Do not share this code with anyone.</p>
+
+        <ul class="consequences-list">
+          <li><span style="color: #dc2626;">✖</span> Permanent removal of all profile data</li>
+          <li><span style="color: #dc2626;">✖</span> Loss of academic records and connections</li>
+          <li><span style="color: #dc2626;">✖</span> Immediate service termination</li>
+          <li><span style="color: #dc2626;">✖</span> Irreversible action</li>
+        </ul>
+      </div>
+
+      <div class="otp-box">
+        <p style="font-weight: 600; color: #b91c1c;">Account Deletion Verification Code</p>
+        <div class="otp-code">{{otpCode}}</div>
+        <p class="timer">Expires in: <span id="countdown">05:00</span></p>
+      </div>
+
+      <div style="margin: 24px 0; padding: 16px; background: #f0f4ff; border-radius: 8px;">
+        <h3 style="margin-top: 0; color: #1e40af;">❗ Important Notes:</h3>
+        <ol style="margin: 12px 0;">
+          <li>This OTP was requested on {{requestDate}}</li>
+          <li>IP Address: {{userIP}}</li>
+          <li>Device: {{deviceInfo}}</li>
+        </ol>
+        <p style="color: #dc2626; font-weight: 500;">
+          If you didn't initiate this request:<br>
+          1. DO NOT share this OTP with anyone<br>
+          2. Immediately contact support: {{emergencySupportLink}}<br>
+          3. Change your password
+        </p>
+      </div>
+
+      <div style="text-align: center; margin-top: 32px;">
+        <a href="{{cancelLink}}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">
+          ⚠️ Cancel Deletion Request
+        </a>
+      </div>
+    </div>
+
+    <div class="footer">
+      <p>© 2025 CollegeConnect. All rights reserved.</p>
+      <p style="color: #dc2626;">This is an automated security alert - DO NOT REPLY</p>
+      <p>24/7 Support: {{supportPhone}} | {{supportEmail}}</p>
+    </div>
+  </div>
+</div>
+
+<!--<script>-->
+<!--  // Countdown timer implementation-->
+<!--  let timeLeft = 300;-->
+<!--  const timerElement = document.getElementById('countdown');-->
+
+<!--  function updateTimer() {-->
+<!--      const minutes = Math.floor(timeLeft / 60);-->
+<!--      const seconds = timeLeft % 60;-->
+<!--      timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;-->
+
+<!--      if(timeLeft <= 0) {-->
+<!--          clearInterval(timerInterval);-->
+<!--          timerElement.textContent = "EXPIRED";-->
+<!--          timerElement.style.color = '#dc2626';-->
+<!--      } else {-->
+<!--          timeLeft&#45;&#45;;-->
+<!--      }-->
+<!--  }-->
+
+<!--  const timerInterval = setInterval(updateTimer, 1000);-->
+<!--</script>-->
+</body>
+</html>

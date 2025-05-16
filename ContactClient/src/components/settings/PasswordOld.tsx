@@ -34,7 +34,7 @@ const PasswordOld = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSubmitting(true);
-        const password: updatePassword = {
+        const password: updatePassword = { 
           currentPassword: formData.oldPassword,
             newPassword: formData.newPassword,
         };

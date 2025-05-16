@@ -7,9 +7,8 @@ import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { InputOTPForm } from "./InputOTPForm";
 import apiStore from "@/api/apiStore";
-import { useDispatch, useSelector } from "react-redux";
-import { login, logout } from "@/redux/UserSlice";
-import { RootState } from "@/redux/SliceStore";
+// import { useDispatch, useSelector } from "react-redux";
+// import { RootState } from "@/redux/SliceStore";
 
 
   
@@ -23,8 +22,8 @@ const DesktopRegister = () => {
         password: "",
         conformPassword: "",
     });
-    let userID=useSelector((state:RootState)=>state.user.userID)
-    const dispatch=useDispatch();
+    // let userID=useSelector((state:RootState)=>state.user.userID)
+    // const dispatch=useDispatch();
 
     const registerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setRegister({
@@ -46,7 +45,8 @@ const DesktopRegister = () => {
         }
 
         try {
-            const responses = await apiStore.register(
+            // const responses = 
+            await apiStore.register(
                 register.name,
                 register.email,
                 register.password
@@ -60,17 +60,17 @@ const DesktopRegister = () => {
             // console.log("name=>",name);
             
             
-            dispatch(login({
-                login: false,
-                userID: responses?.userId,
-                darkmode: false, 
-                userName:responses?.name
-            }));
+            // dispatch(login({
+            //     login: false,
+            //     userID: responses?.userId,
+            //     darkmode: false, 
+            //     userName:responses?.name
+            // }));
             // console.log("userIDredux=>",userID);
             
-            setOTP(true);
-            // if (status === 200) {
-                await apiStore.generateOTP(responses.userId);
+            // setOTP(true);
+            // // if (status === 200) {
+            //     await apiStore.generateOTP(responses.userId,"register");
             //     setOTP(true);
             // }
         } catch {

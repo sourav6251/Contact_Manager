@@ -44,13 +44,13 @@ public class MailService {
         }
     }
 
-    private String loadEmailTemplate(String otp, String name, String mailFor) throws IOException {
+    private String loadEmailTemplate(String data, String name, String mailFor) throws IOException {
         switch (mailFor) {
             case "otp": {
                 ClassPathResource resource = new ClassPathResource("templates/otpMail.html");
                 String content = new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
 
-                return content.replace("{{otp}}", otp)
+                return content.replace("{{otp}}", data)
                         .replace("{{name}}", name)
                         .replace("{{time}}", LocalDateTime.now().toString())
                         ;
@@ -80,6 +80,7 @@ public class MailService {
 
                 return content
                         .replace("{{name}}", name)
+                        .replace("{{otpCode}}", data)
                         ;
             }
             case "passwordChange": {
@@ -99,12 +100,59 @@ public class MailService {
                         ;
             }
             case "passwordChangeAttempt": {
-                ClassPathResource resource = new ClassPathResource("templates/passwordChangeAttempt.html.html");
+                ClassPathResource resource = new ClassPathResource("templates/passwordChangeAttempt.html");
                 String content = new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
 
                 return content
                         .replace("{{name}}", name)
-                        .replace("{{otp}}", otp)
+                        .replace("{{data}}", data)
+                        ;
+            }
+            case "updateProfile": {
+//                String[] parts=data.split("%");
+//               String name1=parts[0];
+                String media;
+                if (data!=null){
+                    media="updated";
+                }else {
+                    media="not update";
+                }
+                ClassPathResource resource = new ClassPathResource("templates/updateProfile.html");
+                String content = new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+
+                return content
+                        .replace("{{name}}", name)
+                        .replace("{{photo}}", media)
+//                        .replace("{{data}}", data)
+                        ;
+            }
+            case "deleteAccount": {
+                System.err.println("Enter into deleteAccount Mail");
+                ClassPathResource resource = new ClassPathResource("templates/deleteAccount.html");
+                String content = new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+
+                return content
+                        .replace("{{otpCode}}", data)
+                        ;
+            }
+            case "existRegister": {
+                System.err.println("Enter into deleteAccount Mail");
+                ClassPathResource resource = new ClassPathResource("templates/existEmailRegister.html");
+                String content = new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+
+                return content
+                        .replace("{{name}}", name)
+                        .replace("{{aname}}", data)
+                        ;
+            }
+            case "verifyProfile": {
+                System.err.println("Enter into deleteAccount Mail");
+                ClassPathResource resource = new ClassPathResource("templates/verifyProfile.html");
+                String content = new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+
+                return content
+                        .replace("{{name}}", name)
+                        .replace("{{otpCode}}", data)
                         ;
             }
             default: {
@@ -126,9 +174,13 @@ public class MailService {
             case "loginSuccess" -> "Login Successful";
             case "loginFail" -> "Suspicious Login Attempt";
             case "register" -> "Welcome to Our Platform";
+            case "deleteAccount" -> "Account delete alert ";
             case "passwordChange" -> "Password change successfully";
+            case "updateProfile" -> "Profile update successfully";
             case "failPasswordChange" -> "Failed attempted to change password";
             case "passwordChangeAttempt" -> "Someone try to change password";
+            case "existRegister" -> "Someone try to Register";
+            case "verifyProfile" -> "Verify profile";
             default -> "Notification";
         };
     }

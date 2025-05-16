@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Security Alert: Registration Attempt</title>
+  <style>
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: #f8fafc;
+      color: #1e293b;
+      margin: 0;
+      padding: 0;
+      line-height: 1.5;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .card {
+      background-color: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+      margin: 40px auto;
+      border: 1px solid #e2e8f0;
+    }
+    .header {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      padding: 30px 20px;
+      text-align: center;
+      color: white;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 700;
+    }
+    .content {
+      padding: 30px;
+    }
+    .alert-box {
+      background-color: #fef2f2;
+      border-left: 4px solid #ef4444;
+      padding: 16px;
+      border-radius: 8px;
+      margin: 20px 0;
+    }
+    .alert-title {
+      font-weight: 600;
+      color: #b91c1c;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .info-box {
+      background-color: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 20px 0;
+    }
+    .info-item {
+      display: flex;
+      margin-bottom: 12px;
+    }
+    .info-label {
+      font-weight: 600;
+      min-width: 120px;
+      color: #64748b;
+    }
+    .action-button {
+      display: inline-block;
+      background-color: #3b82f6;
+      color: white !important;
+      text-decoration: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      margin: 20px 0;
+      text-align: center;
+    }
+    .footer {
+      text-align: center;
+      padding: 20px;
+      color: #64748b;
+      font-size: 14px;
+      border-top: 1px solid #e2e8f0;
+    }
+    @media only screen and (max-width: 600px) {
+      .container {
+        padding: 10px;
+      }
+      .card {
+        margin: 20px auto;
+      }
+      .header {
+        padding: 20px 15px;
+      }
+      .content {
+        padding: 20px 15px;
+      }
+      .info-item {
+        flex-direction: column;
+        gap: 4px;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="card">
+    <div class="header">
+      <h1>⚠️ Unauthorized Registration Attempt</h1>
+    </div>
+    <div class="content">
+      <p>Hello <strong>{{name}}</strong>,</p>
+
+      <div class="alert-box">
+        <div class="alert-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 9V11M12 15H12.01M5.07183 19H18.9282C20.4678 19 21.4301 17.3333 20.6603 16L13.7321 4C12.9623 2.66667 11.0378 2.66667 10.268 4L3.33978 16C2.56998 17.3333 3.53223 19 5.07183 19Z"
+                  stroke="#b91c1c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Someone tried to register using your email
+        </div>
+        <p>We detected an attempt to create a CollegeConnect account using your email address ({{aname}}).</p>
+      </div>
+
+      <div class="info-box">
+        <div class="info-item">
+          <span class="info-label">Attempt Time:</span>
+          <span>{{timestamp}}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">IP Address:</span>
+          <span>{{ipAddress}}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Location:</span>
+          <span>{{location}} (approximate)</span>
+        </div>
+      </div>
+
+      <p>If this was you, you can safely ignore this message. If you didn't attempt to register, please:</p>
+
+      <a href="{{secureAccountLink}}" class="action-button">
+        Secure Your Account
+      </a>
+
+      <p><strong>Recommended actions:</strong></p>
+      <ul style="margin-top: 0; padding-left: 20px;">
+        <li>Change your password immediately if you use this email/password combination elsewhere</li>
+        <li>Enable two-factor authentication for better security</li>
+        <li>Report suspicious activity to our <a href="{{supportLink}}">support team</a></li>
+      </ul>
+    </div>
+    <div class="footer">
+      <p>© 2025 CollegeConnect. All rights reserved.</p>
+      <p>This is an automated security message - please do not reply</p>
+    </div>
+  </div>
+</div>
+</body>
+</html>

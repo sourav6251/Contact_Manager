@@ -51,6 +51,7 @@ const LogoutPopup = ({ onClose }: LogoutPopupProps) => {
     }
     const handleLogout = async () => {
         const response = await apiStore.logout();
+        
         if (response === 200) {
             setTimeout(() => {
                 toast.success(`${userName}, you logout successfully`);

@@ -24,9 +24,10 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        System.err.println("loadUserByUsername=>"+username);
         Users users = userDAO.getByEmail(username);
         if (users == null) {
-            throw new UsernameNotFoundException("User not fund");
+            throw new UsernameNotFoundException("User not found");
         }
         Collection<GrantedAuthority> authorities = new ArrayList<>();
         return new User(users.getEmail(), users.getPassword(), authorities);

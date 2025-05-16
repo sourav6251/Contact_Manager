@@ -116,8 +116,8 @@ class APIStore {
                     password: password,
                 },
             });
-            console.log("response=>",response);
-            
+            console.log("response=>", response);
+
             return response;
         } catch (error) {
             toast.error("Try again");
@@ -126,29 +126,36 @@ class APIStore {
 
     public async logout() {
         try {
-           const resonse= await Axios.axiosInstance.get("logout");
-           console.log("Logout call");
-           
+            const resonse = await Axios.axiosInstance.get("logout");
+            console.log("Logout call");
+
             toast.success("Logoout Successful");
             return resonse.status;
         } catch (error) {
             toast.error("Something wrong");
         }
     }
+
     public async featchProfile(userID: UUID) {
         try {
-            const response = await Axios.axiosInstanceSecure.get(`showuserbyid/${userID}`);
+            const response = await Axios.axiosInstanceSecure.get(
+                `showuserbyid/${userID}`
+            );
             return response.data;
         } catch (error) {
             toast.error("Try again");
         }
     }
 
-    public async generateOTP(userID: string) {
+    public async generateOTP(userID: string | null, otpFor: String) {
         console.log("userID=>", userID);
 
         try {
-            await Axios.axiosInstanceSecure.get(`generateotp/${userID}`);
+            await Axios.axiosInstanceSecure.get(`generateotp/${userID}`, {
+                params: {
+                    otpFor: otpFor,
+                },
+            });
             toast.success("Otp send successfully");
         } catch (error) {
             console.error("error=>", error);
@@ -156,7 +163,7 @@ class APIStore {
         }
     }
 
-    public async verifyOTP(userID: string, otp: any) {
+    public async verifyOTP(userID: string | null, otp: any) {
         try {
             const response = await Axios.axiosInstanceSecure.get(`verifyotp`, {
                 params: {
@@ -175,8 +182,19 @@ class APIStore {
             if (error.response.status === 400 && error.response === 400) {
                 toast.error(error.response.data);
             }
-            toast.error("Please try again");
+            toast.error(error.response.data);
             return "error";
+        }
+    }
+
+    public async isVerifiedUser(userID: string | null) {
+        try {
+            const response = await Axios.axiosInstanceSecure.get(
+                `isverified/${userID}`
+            );
+            return response.data;
+        } catch (error) {
+            throw error;
         }
     }
 
@@ -270,12 +288,18 @@ class APIStore {
                 };
             }
 
-            await Axios.axiosInstanceSecure.post(`createcontact/${userID}`, contactData);
+            await Axios.axiosInstanceSecure.post(
+                `createcontact/${userID}`,
+                contactData
+            );
             toast.success("Contact saved successfully");
         } catch (error: any) {
-            toast.error(
-                error.response?.data?.message || "Failed to save contact"
+            toast.error(error.response?.data);
+            console.log(
+                "error.response?.data?.message =>",
+                error.response.data
             );
+
             throw error;
         }
     }
@@ -338,12 +362,15 @@ class APIStore {
 
     public async updateOldPassword(passwords: updatePassword, userID: any) {
         try {
-            await Axios.axiosInstanceSecure.put(`updateoldpassword/${userID}`, passwords);
+            await Axios.axiosInstanceSecure.put(
+                `updateoldpassword/${userID}`,
+                passwords
+            );
             toast.success("password Change Successfully");
         } catch (error: any) {
             // const status =error.response.status;
             // if (status===400) {
-            toast.error(error.response.data.message);
+            toast.error(error.response.data);
 
             // }
             // toast.error()
@@ -356,14 +383,17 @@ class APIStore {
         };
 
         try {
-            await Axios.axiosInstanceSecure.put(`updatepassword/${userID}`, newPasswords);
+            await Axios.axiosInstanceSecure.put(
+                `updatepassword/${userID}`,
+                newPasswords
+            );
             toast.success("password Change Successfully");
             //    console.log("response=>",response);
             return "success";
         } catch (error: any) {
             // const status =error.response.status;
             // if (status===400) {
-            toast.error(error.response.data.message);
+            toast.error(error.response.data);
 
             // }
             // toast.error()
@@ -391,13 +421,26 @@ class APIStore {
         }
 
         try {
-           await Axios.axiosInstanceSecure.put(`updateprofile/${profile.userId}`, profileData);
+            await Axios.axiosInstanceSecure.put(
+                `updateprofile/${profile.userId}`,
+                profileData
+            );
             toast.success("Profile Update Successfully");
             return "success";
         } catch (error) {
             console.error(error);
             toast.error("Please try again");
             return "error";
+        }
+    }
+
+    public async deleteAccount(userID: string | null) {
+        try {
+            Axios.axiosInstanceSecure.delete(`deleteuser/${userID}`);
+            toast.success("Account delete succesfully");
+            return "success";
+        } catch (error: any) {
+            toast.error(error.response.data);
         }
     }
 }

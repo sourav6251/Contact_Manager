@@ -3,12 +3,8 @@ package com.contact.dao;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.contact.dto.UserDTO;
-import com.contact.util.exception.PasswordNotMatch;
+import com.contact.util.exception.*;
 import com.contact.model.Users;
-import com.contact.util.HttpStatus;
-import com.contact.util.exception.LoginException;
-import com.contact.util.exception.OTPException;
-import com.contact.util.exception.UserExistException;
 import com.contact.util.reposetry.UserRepository;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.stereotype.Component;
@@ -77,12 +73,11 @@ public class UserDAO {
 
 
         }
-         boolean status=userRepository.existsByEmail(userDTO.getEmail());
-        if (status) {
-            throw new UserExistException("User already exist");
-        }
-        else {
-            try{
+        Users users1 = userRepository.findByEmail(userDTO.getEmail());
+        if (users1!=null) {
+            throw new UserExistException(users1.getEmail()+"!"+users1.getName());
+        } else {
+            try {
                 Users users = userDtoToUsers(userDTO, LocalDateTime.now());
                 return userRepository.save(users);
             } catch (RuntimeException e) {
@@ -104,60 +99,51 @@ public class UserDAO {
     public Users login(String email, String password) {
         try {
             Users users = userRepository.findByEmail(email);
-            System.err.println("UserDAO=>"+users);
+            System.err.println("UserDAO=>" + users);
             if (users.getPassword().equals(password)) {
                 return users;
-            }else {
-                System.err.println("LoginException2=>"+email);
+            } else {
+//                System.err.println("LoginException2=>" + email);
                 throw new LoginException(users.getName());
             }
         } catch (NoSuchElementException e) {
-            System.err.println("LoginException3=>"+email);
+//            System.err.println("LoginException3=>" + email);
             throw new NoSuchElementException("User Doesn't exist ");
         } catch (LoginException e) {
             throw e; // Let it bubble up
         } catch (Exception e) {
-            System.err.println("LoginException4=>"+email);
+//            System.err.println("LoginException4=>" + email);
             throw new RuntimeException(e);
         }
     }
 
     public List<Users> showUser() {
-        return userRepository.findAll();
+        try {
+            List<Users> users=   userRepository.findAll();
+            if (users.isEmpty()){
+                throw new NoUserException("No User Exist");
+            }
+
+            return users;
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public int updateProfile(UserDTO userDTO, UUID userID) {
-
-
-
-        if (checkUser(userID)) {
-//            try {
-                Users users = userRepository.findById(userID).orElseThrow(()->new RuntimeException("Internal Server Error"));
-                if (userDTO.getMediaUrl() !=null){
-                    deleteFileFromCloudinary(users.getMediaId());
-                    if (userDTO.getMediaUrl() != null && !userDTO.getMediaUrl().isBlank()) {
-                        users.setMediaUrl(userDTO.getMediaUrl());
-                    }
-                    if (userDTO.getMediaId() != null && !userDTO.getMediaId().isBlank()) {
-                        users.setMediaId(userDTO.getMediaId());
-                    }
-                }
-                if (userDTO.getName() != null && !userDTO.getName().isBlank()) {
-                    users.setName(userDTO.getName());
-                }
-//                if (userDTO.getEmail() != null && !userDTO.getEmail().isBlank()) {
-//                    users.setEmail(userDTO.getEmail());
-//                }
-
-                userRepository.save(users);
-                return 200;
-//            } catch (Exception e) {
-//                return 500;
-//            }
-
-        } else {
-            return 404;
+    public Users updateProfile(UserDTO userDTO, UUID userID) {
+        try{
+            Users users= userRepository.findById(userID).orElseThrow(() -> new NoSuchElementException("User doesn't exist"));
+            if (users.getMediaId()!=null && users.getMediaId().equals(userDTO.getMediaId())){
+                users.setMediaId(userDTO.getMediaId());
+                users.setMediaUrl(userDTO.getMediaUrl());
+            }
+            users.setName(userDTO.getName());
+            return  userRepository.save(users);
         }
+        catch (RuntimeException e){
+            throw new RuntimeException(e);
+        }
+
     }
 
     public boolean checkUser(UUID userID) {
@@ -168,16 +154,16 @@ public class UserDAO {
         return userRepository.existsByEmail(email);
     }
 
-    public Users getByEmail(String email){
+    public Users getByEmail(String email) {
 //        try{
-            return userRepository.findByEmail(email);
+        return userRepository.findByEmail(email);
 //        }catch (){
 //
 //        }
     }
 
     public Users findUserById(UUID userID) {
-        return userRepository.findById(userID).orElseThrow();
+        return userRepository.findById(userID).orElseThrow(()->new NoSuchElementException("User not found"));
     }
 
     private Users userDtoToUsers(UserDTO userDTO, LocalDateTime localDateTime) {
@@ -206,30 +192,32 @@ public class UserDAO {
 //            return new HttpStatus(500);
 //        }
 //    }
-    public HttpStatus showUserByID(UUID userID) {
+    public Map<String, Object>  showUserByID(UUID userID) {
         try {
-            Users user = userRepository.findById(userID).orElseThrow();
+            Users user = userRepository.findById(userID).orElseThrow(()->new NoSuchElementException("User not found"));
 
             // Create a response map
             Map<String, Object> responseData = new HashMap<>();
             responseData.put("user", user);
             responseData.put("totalContacts", user.getContacts() != null ? user.getContacts().size() : 0);
 
-            return new HttpStatus(200, responseData);
+            return responseData;
 
-        } catch (NoSuchElementException e) {
-            return new HttpStatus(400, "User Doesn't found");
-        } catch (Exception e) {
-            return new HttpStatus(500);
+//            return new HttpStatus(200, responseData);
+
+        }catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
-    public HttpStatus deleteUser(UUID userID) {
+    public void deleteUser(UUID userID) {
         try {
+            Users users=userRepository.findById(userID).orElseThrow(()->new NoSuchElementException("User not found"));
             userRepository.deleteById(userID);
-            return new HttpStatus(200);
+            deleteFileFromCloudinary(users.getMediaId());
+
         } catch (Exception e) {
-            return new HttpStatus(500);
+            throw new RuntimeException(e);
         }
     }
 
@@ -239,8 +227,8 @@ public class UserDAO {
             Users users = userRepository.findById(userID).orElseThrow(() -> new NoSuchElementException("User Not found"));
             users.setOtp(otp);
             users.setOtpCreate(LocalDateTime.now());
-            Users users1=userRepository.save(users);
-            System.err.println("users=>"+users1);
+            Users users1 = userRepository.save(users);
+            System.err.println("users=>" + users1);
             return users1;
         } catch (RuntimeException e) {
             throw new RuntimeException(e);
@@ -285,9 +273,9 @@ public class UserDAO {
         if (users.getPassword().equals(userDTO.getCurrentPassword())) {
             users.setPassword(userDTO.getNewPassword());
         } else {
-            throw new PasswordNotMatch(users.getEmail()+"!"+users.getName());
+            throw new PasswordNotMatch(users.getEmail() + "!" + users.getName());
         }
-      return  userRepository.save(users);
+        return userRepository.save(users);
     }
 
     public void updatePasswordWithPassword(UUID userID, UserDTO userDTO) {
@@ -300,6 +288,16 @@ public class UserDAO {
         users.setPassword(userDTO.getNewPassword());
 
         userRepository.save(users);
+    }
+
+    public boolean isVerifiedProfile(UUID userID){
+        try {
+            Users users = findUserById(userID);
+            return users.isVerify();
+        }catch (NoSuchElementException e){
+            throw new NoSuchElementException(e.getMessage());
+        }
+
     }
 
 

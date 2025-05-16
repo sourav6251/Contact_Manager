@@ -30,6 +30,7 @@ public class NonSecureController {
     }
     @PostMapping("/register")
     public ResponseEntity<Object> register(@Validated(OnRegister.class) @RequestBody UserDTO userDTO) {
+        System.err.println("userDTO=>"+userDTO.toString());
         HttpStatus httpStatus = userService.register(userDTO);
         return ResponseEntity.status(httpStatus.statusCode()).body(httpStatus.data());
     }

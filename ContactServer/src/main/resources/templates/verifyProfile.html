@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Your Profile | PhoneBook</title>
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+            margin: 0;
+            padding: 0;
+            line-height: 1.5;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .card {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            margin: 40px auto;
+            border: 1px solid #e2e8f0;
+        }
+        .header {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            padding: 30px 20px;
+            text-align: center;
+            color: white;
+        }
+        .logo {
+            height: 40px;
+            margin-bottom: 15px;
+        }
+        .content {
+            padding: 30px;
+        }
+        .otp-container {
+            background-color: #f8fafc;
+            border: 1px dashed #3b82f6;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 25px 0;
+            text-align: center;
+        }
+        .otp-code {
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: 8px;
+            color: #2563eb;
+            margin: 15px 0;
+            font-family: monospace;
+            background-color: #eff6ff;
+            padding: 10px;
+            border-radius: 6px;
+            display: inline-block;
+        }
+        .info-box {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .info-item {
+            display: flex;
+            margin-bottom: 12px;
+        }
+        .info-label {
+            font-weight: 600;
+            min-width: 120px;
+            color: #64748b;
+        }
+        .verify-button {
+            display: inline-block;
+            background-color: #3b82f6;
+            color: white !important;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #64748b;
+            font-size: 14px;
+            border-top: 1px solid #e2e8f0;
+        }
+        @media only screen and (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+            .card {
+                margin: 20px auto;
+            }
+            .header {
+                padding: 20px 15px;
+            }
+            .content {
+                padding: 20px 15px;
+            }
+            .otp-code {
+                font-size: 24px;
+                letter-spacing: 4px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="card">
+        <div class="header">
+            <img src="https://res.cloudinary.com/dkxei4b5s/image/upload/v1747053468/LOGO_tiknv0.png" alt="PhoneBook Logo" class="logo">
+            <h1>🔒 Verify Your Profile</h1>
+        </div>
+        <div class="content">
+            <p>Hello <strong>{{name}}</strong>,</p>
+            <p>To complete your profile verification on PhoneBook, please use the following One-Time Password (OTP):</p>
+
+            <div class="otp-container">
+                <p>Your verification code:</p>
+                <div class="otp-code">{{otpCode}}</div>
+                <p style="color: #ef4444; font-weight: 600;">⏳ Expires at: {{expirationTime}} (UTC) - Valid for 5 minutes</p>
+            </div>
+
+            <div class="info-box">
+                <div class="info-item">
+                    <span class="info-label">Requested From:</span>
+                    <span>{{deviceInfo}}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">IP Address:</span>
+                    <span>{{ipAddress}}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Location:</span>
+                    <span>{{location}}</span>
+                </div>
+            </div>
+
+            <p>Enter this code in the verification page to complete your profile verification.</p>
+
+            <a href="{{verificationLink}}" class="verify-button">
+                Go to Verification Page
+            </a>
+
+            <p><strong>Security Notice:</strong></p>
+            <ul style="margin-top: 0; padding-left: 20px;">
+                <li>PhoneBook will never ask you for this OTP</li>
+                <li>Do not share this code with anyone</li>
+                <li>If you didn't request this, <a href="{{supportLink}}" style="color: #3b82f6;">contact support</a> immediately</li>
+            </ul>
+        </div>
+        <div class="footer">
+            <p>© 2025 PhoneBook. All rights reserved.</p>
+            <p>123 Business Street, Tech City | <a href="{{privacyLink}}" style="color: #64748b;">Privacy Policy</a></p>
+        </div>
+    </div>
+</div>
+</body>
+</html>
