@@ -73,21 +73,27 @@ const ContactManager = () => {
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
-        if (!contactDetails.file) {
-            toast.warning("Please select a profile image");
+        // if (!contactDetails.file) {
+        //     toast.warning("Please select a profile image");
+        //     return;
+        // }
+        if (!contactDetails.name) {
+            toast.warning("Please enter a name");
+            return;
+        }
+        if (!contactDetails.phone) {
+            toast.warning("Please enter a phone number");
             return;
         }
 
         setSubmitting(true);
         try {
             await apiStore.saveContact(contactDetails, userID);
-            toast.success("Contact saved successfully");
 
             setContactDetails({ file: null, name: "", email: "", phone: "" });
             setPreviewImage(null);
             fetchContacts();
-        } catch (error) {
-            console.error("Error saving contact:", error);
+        } catch  {
             // toast.error("Failed to save contact");
         } finally {
             setSubmitting(false);

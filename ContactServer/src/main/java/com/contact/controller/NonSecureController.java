@@ -2,21 +2,26 @@ package com.contact.controller;
 
 import com.contact.dto.UserDTO;
 import com.contact.dto.imp.OnRegister;
-import com.contact.model.Users;
+import com.contact.dto.imp.Test;
+import com.contact.service.ImagekitService;
 import com.contact.service.UserService;
 import com.contact.util.HttpStatus;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Map;
+import java.util.List;
 
 @Controller
 @RequestMapping("/api/v1")
 public class NonSecureController {
+    @Autowired
+    private ImagekitService imagekitService;
 
     private final UserService userService;
 
@@ -25,31 +30,35 @@ public class NonSecureController {
     }
 
     @GetMapping("/")
-    public  ResponseEntity<String> normal(){
+    public ResponseEntity<String> normal() {
         return ResponseEntity.ok("Everything is correct");
     }
+
     @PostMapping("/register")
     public ResponseEntity<Object> register(@Validated(OnRegister.class) @RequestBody UserDTO userDTO) {
-        System.err.println("userDTO=>"+userDTO.toString());
+        System.err.println("userDTO=>" + userDTO.toString());
         HttpStatus httpStatus = userService.register(userDTO);
         return ResponseEntity.status(httpStatus.statusCode()).body(httpStatus.data());
     }
 
     @GetMapping("/login")
-    public ResponseEntity<Object> login(@RequestParam("email") String email, @RequestParam("password") String password , HttpServletResponse response) {
+    public ResponseEntity<Object> login(@RequestParam("email") String email, @RequestParam("password") String password, HttpServletResponse response) {
         HttpStatus status = userService.login(email, password);
 //        Map<String, Object> dataMap = (Map<String, Object>) status.data();
 //        Users user = (Users) dataMap.get("user");
 //        String token = (String) dataMap.get("token");
+        if (status.statusCode() == 200) {
 
-        ResponseCookie cookie=ResponseCookie.from("AccessToken",status.cookies())
-                .httpOnly(true)
-                .secure(false)
-                .path("/")
-                .maxAge(15*24*60*60)
-                .sameSite("Lax")
-                .build();
-        response.setHeader("Set-Cookie",cookie.toString());
+            ResponseCookie cookie = ResponseCookie.from("AccessToken", status.cookies())
+                    .httpOnly(true)
+                    .secure(false)
+                    .path("/")
+                    .maxAge(15 * 24 * 60 * 60)
+                    .sameSite("Lax")
+                    .build();
+            response.setHeader("Set-Cookie", cookie.toString());
+        }
+
         System.err.println(status.data().toString());
         return ResponseEntity.status(status.statusCode()).body(status.data());
     }
@@ -69,6 +78,17 @@ public class NonSecureController {
         return ResponseEntity.ok().body("Logged out successfully");
     }
 
+    @PostMapping("/upload")
+    public ResponseEntity<Object> upload(@Validated(Test.class) @ModelAttribute  UserDTO userDTO){
+        MultipartFile file= userDTO.getFile();
+       List<String> result= imagekitService.uploadFile(file);
+        return ResponseEntity.ok(result);
+    }
+    @GetMapping("/delete/{ID}")
+    public ResponseEntity<Object> delete(@PathVariable("ID") String ID){
+       boolean result= imagekitService.deleteFile(ID);
+        return ResponseEntity.ok(result);
+    }
 
 
 }

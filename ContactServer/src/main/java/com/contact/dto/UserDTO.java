@@ -1,7 +1,9 @@
 package com.contact.dto;
 
 import com.contact.dto.imp.OnRegister;
+import com.contact.dto.imp.Test;
 import jakarta.validation.constraints.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -13,10 +15,10 @@ public class UserDTO {
     private String mediaUrl;
     private String mediaId;
     @Size(min = 4, max = 20, groups = {OnRegister.class})
-    @NotBlank(groups = {OnRegister.class})
+    @NotBlank(groups = {OnRegister.class,Test.class})
     private String name;
     @Email(message = "Enter valid Email ", groups = {OnRegister.class})
-    @NotBlank(groups = {OnRegister.class})
+    @NotBlank(groups = {OnRegister.class,Test.class})
     private String email;
     private String currentPassword;
     @Size(min = 8, max = 15, groups = {OnRegister.class})
@@ -28,6 +30,16 @@ public class UserDTO {
     private LocalDateTime otpCreate;
     private LocalDateTime userCreate;
     private LocalDateTime lastLogin;
+    @NotNull(groups = Test.class)
+    private MultipartFile file;
+
+    public MultipartFile getFile() {
+        return file;
+    }
+
+    public void setFile(MultipartFile file) {
+        this.file = file;
+    }
 
     public UserDTO() {}
 

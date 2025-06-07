@@ -113,7 +113,6 @@ const Contact = ({ search, Contacts,onContactChange }: ContactProps) => {
             onContactChange();  // Call the refresh function
         } catch (error) {
             console.error("Failed to update contact:", error);
-            toast.error("Failed to update contact");
         } finally {
             setIsUpdating(false);
         }
@@ -122,7 +121,7 @@ const Contact = ({ search, Contacts,onContactChange }: ContactProps) => {
     const deleteContact = async (contactId: UUID) => {
         setIsDeleting(true);
         try {
-            await apiStore.deleteContact(contactId);
+            await apiStore.deleteContact(contactId,userID);
             toast.success("Contact deleted successfully");
             onContactChange();  // Call the refresh function
         } catch (error) {

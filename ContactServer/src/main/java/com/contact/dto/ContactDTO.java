@@ -4,13 +4,16 @@ import com.contact.dto.imp.CreateContact;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
 
 public class ContactDTO {
 
+    private UUID contactID;
     private String mediaUrl;
     private String mediaId;
+    private MultipartFile file;
     @NotBlank(message = "Name is required",groups = {CreateContact.class})
     @Size(min = 4,max = 20,groups = {CreateContact.class})
     private String name;
@@ -21,6 +24,22 @@ public class ContactDTO {
 
     public String getMediaUrl() {
         return mediaUrl;
+    }
+
+    public MultipartFile getFile() {
+        return file;
+    }
+
+    public void setFile(MultipartFile file) {
+        this.file = file;
+    }
+
+    public UUID getContactID() {
+        return contactID;
+    }
+
+    public void setContactID(UUID contactID) {
+        this.contactID = contactID;
     }
 
     public void setMediaUrl(String mediaUrl) {
@@ -74,5 +93,18 @@ public class ContactDTO {
     }
     public static String removeAllSpace(String input){
         return input !=null ? input.replaceAll("\\s+",""):null;
+    }
+
+    @Override
+    public String toString() {
+        return "ContactDTO{" +
+                "contactID=" + contactID +
+                ", mediaUrl='" + mediaUrl + '\'' +
+                ", mediaId='" + mediaId + '\'' +
+                ", file=" + file +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", phone='" + phone + '\'' +
+                '}';
     }
 }

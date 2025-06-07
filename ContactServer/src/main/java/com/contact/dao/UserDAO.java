@@ -3,6 +3,7 @@ package com.contact.dao;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.contact.dto.UserDTO;
+import com.contact.service.ImagekitService;
 import com.contact.util.exception.*;
 import com.contact.model.Users;
 import com.contact.util.reposetry.UserRepository;
@@ -17,31 +18,12 @@ import java.util.*;
 public class UserDAO {
 
     private final UserRepository userRepository;
-    private final Cloudinary cloudinary;
+    private final ImagekitService imagekitService;
 
-    public void deleteFileFromCloudinary(String publicId) {
-        try {
-            Map result = cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
-            if ("ok".equals(result.get("result"))) {
-                System.out.println("File deleted successfully from Cloudinary.");
-            } else {
-//                System.errout.println("Cloudinary deletion failed: " + result);
-                System.err.println("Cloudinary deletion failed: " + result);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("Exception occurred while deleting file from Cloudinary.");
-        }
-    }
-
-    public UserDAO(UserRepository userRepository) {
+    public UserDAO(UserRepository userRepository, ImagekitService imagekitService) {
         this.userRepository = userRepository;
-        Dotenv dotenv = Dotenv.load();
-        this.cloudinary = new Cloudinary(ObjectUtils.asMap(
-                "cloud_name", dotenv.get("CLOUDINARY_CLOUD_NAME"),
-                "api_key", dotenv.get("CLOUDINARY_API_KEY"),
-                "api_secret", dotenv.get("CLOUDINARY_API_SECRET")
-        ));
+        this.imagekitService = imagekitService;
+
     }
 
     public Users register(UserDTO userDTO) {
@@ -74,8 +56,8 @@ public class UserDAO {
 
         }
         Users users1 = userRepository.findByEmail(userDTO.getEmail());
-        if (users1!=null) {
-            throw new UserExistException(users1.getEmail()+"!"+users1.getName());
+        if (users1 != null) {
+            throw new UserExistException(users1.getEmail() + "!" + users1.getName());
         } else {
             try {
                 Users users = userDtoToUsers(userDTO, LocalDateTime.now());
@@ -119,8 +101,8 @@ public class UserDAO {
 
     public List<Users> showUser() {
         try {
-            List<Users> users=   userRepository.findAll();
-            if (users.isEmpty()){
+            List<Users> users = userRepository.findAll();
+            if (users.isEmpty()) {
                 throw new NoUserException("No User Exist");
             }
 
@@ -131,16 +113,16 @@ public class UserDAO {
     }
 
     public Users updateProfile(UserDTO userDTO, UUID userID) {
-        try{
-            Users users= userRepository.findById(userID).orElseThrow(() -> new NoSuchElementException("User doesn't exist"));
-            if (users.getMediaId()!=null && users.getMediaId().equals(userDTO.getMediaId())){
-                users.setMediaId(userDTO.getMediaId());
+        try {
+            Users users = userRepository.findById(userID).orElseThrow(() -> new NoSuchElementException("User doesn't exist"));
+            if (userDTO.getMediaId() != null || !userDTO.getMediaId().isEmpty()) {
+                imagekitService.deleteFile(users.getMediaId());
                 users.setMediaUrl(userDTO.getMediaUrl());
+                users.setMediaId(userDTO.getMediaId());
             }
             users.setName(userDTO.getName());
-            return  userRepository.save(users);
-        }
-        catch (RuntimeException e){
+            return userRepository.save(users);
+        } catch (RuntimeException e) {
             throw new RuntimeException(e);
         }
 
@@ -163,7 +145,7 @@ public class UserDAO {
     }
 
     public Users findUserById(UUID userID) {
-        return userRepository.findById(userID).orElseThrow(()->new NoSuchElementException("User not found"));
+        return userRepository.findById(userID).orElseThrow(() -> new NoSuchElementException("User not found"));
     }
 
     private Users userDtoToUsers(UserDTO userDTO, LocalDateTime localDateTime) {
@@ -182,19 +164,9 @@ public class UserDAO {
         );
     }
 
-    //    public HttpStatus showUserByID(UUID userID) {
-//        try {
-//            Users users = userRepository.findById(userID).orElseThrow();
-//            return new HttpStatus(200, users);
-//        } catch (NoSuchElementException e) {
-//            return new HttpStatus(400, "User Doesn't found");
-//        } catch (Exception e) {
-//            return new HttpStatus(500);
-//        }
-//    }
-    public Map<String, Object>  showUserByID(UUID userID) {
+    public Map<String, Object> showUserByID(UUID userID) {
         try {
-            Users user = userRepository.findById(userID).orElseThrow(()->new NoSuchElementException("User not found"));
+            Users user = userRepository.findById(userID).orElseThrow(() -> new NoSuchElementException("User not found"));
 
             // Create a response map
             Map<String, Object> responseData = new HashMap<>();
@@ -205,16 +177,16 @@ public class UserDAO {
 
 //            return new HttpStatus(200, responseData);
 
-        }catch (Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     public void deleteUser(UUID userID) {
         try {
-            Users users=userRepository.findById(userID).orElseThrow(()->new NoSuchElementException("User not found"));
+            Users users = userRepository.findById(userID).orElseThrow(() -> new NoSuchElementException("User not found"));
             userRepository.deleteById(userID);
-            deleteFileFromCloudinary(users.getMediaId());
+            imagekitService.deleteFile(users.getMediaId());
 
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -290,11 +262,11 @@ public class UserDAO {
         userRepository.save(users);
     }
 
-    public boolean isVerifiedProfile(UUID userID){
+    public boolean isVerifiedProfile(UUID userID) {
         try {
             Users users = findUserById(userID);
             return users.isVerify();
-        }catch (NoSuchElementException e){
+        } catch (NoSuchElementException e) {
             throw new NoSuchElementException(e.getMessage());
         }
 

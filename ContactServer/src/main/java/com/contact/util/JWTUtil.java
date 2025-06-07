@@ -10,7 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
-import java.util.Date;
+import java.util.*;
 import java.util.function.Function;
 
 @Component
@@ -63,10 +63,14 @@ public class JWTUtil {
 //        Claims claims=new  DefaultClaims();
 //    }
 
-    public String jwtGenerator(UserDetails userDetails) {
+    public String jwtGenerator(UserDetails userDetails, UUID userID) {
         SecretKey key = Keys.hmacShaKeyFor(secret.getBytes());
 
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("userId", userID);
+//        claims.put("role", role); // Or userDetails.getAuthorities() if needed
         return Jwts.builder()
+                .setClaims(claims)
                 .setSubject(userDetails.getUsername())
                 .setExpiration(new Date(System.currentTimeMillis() + 15L * 24 * 60 * 60 * 1000))//15days 60 * 60 * 24 * 1000
                 .setIssuedAt(new Date())

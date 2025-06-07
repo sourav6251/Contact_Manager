@@ -23,11 +23,13 @@ public class UserService {
     private final MailService mailService;
     private final JWTUtil jwtUtil;
     private final UserDetailsService userDetailsService;
+    private final ImagekitService imagekitService;
 
-    public UserService(UserDAO userDAO, MailService mailService, JWTUtil jwtUtil, UserDetailsService userDetailsService) {
+    public UserService(UserDAO userDAO, MailService mailService, JWTUtil jwtUtil, UserDetailsService userDetailsService, ImagekitService imagekitService) {
         this.userDAO = userDAO;
         this.mailService = mailService;
         this.jwtUtil = jwtUtil;
+        this.imagekitService = imagekitService;
         this.userDetailsService = userDetailsService;
     }
 
@@ -37,21 +39,21 @@ public class UserService {
         }
         try {
             Users users = userDAO.register(userDTO);
-            try{
-                mailService.sendMail(users.getEmail(), users.getName(), "","register");
+            try {
+                mailService.sendMail(users.getEmail(), users.getName(), "", "register");
 
             } catch (MessagingException | IOException e) {
-                System.err.println("Mail error"+e.getMessage());
+                System.err.println("Mail error" + e.getMessage());
             }
             return new HttpStatus(200, users);
         } catch (UserExistException e) {
-            String[] parts=e.getMessage().split("!");
-            String email=parts[0];
-            String name=parts[1];
-            try{
-                mailService.sendMail(email,name, userDTO.getName(), "existRegister");
+            String[] parts = e.getMessage().split("!");
+            String email = parts[0];
+            String name = parts[1];
+            try {
+                mailService.sendMail(email, name, userDTO.getName(), "existRegister");
             } catch (MessagingException | IOException ex) {
-                System.err.println("Mail exception => "+ex.getMessage());
+                System.err.println("Mail exception => " + ex.getMessage());
             }
             return new HttpStatus(400, "User already exist");
         } catch (RuntimeException e) {
@@ -69,7 +71,7 @@ public class UserService {
             System.err.println("userService=>" + users);
             mailService.sendMail(users.getEmail(), users.getName(), "", "loginSuccess");
             userDetails = userDetailsService.loadUserByUsername(users.getEmail());
-            String token = jwtUtil.jwtGenerator(userDetails);
+            String token = jwtUtil.jwtGenerator(userDetails, users.getUserId());
             System.err.println("token=>" + token);
             return new HttpStatus(200, users, token);
         } catch (NoSuchElementException e) {
@@ -102,31 +104,44 @@ public class UserService {
     }
 
     public HttpStatus updateProfile(UserDTO userDTO, UUID userID) {
+
+        if (userDTO.getFile() != null) {
+            try {
+                List<String> list = imagekitService.uploadFile(userDTO.getFile());
+                userDTO.setMediaUrl(list.getFirst());
+                userDTO.setMediaId(list.getLast());
+            } catch (NotImage e) {
+                return new HttpStatus(400, e.getMessage());
+            } catch (Exception e) {
+                return new HttpStatus(500, e.getMessage());
+            }
+        }
         try {
-           Users users= userDAO.updateProfile(userDTO, userID);
-            try{
-                String updates=null;
-                if (userDTO.getMediaId()!=null){
-                    updates="media";
+
+            Users users = userDAO.updateProfile(userDTO, userID);
+            try {
+                String updates = null;
+                if (userDTO.getMediaId() != null) {
+                    updates = "media";
                 }
                 mailService.sendMail(users.getEmail(), users.getName(), updates, "updateProfile");
-            }catch (MessagingException | IOException | RuntimeException e ) {
+            } catch (MessagingException | IOException | RuntimeException e) {
                 System.err.println(e.getMessage());
             }
-            return new HttpStatus(200,users);
-        }catch (NoSuchElementException e){
-            return new HttpStatus(404,e.getMessage());
+            return new HttpStatus(200, users);
+        } catch (NoSuchElementException e) {
+            return new HttpStatus(404, e.getMessage());
         } catch (RuntimeException e) {
-            return new HttpStatus(500,e.getMessage());
+            return new HttpStatus(500, e.getMessage());
 
         }
     }
 
     public HttpStatus showUserByID(UUID userId) {
-        try{
+        try {
             Map<String, Object> result = userDAO.showUserByID(userId);
-            return new HttpStatus(200,result);
-        }catch (NoSuchElementException e){
+            return new HttpStatus(200, result);
+        } catch (NoSuchElementException e) {
             return new HttpStatus(204);
         } catch (RuntimeException e) {
             return new HttpStatus(500);
@@ -134,17 +149,17 @@ public class UserService {
     }
 
     public HttpStatus deleteUser(UUID uuid) {
-        try{
+        try {
             userDAO.deleteUser(uuid);
             return new HttpStatus(200);
-        }catch (NoSuchElementException e){
-            return new HttpStatus(204,e);
+        } catch (NoSuchElementException e) {
+            return new HttpStatus(204, e);
         } catch (RuntimeException e) {
-            return new HttpStatus(500,e.getMessage());
+            return new HttpStatus(500, e.getMessage());
         }
     }
 
-    public HttpStatus generateOTP(UUID userID,String otpFor) {
+    public HttpStatus generateOTP(UUID userID, String otpFor) {
         long otp = ThreadLocalRandom.current().nextInt(100000, 999999);
         try {
             Users users = userDAO.generateOTP(otp, userID);
@@ -212,13 +227,18 @@ public class UserService {
         }
     }
 
-    public HttpStatus isVerifiedProfile(UUID userID){
-        try{
-           boolean data= userDAO.isVerifiedProfile(userID);
-            return new HttpStatus(200,data);
-        }catch (NoSuchElementException e){
-            return new HttpStatus(400,e);
+    public HttpStatus isVerifiedProfile(UUID userID) {
+        try {
+            boolean data = userDAO.isVerifiedProfile(userID);
+            return new HttpStatus(200, data);
+        } catch (NoSuchElementException e) {
+            return new HttpStatus(400, e);
         }
+    }
+
+    private boolean isAuthenticate(UUID userID, String userName) {
+        Users users = userDAO.findUserById(userID);
+        return users.getEmail().equals(userName);
     }
 
 

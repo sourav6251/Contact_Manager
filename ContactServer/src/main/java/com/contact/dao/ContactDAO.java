@@ -5,6 +5,7 @@ import com.cloudinary.utils.ObjectUtils;
 import com.contact.dto.ContactDTO;
 import com.contact.model.Contacts;
 import com.contact.model.Users;
+import com.contact.service.ImagekitService;
 import com.contact.util.HttpStatus;
 import com.contact.util.exception.ContactExistException;
 import com.contact.util.reposetry.ContactRepository;
@@ -21,116 +22,55 @@ public class ContactDAO {
 
     private final ContactRepository contactRepository;
     private final UserDAO userDAO;
-    private final Cloudinary cloudinary;
-
-    public void deleteFileFromCloudinary(String publicId) {
-        try {
-            Map result = cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
-            if ("ok".equals(result.get("result"))) {
-                System.out.println("File deleted successfully from Cloudinary.");
-            } else {
-//                System.errout.println("Cloudinary deletion failed: " + result);
-                System.err.println("Cloudinary deletion failed: " + result);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("Exception occurred while deleting file from Cloudinary.");
-        }
-    }
+    private final ImagekitService imagekitService;
 
 
-    public ContactDAO(ContactRepository contactRepository, UserDAO userDAO) {
+    public ContactDAO(ContactRepository contactRepository, UserDAO userDAO, ImagekitService imagekitService) {
         this.contactRepository = contactRepository;
         this.userDAO = userDAO;
-        Dotenv dotenv = Dotenv.load();
-        this.cloudinary = new Cloudinary(ObjectUtils.asMap(
-                "cloud_name", dotenv.get("CLOUDINARY_CLOUD_NAME"),
-                "api_key", dotenv.get("CLOUDINARY_API_KEY"),
-                "api_secret", dotenv.get("CLOUDINARY_API_SECRET")
-        ));
+        this.imagekitService = imagekitService;
+
     }
 
     public Contacts createContact(UUID userID, ContactDTO contactDTO) {
-//        if (userDAO.checkUser(userID)) {
-            if (contactRepository.existsByUserIdAndPhone(userID, contactDTO.getPhone())) {
-                throw new ContactExistException("Contact already exist");
-            }
-            try {
-                Users users = userDAO.findUserById(userID);
-                Contacts contacts = contactDAOToContact(contactDTO);
-                contacts.setUsers(users);
-               return contactRepository.save(contacts);
-//                return 201;
-            } catch (NoSuchElementException e) {
-                throw new NoSuchElementException(e);
-            } catch (RuntimeException e) {
-                throw new RuntimeException(e);
-            }
-//        }
-
-//        return 404;
+        if (contactRepository.existsByUserIdAndPhone(userID, contactDTO.getPhone())) {
+            throw new ContactExistException("Contact already exist");
+        }
+        try {
+            Users users = userDAO.findUserById(userID);
+            Contacts contacts = contactDAOToContact(contactDTO);
+            contacts.setUsers(users);
+            return contactRepository.save(contacts);
+        } catch (NoSuchElementException e) {
+            throw new NoSuchElementException(e);
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-
-//    public HttpStatus updateContact(UUID userID, UUID contactID, ContactDTO contactDTO) {
-////        if (userDAO.checkUser(userID)) {
-////        if (isContactExist(contactID)) {
-//            try {
-//                Contacts contacts = contactRepository.findByUserIdAndContactId(userID, contactID).orElseThrow();
-////                Contacts convertContact=contactDAOToContact(contactDTO);
-//                if (!contactDTO.getMediaUrl().isBlank()) {
-//                    contacts.setMediaUrl(contactDTO.getMediaUrl());
-//                }
-//                if (!contactDTO.getMediaId().isBlank()) {
-//                    contacts.setMediaId(contactDTO.getMediaId());
-//                }
-//                if (!contactDTO.getName().isBlank()) {
-//                    contacts.setName(contactDTO.getName());
-//                }
-//                if (!contactDTO.getEmail().isBlank()) {
-//                    contacts.setEmail(contactDTO.getEmail());
-//                }
-//                contactRepository.save(contacts);
-//                return new HttpStatus(200);
-//            } catch (NoSuchElementException e) {
-//                return new HttpStatus(400, "Contact not found");
-//            } catch (Exception e) {
-//                return new HttpStatus(500);
-//            }
-////            }
-////            return new HttpStatus(400,"Contact not found");
-////        }
-////        return new HttpStatus(400, "Contact not found");
-//
-//    }
-//
-
-    public Contacts showContacts(UUID contactID){
-        try{
-            return  contactRepository.findById(contactID).orElseThrow(()->new NoSuchElementException("No Contact exist"));
+    public Contacts showContacts(UUID contactID) {
+        try {
+            return contactRepository.findById(contactID).orElseThrow(() -> new NoSuchElementException("No Contact exist"));
 
         } catch (NoSuchElementException e) {
             throw new NoSuchElementException(e);
-        }
-        catch (RuntimeException e) {
+        } catch (RuntimeException e) {
             throw new RuntimeException(e);
 //            return new HttpStatus(500);
         }
     }
 
-    public Contacts updateContact(UUID userID, UUID contactID, ContactDTO contactDTO) {
+    public Contacts updateContact(UUID userID, ContactDTO contactDTO) {
 
+        System.err.println("updateContact=>  " + contactDTO.toString());
         try {
-            Contacts contacts = contactRepository.findByUserIdAndContactId(userID, contactID).orElseThrow();
-            if (!contactDTO.getMediaId().equals(contacts.getMediaId())){
-                deleteFileFromCloudinary(contacts.getMediaId());
-            }
-            if (StringUtils.hasText(contactDTO.getMediaUrl())) {
+            Contacts contacts = contactRepository.findByUserIdAndContactId(userID, contactDTO.getContactID()).orElseThrow();
+            if (contactDTO.getMediaId() != null) {
+                imagekitService.deleteFile(contacts.getMediaId());
                 contacts.setMediaUrl(contactDTO.getMediaUrl());
-            }
-            if (StringUtils.hasText(contactDTO.getMediaId())) {
                 contacts.setMediaId(contactDTO.getMediaId());
             }
+
             if (StringUtils.hasText(contactDTO.getName())) {
                 contacts.setName(contactDTO.getName());
             }
@@ -138,7 +78,7 @@ public class ContactDAO {
                 contacts.setEmail(contactDTO.getEmail());
             }
 
-            return  contactRepository.save(contacts);
+            return contactRepository.save(contacts);
 
         } catch (NoSuchElementException e) {
             throw new NoSuchElementException(e);
@@ -148,9 +88,8 @@ public class ContactDAO {
     }
 
     public List<Contacts> showAllContact(UUID userID) {
-//        if (userDAO.checkUser(userID)) {
 
-        try{
+        try {
             return contactRepository.findByUserId(userID).orElseThrow(() -> new NoSuchElementException("User doesn't exist"));
 
         } catch (NoSuchElementException e) {
@@ -161,15 +100,13 @@ public class ContactDAO {
     }
 
     public void deleteContact(UUID contactID) {
-        try{
-            Contacts contacts=contactRepository.findById(contactID).orElseThrow(()->new NoSuchElementException("No element found"));
+        try {
+            Contacts contacts = contactRepository.findById(contactID).orElseThrow(() -> new NoSuchElementException("No element found"));
             contactRepository.deleteById(contactID);
-            deleteFileFromCloudinary(contacts.getMediaId());
-//            return new HttpStatus(200,contacts.getMediaId());
-        }catch (NoSuchElementException e){
+            imagekitService.deleteFile(contacts.getMediaId());
+        } catch (NoSuchElementException e) {
             throw new NoSuchElementException(e);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -182,7 +119,6 @@ public class ContactDAO {
         return new Contacts(contactDTO.getMediaUrl(), contactDTO.getMediaId(), contactDTO.getName(), contactDTO.getEmail(), contactDTO.getPhone());
 
     }
-
 
 
 }

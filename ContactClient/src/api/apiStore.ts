@@ -252,55 +252,24 @@ class APIStore {
     // }
 
     public async saveContact(contactDetails: Contact, userID: any) {
-        let cloudinaryResponse;
-        let contactData = {
-            name: "",
-            email: "",
-            phone: "",
-            mediaUrl: "",
-            mediaId: "",
-        };
+        const formData = new FormData();
+        formData.append("name", contactDetails.name);
+        formData.append("email", contactDetails.email);
+        formData.append("phone", contactDetails.phone);
+        if (contactDetails.file) {
+            formData.append("file", contactDetails.file);
+        }
+
         try {
-            if (contactDetails.file != null) {
-                cloudinaryResponse = await this.uploadToCloudinary(
-                    contactDetails.file
-                );
-                console.log("cloudinaryResponse=>", cloudinaryResponse);
-
-                // 2. Prepare contact data with image URL
-                contactData = {
-                    name: contactDetails.name,
-                    email: contactDetails.email,
-                    phone: contactDetails.phone,
-                    mediaUrl: cloudinaryResponse.url,
-                    mediaId: cloudinaryResponse.publicId,
-                };
-            } else {
-                // 1. Upload image to Cloudinary
-
-                // 3. Save to backend
-                contactData = {
-                    name: contactDetails.name,
-                    email: contactDetails.email,
-                    phone: contactDetails.phone,
-                    mediaUrl: "",
-                    mediaId: "",
-                };
-            }
-
-            await Axios.axiosInstanceSecure.post(
+            const result = await Axios.axiosInstanceSecure.post(
                 `createcontact/${userID}`,
-                contactData
+                formData
             );
             toast.success("Contact saved successfully");
         } catch (error: any) {
-            toast.error(error.response?.data);
-            console.log(
-                "error.response?.data?.message =>",
-                error.response.data
-            );
-
-            throw error;
+            toast.error(error.response.data);
+            console.error("Error saving contact:", error);
+            throw error; // Re-throw the error if you want to handle it in the component
         }
     }
 
@@ -310,10 +279,6 @@ class APIStore {
                 `showallcontact/${userID}`
             );
             toast.success("Contact save successfully");
-
-            // console.log("response=>",response);
-            // console.log("response.data=>",response.data);
-            // console.log("response.data.data=>",response.data.data);
             return response.data;
         } catch (error) {
             toast.error("Something went wrong");
@@ -321,10 +286,15 @@ class APIStore {
         }
     }
 
-    public async deleteContact(contactID: any) {
+    public async deleteContact(contactID: any, userID: string | null) {
         try {
             const response = await Axios.axiosInstanceSecure.delete(
-                `deletecontact/${contactID}`
+                `deletecontact/${userID}`,
+                {
+                    params: {
+                        contactID: contactID,
+                    },
+                }
             );
             toast.success("Contact delete successfully");
             return response.data;
@@ -340,23 +310,31 @@ class APIStore {
         userID: any
     ) {
         try {
+            const formData = new FormData();
+            formData.append("name", contactDetails.name);
+            formData.append("email", contactDetails.email);
+            // formData.append("phone", contactDetails.phone);
+            formData.append("contactID", contactID);
+            console.log("formData=>", formData.get("name"));
+            console.log("formData=>", formData.get("email"));
+            console.log("formData=>", formData.get("phone"));
+            console.log("formData=>", formData.get("phone"));
+            console.log("contactDetails.file=>", contactDetails.file);
+
+            if (contactDetails.file) {
+                formData.append("file", contactDetails.file);
+            }
             const response = await Axios.axiosInstanceSecure.put(
-                `/updatecontact`,
-                contactDetails, // This will be the request body
-                {
-                    params: {
-                        userid: userID,
-                        contactid: contactID,
-                    },
-                }
+                `/updatecontact/${userID}`,
+                formData
             );
 
             toast.success("Contact updated successfully");
             return response.data;
-        } catch (error) {
-            toast.error("Failed to update contact");
-            console.error("Update contact error:", error);
-            throw error; // Re-throw the error if you want to handle it in the component
+        } catch (error: any) {
+            toast.error(error.response.data);
+            console.error("Update contact error:", error.response.data);
+            throw error;
         }
     }
 
@@ -401,29 +379,33 @@ class APIStore {
     }
 
     public async updateProfile(profile: profile) {
-        let profileData;
-        if (profile.media != null) {
-            const { url, publicId } = await this.uploadToCloudinary(
-                profile.media
-            );
-            profileData = {
-                // email: profile.email,
-                mediaId: publicId,
-                mediaUrl: url,
-                name: profile.name,
-                // userId:UUID
-            };
-        } else {
-            profileData = {
-                email: profile.email,
-                name: profile.name,
-            };
+        // let profileData;
+        // if (profile.media != null) {
+        //     const { url, publicId } = await this.uploadToCloudinary(
+        //         profile.media
+        //     );
+        //     profileData = {
+        //         // email: profile.email,
+        //         mediaId: publicId,
+        //         mediaUrl: url,
+        //         name: profile.name,
+        //         // userId:UUID
+        //     };
+        // } else {
+        //     profileData = {
+        //         email: profile.email,
+        //         name: profile.name,
+        //     };
+        // }
+        const formData = new FormData();
+        formData.append("name", profile.name);
+        if (profile.media) {
+            formData.append("file", profile.media);
         }
-
         try {
             await Axios.axiosInstanceSecure.put(
                 `updateprofile/${profile.userId}`,
-                profileData
+                formData
             );
             toast.success("Profile Update Successfully");
             return "success";
@@ -446,3 +428,52 @@ class APIStore {
 }
 
 export default new APIStore();
+
+//  let cloudinaryResponse;
+// let contactData = {
+//     name: "",
+//     email: "",
+//     phone: "",
+//     file: File
+// };
+// try {
+//     if (contactDetails.file != null) {
+//         cloudinaryResponse = await this.uploadToCloudinary(
+//             contactDetails.file
+//         );
+//         console.log("cloudinaryResponse=>", cloudinaryResponse);
+
+//         // 2. Prepare contact data with image URL
+//         contactData = {
+//             name: contactDetails.name,
+//             email: contactDetails.email,
+//             phone: contactDetails.phone,
+//             file: contactDetails.file,
+//         };
+//     } else {
+//         // 1. Upload image to Cloudinary
+
+//         // 3. Save to backend
+//         contactData = {
+//             name: contactDetails.name,
+//             email: contactDetails.email,
+//             phone: contactDetails.phone,
+//             mediaUrl: "",
+//             mediaId: "",
+//         };
+//     }
+
+//     await Axios.axiosInstanceSecure.post(
+//         `createcontact/${userID}`,
+//         contactData
+//     );
+//     toast.success("Contact saved successfully");
+// } catch (error: any) {
+//     toast.error(error.response?.data);
+//     console.log(
+//         "error.response?.data?.message =>",
+//         error.response.data
+//     );
+
+//     throw error;
+// }

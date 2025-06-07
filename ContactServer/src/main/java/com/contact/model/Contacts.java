@@ -89,6 +89,7 @@ public class Contacts {
         this.phone = phone;
         this.users = users;
     }
+
     public Contacts(  String mediaUrl, String mediaId, String name, String email, String phone ) {
         this.mediaUrl = mediaUrl;
         this.mediaId = mediaId;

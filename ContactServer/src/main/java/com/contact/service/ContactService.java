@@ -1,53 +1,45 @@
 package com.contact.service;
 
-import com.cloudinary.Cloudinary;
-import com.cloudinary.utils.ObjectUtils;
 import com.contact.dao.ContactDAO;
 import com.contact.dto.ContactDTO;
 import com.contact.model.Contacts;
 import com.contact.util.HttpStatus;
 import com.contact.util.exception.ContactExistException;
-import io.github.cdimascio.dotenv.Dotenv;
+import com.contact.util.exception.NotImage;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.*;
 
 @Service
 public class ContactService {
 
     private final ContactDAO contactDAO;
-    private final Cloudinary cloudinary;
+    private final ImagekitService imagekitService;
 
-    public void deleteFileFromCloudinary(String publicId) {
-        try {
-            Map result = cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
-            if ("ok".equals(result.get("result"))) {
-                System.out.println("File deleted successfully from Cloudinary.");
-            } else {
-//                System.errout.println("Cloudinary deletion failed: " + result);
-                System.err.println("Cloudinary deletion failed: " + result);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("Exception occurred while deleting file from Cloudinary.");
-        }
-    }
 
-    public ContactService(ContactDAO contactDAO) {
+    public ContactService(ContactDAO contactDAO, ImagekitService imagekitService) {
         this.contactDAO = contactDAO;
+        this.imagekitService = imagekitService;
 
-        Dotenv dotenv = Dotenv.load();
-        this.cloudinary = new Cloudinary(ObjectUtils.asMap(
-                "cloud_name", dotenv.get("CLOUDINARY_CLOUD_NAME"),
-                "api_key", dotenv.get("CLOUDINARY_API_KEY"),
-                "api_secret", dotenv.get("CLOUDINARY_API_SECRET")
-        ));
+
     }
 
     public HttpStatus createContact(UUID userID, ContactDTO contactDTO) {
+        String mediaID;
+        String mediaURL;
+        try{
+          List<String>list=  imagekitService.uploadFile(contactDTO.getFile());
+          mediaURL=list.getFirst();
+          mediaID=list.getLast();
+        }catch (NotImage e){
+            return new HttpStatus(400,e.getMessage());
+        }
+        catch (Exception e) {
+            return new HttpStatus(500);
+        }
+        ContactDTO contactDTO1=new ContactDTO(mediaURL,mediaID,contactDTO.getName(),contactDTO.getEmail(),contactDTO.getPhone());
         try {
-            Contacts contacts = contactDAO.createContact(userID, contactDTO);
+            Contacts contacts = contactDAO.createContact(userID, contactDTO1);
             return new HttpStatus(200, contacts);
         } catch (NoSuchElementException e) {
             return new HttpStatus(400, "User doesn't exist");
@@ -58,9 +50,25 @@ public class ContactService {
         }
     }
 
-    public HttpStatus updateContact(UUID userID, UUID contactID, ContactDTO contactDTO) {
+    public HttpStatus updateContact(UUID userID,ContactDTO contactDTO) {
+        String mediaID=null;
+        String mediaURL=null;
+        if (contactDTO.getFile()!=null){
+            try{
+                List<String>list=  imagekitService.uploadFile(contactDTO.getFile());
+                mediaURL=list.getFirst();
+                mediaID=list.getLast();
+                contactDTO.setMediaUrl(mediaURL);
+                contactDTO.setMediaId(mediaID);
+            }catch (NotImage e){
+                return new HttpStatus(400,e.getMessage());
+            }
+            catch (Exception e) {
+                return new HttpStatus(500);
+            }
+        }
         try{
-            Contacts contacts=contactDAO.updateContact(userID, contactID, contactDTO);
+            Contacts contacts=contactDAO.updateContact(userID, contactDTO);
             return new HttpStatus(200,contacts);
 
         }catch (NoSuchElementException e){
@@ -103,5 +111,4 @@ public class ContactService {
         }
     }
 
-    // You can now use `cloudinary` to delete or upload images
 }

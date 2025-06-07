@@ -2,7 +2,6 @@ package com.contact.controller;
 
 import com.contact.dto.*;
 import com.contact.dto.imp.CreateContact;
-import com.contact.dto.imp.OnRegister;
 import com.contact.service.ContactService;
 import com.contact.service.UserService;
 import com.contact.util.HttpStatus;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
-//@CrossOrigin("http://localhost:5236/")
 @RestController()
 @RequestMapping("/secure")
 public class SecureController {
@@ -31,45 +29,7 @@ public class SecureController {
         return ResponseEntity.ok("Code work properly");
     }
 
-    /**
-     * {@code User}
-     */
 
-//    @PostMapping("/register")
-//    public ResponseEntity<Object> register(@Validated(OnRegister.class) @RequestBody UserDTO userDTO) {
-//        HttpStatus httpStatus = userService.register(userDTO);
-//        return ResponseEntity.status(httpStatus.statusCode()).body(httpStatus.data());
-//    }
-
-//    @GetMapping("/login")
-//    public ResponseEntity<Object> login(@RequestParam("email") String email, @RequestParam("password") String password ,HttpServletResponse response) {
-//        HttpStatus status = userService.login(email, password);
-//        ResponseCookie cookie=ResponseCookie.from("AccessToken","hi")
-//                .httpOnly(true)
-//                .secure(false)
-//                .path("/")
-//                .maxAge(15*24*60*60)
-//                .sameSite("Lax")
-//                .build();
-//        response.setHeader("Set-Cookie",cookie.toString());
-//        return ResponseEntity.status(status.statusCode()).body(status.data());
-//    }
-
-//    @GetMapping("/logout")
-//    public ResponseEntity<Object> logout(HttpServletResponse response) {
-//        System.err.println("Enter into logout");
-//        ResponseCookie cookie = ResponseCookie.from("AccessToken", "")
-//                .httpOnly(true)
-//                .secure(false)
-//                .path("/")
-//                .maxAge(0) // <-- expire cookie
-//                .sameSite("Lax")
-//                .build();
-//
-//        response.setHeader("Set-Cookie", cookie.toString());
-//        return ResponseEntity.ok().body("Logged out successfully");
-//    }
-//
 
     @GetMapping("/generateotp/{userID}")
     public ResponseEntity<Object> generateOTP(@PathVariable UUID userID , @RequestParam("otpFor") String otpFor) {
@@ -78,7 +38,7 @@ public class SecureController {
         return ResponseEntity.status(status.statusCode()).body(status.data());
     }
 
-    @GetMapping("/verifyotp")
+    @GetMapping("/verifyotp/{userID}")
     public ResponseEntity<Object> verifyOTP(@RequestParam("userID") UUID userID, @RequestParam("otp") long otp) {
         HttpStatus status = userService.verifyOTP(userID, otp);
         return ResponseEntity.status(status.statusCode()).body(status.data());
@@ -93,7 +53,7 @@ public class SecureController {
     }
 
     @PutMapping("/updateprofile/{userID}")
-    public ResponseEntity<Object> updateProfile(@PathVariable UUID userID, @RequestBody UserDTO userDTO) {
+    public ResponseEntity<Object> updateProfile(@PathVariable UUID userID, @ModelAttribute UserDTO userDTO) {
         HttpStatus httpStatus = userService.updateProfile(userDTO, userID);
         return ResponseEntity.status(httpStatus.statusCode()).body(httpStatus.data());
     }
@@ -110,6 +70,7 @@ public class SecureController {
         return ResponseEntity.status(httpStatus.statusCode()).body(httpStatus.data());
 
     }
+
     @PutMapping("/updatepassword/{userID}")
     public ResponseEntity<Object> updatePassword(@PathVariable UUID userID, @RequestBody UserDTO userDTO){
         HttpStatus httpStatus=userService.updatePasswordWithPassword(userID,userDTO);
@@ -141,20 +102,16 @@ public class SecureController {
     }
 
 
-
-    /**
-     * {@code Contact}
-     */
     @PostMapping("/createcontact/{userID}")
-    public ResponseEntity<Object> createContact(@PathVariable UUID userID, @Validated(CreateContact.class) @RequestBody ContactDTO contactDTO) {
+    public ResponseEntity<Object> createContact(@PathVariable UUID userID, @Validated(CreateContact.class) @ModelAttribute ContactDTO contactDTO) {
         System.out.println("data=>"+contactDTO);
         HttpStatus httpStatus = contactService.createContact(userID, contactDTO);
         return ResponseEntity.status(httpStatus.statusCode()).body(httpStatus.data());
     }
 
-    @PutMapping("/updatecontact")
-    public ResponseEntity<Object> updateContact(@RequestParam("userid") UUID userID, @RequestParam("contactid") UUID contactID, @RequestBody ContactDTO contactDTO) {
-        HttpStatus httpStatus = contactService.updateContact(userID, contactID, contactDTO);
+    @PutMapping("/updatecontact/{userID}")
+    public ResponseEntity<Object> updateContact(@PathVariable("userID") UUID userID, @ModelAttribute ContactDTO contactDTO) {
+        HttpStatus httpStatus = contactService.updateContact(userID, contactDTO);
         return ResponseEntity.status(httpStatus.statusCode()).body(httpStatus.data());
     }
 
@@ -165,16 +122,12 @@ public class SecureController {
 
     }
 
-    @GetMapping("/showcontact/{contactID}")
-    public ResponseEntity<Object> showContact(@PathVariable UUID contactID) {
-        HttpStatus httpStatus = contactService.showContacts(contactID);
-        return ResponseEntity.status(httpStatus.statusCode()).body(httpStatus.data());
-
-    }
-
-    @DeleteMapping("/deletecontact/{contactID}")
-    public ResponseEntity<Object> deleteContact(@PathVariable UUID contactID) {
+    @DeleteMapping("/deletecontact/{userID}")
+    public ResponseEntity<Object> deleteContact(@PathVariable UUID userID ,@RequestParam("contactID") UUID contactID) {
+        System.err.println("contactID=> "+contactID+ " "+userID);
         HttpStatus httpStatus = contactService.deleteContact(contactID);
         return ResponseEntity.status(httpStatus.statusCode()).body(httpStatus.data());
     }
+
+
 }
