@@ -16,6 +16,7 @@ const DesktopRegister = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [showConformPassword, setShowConformPassword] = useState(false);
     const [otp, setOTP] = useState(false);
+    const [process,setProcess] = useState(false);
     const [register, setRegister] = useState({
         name: "",
         email: "",
@@ -33,6 +34,7 @@ const DesktopRegister = () => {
     };
 
     const submitRegister = async (e: React.FormEvent<HTMLFormElement>) => {
+        setProcess(true);
         e.preventDefault();
         if (
             !register.name ||
@@ -76,6 +78,8 @@ const DesktopRegister = () => {
         } catch {
             toast.error("Something went wrong");
         }
+
+        setProcess(false);
     };
 
     return (
@@ -188,8 +192,8 @@ const DesktopRegister = () => {
                     )}
                 </div>
 
-                <Button className="w-full mt-3 font-semibold rounded-md py-2 transition">
-                    Sign Up
+                <Button disabled={process} className="w-full mt-3 font-semibold rounded-md py-2 transition">
+                   {!process? <span>Sign Up</span> : <span>Signing ....</span>}
                 </Button>
             </form>
         </>
