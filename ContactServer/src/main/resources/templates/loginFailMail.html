@@ -189,7 +189,7 @@
 <div class="container">
     <div class="card">
         <div class="header">
-            <img src="https://res.cloudinary.com/dkxei4b5s/image/upload/v1747053468/LOGO_tiknv0.png" alt="CollegeConnect Logo" />
+            <img src="https://res.cloudinary.com/dkxei4b5s/image/upload/v1747053468/LOGO_tiknv0.png" alt="PhoneBook Logo" />
             <div class="header-icon">⚠️</div>
             <h1>Security Alert: Failed Login Attempt</h1>
         </div>
@@ -205,21 +205,41 @@
                     </svg>
                     Suspicious Login Attempt Detected
                 </div>
-                <p>We detected an unsuccessful attempt to access your CollegeConnect account. Please review the details below to ensure your account's security.</p>
+                <p>We detected an unsuccessful attempt to access your PhoneBook account. Please review the details below to ensure your account's security.</p>
             </div>
 
             <div class="info-box">
                 <div class="info-item">
-                    <span class="info-label">Date & Time:</span>
-                    <span>{{date}}</span>
+                    <span class="info-label">Time:</span>
+                    <span>{{clientTime}}</span>
                 </div>
                 <div class="info-item">
                     <span class="info-label">Device:</span>
-                    <span>{{deviceInfo}}</span>
+                    <span>{{clientDevice}}</span>
                 </div>
                 <div class="info-item">
                     <span class="info-label">Location:</span>
-                    <span>{{location}} (approximate)</span>
+                    <span>{{clientLocation}} (approximate)</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">IP Address:</span>
+                    <span>{{clientIp}}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Operating System:</span>
+                    <span>{{clientOS}}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Browser:</span>
+                    <span>{{clientBrowser}}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">User Agent:</span>
+                    <span>{{clientUserAgent}}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Platform:</span>
+                    <span>{{clientPlatform}}</span>
                 </div>
             </div>
 
@@ -231,7 +251,7 @@
         </div>
 
         <div class="footer">
-            <p>© 2025 CollegeConnect. All rights reserved.</p>
+            <p>© 2025 PhoneBook. All rights reserved.</p>
             <p>
                 <a href="{{privacyLink}}">Privacy Policy</a> |
                 <a href="{{termsLink}}">Terms of Service</a>

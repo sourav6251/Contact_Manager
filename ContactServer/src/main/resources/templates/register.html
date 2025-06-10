@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Welcome to CollegeConnect</title>
+  <title>Welcome to PhoneBook</title>
   <style>
     body {
       background-color: #f3f4f6;
@@ -59,6 +59,25 @@
     .button:hover {
       background-color: #2563eb;
     }
+    .metadata {
+      background-color: #f9fafb;
+      border-radius: 8px;
+      padding: 15px;
+      margin: 20px 0;
+      font-size: 14px;
+    }
+    .metadata-item {
+      display: flex;
+      margin-bottom: 8px;
+    }
+    .metadata-label {
+      font-weight: 600;
+      min-width: 120px;
+      color: #4b5563;
+    }
+    .metadata-value {
+      color: #1f2937;
+    }
     .footer {
       background-color: #f9fafb;
       padding: 20px;
@@ -86,6 +105,12 @@
         font-size: 13px;
         padding: 15px;
       }
+      .metadata-item {
+        flex-direction: column;
+      }
+      .metadata-label {
+        margin-bottom: 3px;
+      }
     }
   </style>
 </head>
@@ -95,19 +120,52 @@
     <td>
       <div class="container">
         <div class="header">
-          <h1>🎉 Welcome to CollegeConnect!</h1>
+          <h1>🎉 Welcome to PhoneBook!</h1>
         </div>
         <div class="content">
           <p>Hi <strong>{{name}}</strong>,</p>
-          <p>We're excited to welcome you to CollegeConnect! Your account is ready, and you can now dive in to explore all the amazing features waiting for you.</p>
+          <p>We're excited to welcome you to PhoneBook! Your account is ready, and you can now dive in to explore all the amazing features waiting for you.</p>
+
+          <div class="metadata">
+            <div class="metadata-item">
+              <span class="metadata-label">Device:</span>
+              <span class="metadata-value">{{clientDevice}}</span>
+            </div>
+            <div class="metadata-item">
+              <span class="metadata-label">Location:</span>
+              <span class="metadata-value">{{clientLocation}}</span>
+            </div>
+            <div class="metadata-item">
+              <span class="metadata-label">IP Address:</span>
+              <span class="metadata-value">{{clientIp}}</span>
+            </div>
+            <div class="metadata-item">
+              <span class="metadata-label">Operating System:</span>
+              <span class="metadata-value">{{clientOS}}</span>
+            </div>
+            <div class="metadata-item">
+              <span class="metadata-label">Browser:</span>
+              <span class="metadata-value">{{clientBrowser}}</span>
+            </div>
+            <div class="metadata-item">
+              <span class="metadata-label">Platform:</span>
+              <span class="metadata-value">{{clientPlatform}}</span>
+            </div>
+            <div class="metadata-item">
+              <span class="metadata-label">Login Time:</span>
+              <span class="metadata-value">{{clientTime}}</span>
+            </div>
+          </div>
+
           <p style="text-align: center;">
             <a class="button" href="http://127.0.0.1:5236">Log In to Your Account</a>
           </p>
-          <p>If you didn’t create this account, please <a href="http://127.0.0.1:5236/support">contact our support team</a> right away.</p>
+
+          <p>If you didn't create this account, please <a href="http://127.0.0.1:5236/support">contact our support team</a> right away.</p>
         </div>
         <div class="footer">
-          — The CollegeConnect Team<br />
-          © 2025 CollegeConnect. All rights reserved.
+          — The PhoneBook Team<br />
+          © 2025 PhoneBook. All rights reserved.
         </div>
       </div>
     </td>

@@ -1,20 +1,7 @@
 import { toast } from "sonner";
-// import axiosInstance from "./axiosInstance";
 import { UUID } from "crypto";
-import axios from "axios";
 import Axios from "./Axios";
-// import { v2 as cloudinary } from "cloudinary";
-// Cloudinary type declarations
-interface CloudinaryUploadResult {
-    url: string;
-    publicId: string;
-}
 
-interface CloudinaryUploadWidgetInfo {
-    secure_url: string;
-    public_id: string;
-    [key: string]: any;
-}
 interface Contact {
     file: File | null;
     name: string;
@@ -28,29 +15,11 @@ interface ContactFormData {
     email: string;
     phone: string;
 }
-declare global {
-    interface Window {
-        cloudinary: {
-            createUploadWidget: (
-                config: Record<string, any>,
-                callback: (
-                    error: Error | null,
-                    result: { event: string; info: CloudinaryUploadWidgetInfo }
-                ) => void
-            ) => any;
-        };
-    }
-}
 interface updatePassword {
     currentPassword: string;
     newPassword: string;
 }
 interface profile {
-    // email: string,
-    // mediaId:string | null,
-    // mediaUrl : string
-    // name : string
-    // userId:UUID
     email: string;
     media: File | null;
     name: string;
@@ -64,21 +33,7 @@ interface UserData {
     status: number;
 }
 
-// cloudinary.config({
-//     cloud_name: "dkxei4b5s",
-//     api_key: "156732394766315",
-//     api_secret: "nwkaLHN7giKg4rEVStTkUZW5918",
-// });
-
 class APIStore {
-    private readonly cloudName: string;
-    private readonly uploadPreset: string;
-
-    constructor() {
-        this.cloudName = "dkxei4b5s"; //import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
-        this.uploadPreset = "skd_product"; //import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
-    }
-
     public async register(name: String, email: String, password: String) {
         const data = {
             name: name,
@@ -86,7 +41,8 @@ class APIStore {
             newPassword: password,
         };
         try {
-            const resonse = await Axios.axiosInstance.post("/register", data);
+            const headers = await Axios.getClientHeaders();
+            const resonse = await Axios.axiosInstance.post("/register", data,{headers:headers});
             console.log(resonse);
 
             toast.success("User create sucessfully");
@@ -109,18 +65,21 @@ class APIStore {
     }
 
     public async login(email: String, password: String) {
+        const headers = await Axios.getClientHeaders();
         try {
             const response = await Axios.axiosInstance.get("login", {
                 params: {
                     email: email,
                     password: password,
                 },
+                headers,
             });
             console.log("response=>", response);
 
             return response;
-        } catch (error) {
-            toast.error("Try again");
+        } catch (error: any) {
+            // toast.error("Try again");
+            toast.error(error.response.data);
         }
     }
 
@@ -148,6 +107,7 @@ class APIStore {
     }
 
     public async generateOTP(userID: string | null, otpFor: String) {
+        const headers = await Axios.getClientHeaders();
         console.log("userID=>", userID);
 
         try {
@@ -155,6 +115,7 @@ class APIStore {
                 params: {
                     otpFor: otpFor,
                 },
+                headers: headers,
             });
             toast.success("Otp send successfully");
         } catch (error) {
@@ -198,59 +159,6 @@ class APIStore {
         }
     }
 
-    private async uploadToCloudinary(
-        file: File
-    ): Promise<CloudinaryUploadResult> {
-        try {
-            // Convert file to Base64
-            const reader = new FileReader();
-            const base64 = await new Promise<string>((resolve, reject) => {
-                reader.onload = () => resolve(reader.result as string);
-                reader.onerror = reject;
-                reader.readAsDataURL(file);
-            });
-
-            // Create form data
-            const formData = new FormData();
-            formData.append("file", base64);
-            formData.append("upload_preset", this.uploadPreset);
-            formData.append("folder", "Contact");
-
-            // Upload to Cloudinary
-            const response = await axios.post(
-                `https://api.cloudinary.com/v1_1/${this.cloudName}/image/upload`,
-                formData,
-                {
-                    headers: {
-                        "Content-Type": "multipart/form-data",
-                    },
-                }
-            );
-
-            return {
-                url: response.data.secure_url,
-                publicId: response.data.public_id,
-            };
-        } catch (error) {
-            toast.error("File upload failed");
-            throw error;
-        }
-    }
-
-    // private async deleteFromCloudinary(publicId: string): Promise<void> {
-    //     try {
-    //         const result = await cloudinary.uploader.destroy(publicId);
-    //         if (result.result === "ok") {
-    //             console.log("Deleted successfully");
-    //         } else {
-    //             console.log("Deletion failed:", result);
-    //         }
-    //     } catch (error) {
-    //         console.error("Cloudinary deletion error:", error);
-    //         throw error;
-    //     }
-    // }
-
     public async saveContact(contactDetails: Contact, userID: any) {
         const formData = new FormData();
         formData.append("name", contactDetails.name);
@@ -261,7 +169,7 @@ class APIStore {
         }
 
         try {
-            const result = await Axios.axiosInstanceSecure.post(
+            await Axios.axiosInstanceSecure.post(
                 `createcontact/${userID}`,
                 formData
             );
@@ -339,10 +247,14 @@ class APIStore {
     }
 
     public async updateOldPassword(passwords: updatePassword, userID: any) {
+        const headers = await Axios.getClientHeaders();
         try {
             await Axios.axiosInstanceSecure.put(
                 `updateoldpassword/${userID}`,
-                passwords
+                passwords,
+                {
+                    headers: headers,
+                }
             );
             toast.success("password Change Successfully");
         } catch (error: any) {
@@ -379,33 +291,18 @@ class APIStore {
     }
 
     public async updateProfile(profile: profile) {
-        // let profileData;
-        // if (profile.media != null) {
-        //     const { url, publicId } = await this.uploadToCloudinary(
-        //         profile.media
-        //     );
-        //     profileData = {
-        //         // email: profile.email,
-        //         mediaId: publicId,
-        //         mediaUrl: url,
-        //         name: profile.name,
-        //         // userId:UUID
-        //     };
-        // } else {
-        //     profileData = {
-        //         email: profile.email,
-        //         name: profile.name,
-        //     };
-        // }
         const formData = new FormData();
         formData.append("name", profile.name);
         if (profile.media) {
             formData.append("file", profile.media);
         }
         try {
+            const headers = await Axios.getClientHeaders();
             await Axios.axiosInstanceSecure.put(
                 `updateprofile/${profile.userId}`,
-                formData
+                formData,{
+                    headers:headers
+                }
             );
             toast.success("Profile Update Successfully");
             return "success";
@@ -428,52 +325,3 @@ class APIStore {
 }
 
 export default new APIStore();
-
-//  let cloudinaryResponse;
-// let contactData = {
-//     name: "",
-//     email: "",
-//     phone: "",
-//     file: File
-// };
-// try {
-//     if (contactDetails.file != null) {
-//         cloudinaryResponse = await this.uploadToCloudinary(
-//             contactDetails.file
-//         );
-//         console.log("cloudinaryResponse=>", cloudinaryResponse);
-
-//         // 2. Prepare contact data with image URL
-//         contactData = {
-//             name: contactDetails.name,
-//             email: contactDetails.email,
-//             phone: contactDetails.phone,
-//             file: contactDetails.file,
-//         };
-//     } else {
-//         // 1. Upload image to Cloudinary
-
-//         // 3. Save to backend
-//         contactData = {
-//             name: contactDetails.name,
-//             email: contactDetails.email,
-//             phone: contactDetails.phone,
-//             mediaUrl: "",
-//             mediaId: "",
-//         };
-//     }
-
-//     await Axios.axiosInstanceSecure.post(
-//         `createcontact/${userID}`,
-//         contactData
-//     );
-//     toast.success("Contact saved successfully");
-// } catch (error: any) {
-//     toast.error(error.response?.data);
-//     console.log(
-//         "error.response?.data?.message =>",
-//         error.response.data
-//     );
-
-//     throw error;
-// }

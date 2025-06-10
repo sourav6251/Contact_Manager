@@ -1,114 +1,117 @@
+// Axios.ts
 import axios from "axios";
-class  Axios{
-    axiosInstanceSecure = axios.create({
-        baseURL: "http://localhost:8569/secure/",
-        withCredentials: true,
-        headers: {
-            // "Content-Type": "application/json",
-            Accept: "application/json",
-            "X-Requested-With": "XMLHttpRequest",
-            "X-Client-IP": "unknown",
-            "X-Client-Location": "unknown",
-            "X-Client-Device": "unknown",
-            "X-Client-Time": new Date().toISOString(),
-            "X-Client-User-Agent": navigator.userAgent,
-            "X-Client-Platform": navigator.platform,    
-        },
-    });  
+import {UAParser} from "ua-parser-js";
 
-    axiosInstance = axios.create({
-        baseURL: "http://localhost:8569/api/v1/",
-        withCredentials: true,
-        headers: {
-            Accept: "application/json",
-            "X-Requested-With": "XMLHttpRequest",
-            "X-Client-IP": "unknown",
-            "X-Client-Location": "unknown",
-            "X-Client-Device": "unknown",
-            "X-Client-Time": new Date().toISOString(),
-            "X-Client-User-Agent": navigator.userAgent,
-            "X-Client-Platform": navigator.platform,    
-        },
-    });
+class Axios {
+  // Public instance without client headers by default
+  axiosInstance = axios.create({
+    baseURL: "http://localhost:8569/api/v1/",
+    withCredentials: true,
+    headers: {
+      Accept: "application/json",
+      "X-Requested-With": "XMLHttpRequest",
+    },
+  });
+
+  // Secure instance without client headers by default
+  axiosInstanceSecure = axios.create({
+    baseURL: "http://localhost:8569/secure/",
+    withCredentials: true,
+    headers: {
+      Accept: "application/json",
+      "X-Requested-With": "XMLHttpRequest",
+    },
+  });
+
+  // Helper to generate client headers with real IP and location
+  public async getClientHeaders() {
+    // Get client IP using a free API service
+    let clientIp = "unknown";
+    let clientLocation = "unknown";
+    
+    try {
+      const ipResponse = await axios.get("https://api.ipify.org?format=json");
+      clientIp = ipResponse.data.ip;
+      
+      // Get location using IP-based geolocation
+      const locationResponse = await axios.get(`https://ipapi.co/${clientIp}/json/`);
+      clientLocation = [
+        locationResponse.data.city,
+        locationResponse.data.region,
+        locationResponse.data.country_name
+      ].filter(Boolean).join(", ");
+    } catch (error) {
+      console.error("Failed to fetch IP/location", error);
+    }
+
+    // Parse user agent
+    const parser = new UAParser();
+    const result = parser.getResult();
+
+    return {
+      "X-Client-IP": clientIp,
+      "X-Client-Location": clientLocation,
+      "X-Client-Device": result.device.model || navigator.platform,
+      "X-Client-OS": result.os.name || "unknown",
+      "X-Client-Browser": result.browser.name || "unknown",
+      "X-Client-Time": new Date().toISOString(),
+      "X-Client-User-Agent": navigator.userAgent,
+      "X-Client-Platform": navigator.platform,
+    };
+  }
 }
+
 export default new Axios();
 
-
 // import axios from "axios";
+// import {UAParser} from "ua-parser-js";
+// const { browser, cpu, device } = UAParser('Mozilla/5.0 (X11; U; Linux armv7l; en-GB; rv:1.9.2a1pre) Gecko/20090928 Firefox/3.5 Maemo Browser 1.4.1.22 RX-51 N900');
 
-// class Axios {
-//   axiosInstanceSecure = axios.create({
-//     baseURL: "http://localhost:8569/secure/",
-//     withCredentials: true,
-//     headers: {
-//       "Content-Type": "application/json",
-//     },
-//   });
+// console.log(browser.name);          // Maemo Browser
+// console.log(cpu.is('arm'));         // true
+// console.log(device.is('mobile'));   // true
+// console.log(device.model);          // N900
+// class  Axios{
+//     axiosInstanceSecure = axios.create({
+//         baseURL: "http://localhost:8569/secure/",
+//         withCredentials: true,
+//         headers: {
+//             Accept: "application/json",
+//             "X-Requested-With": "XMLHttpRequest",
+//             // "X-Client-IP": "unknown",
+//             // "X-Client-Location": "unknown",
+//             // "X-Client-Device": navigator.platform,
+//             // "X-Client-Time": new Date().toISOString(),
+//             // "X-Client-User-Agent": navigator.userAgent,
+//             // "X-Client-Platform": navigator.platform,    
+//         },
+//     });  
 
-//   axiosInstance = axios.create({
-//     baseURL: "http://localhost:8569/api/v1/",
-//     withCredentials: true,
-//     headers: {
-//       "Content-Type": "application/json",
-//     },
-//   });
+//     axiosInstance = axios.create({
+//         baseURL: "http://localhost:8569/api/v1/",
+//         withCredentials: true,
+//         headers: {
+//             Accept: "application/json",
+//             "X-Requested-With": "XMLHttpRequest",
+//             // "X-Client-IP": "unknown",
+//             // "X-Client-Location": "unknown",
+//             // "X-Client-Device": "unknown",
+//             // "X-Client-Time": new Date().toISOString(),
+//             // "X-Client-User-Agent": navigator.userAgent,
+//             // "X-Client-Platform": navigator.platform,    
+//         },
+//     });
 
-//   constructor() {
-//     this.setupInterceptors();
-//   }
-
-//   private async getClientInfo() {
-//     try {
-//       // Get public IP
-//       const ipResponse = await axios.get('https://api.ipify.org?format=json');
-//       const publicIp = ipResponse.data.ip;
-      
-//       // Get approximate location (this is a simple free service)
-//       let location = "Unknown";
-//       try {
-//         const locationResponse = await axios.get(`https://ipapi.co/${publicIp}/country_name/`);
-//         location = locationResponse.data;
-//       } catch (e) {
-//         console.error("Could not fetch location", e);
-//       }
-
-//       // Get device info (note: in browsers this is limited)
-//       const userAgent = navigator.userAgent;
-      
-//       // Get current time
-//       const currentTime = new Date().toISOString();
-
-//       return {
-//         ip: publicIp,
-//         location,
-//         device: userAgent,
-//         time: currentTime
-//       };
-//     } catch (error) {
-//       console.error("Error gathering client info:", error);
-//       return {
-//         ip: "unknown",
-//         location: "unknown",
-//         device: "unknown",
-//         time: new Date().toISOString()
-//       };
-//     }
-//   }
-
-//   private setupInterceptors() {
-//     // Add request interceptor to both instances
-//     const injectHeaders = async (config: any) => {
-//       const clientInfo = await this.getClientInfo();
-//       config.headers['X-Client-IP'] = clientInfo.ip;
-//       config.headers['X-Client-Location'] = clientInfo.location;
-//       config.headers['X-Client-Device'] = clientInfo.device;
-//       config.headers['X-Client-Time'] = clientInfo.time;
-//       return config;
+//   public getClientHeaders() {
+//     return {
+//       "X-Client-IP": "unknown",
+//       "X-Client-Location": "unknown",
+//       "X-Client-Device": navigator.platform,
+//       "X-Client-Time": new Date().toISOString(),
+//       "X-Client-User-Agent": navigator.userAgent,
+//       "X-Client-Platform": navigator.platform,
 //     };
-
-//     this.axiosInstance.interceptors.request.use(injectHeaders);
-//     this.axiosInstanceSecure.interceptors.request.use(injectHeaders);
 //   }
 // }
-
 // export default new Axios();
+

@@ -1,6 +1,7 @@
 package com.contact.service;
 
 import com.contact.dao.UserDAO;
+import com.contact.dto.ClientHeadersDTO;
 import com.contact.dto.UserDTO;
 import com.contact.util.JWTUtil;
 import com.contact.util.exception.*;
@@ -33,14 +34,14 @@ public class UserService {
         this.userDetailsService = userDetailsService;
     }
 
-    public HttpStatus register(UserDTO userDTO) {
+    public HttpStatus register(UserDTO userDTO, ClientHeadersDTO clientHeadersDTO) {
         if (userDTO.getEmail().isBlank() || userDTO.getName().isBlank() || userDTO.getNewPassword().isBlank()) {
             return new HttpStatus(400, "Email,Name,Password is required");
         }
         try {
             Users users = userDAO.register(userDTO);
             try {
-                mailService.sendMail(users.getEmail(), users.getName(), "", "register");
+                mailService.sendMail(users.getEmail(), users.getName(), "", "register",clientHeadersDTO);
 
             } catch (MessagingException | IOException e) {
                 System.err.println("Mail error" + e.getMessage());
@@ -51,7 +52,7 @@ public class UserService {
             String email = parts[0];
             String name = parts[1];
             try {
-                mailService.sendMail(email, name, userDTO.getName(), "existRegister");
+                mailService.sendMail(email, name, userDTO.getName(), "existRegister",clientHeadersDTO);
             } catch (MessagingException | IOException ex) {
                 System.err.println("Mail exception => " + ex.getMessage());
             }
@@ -62,14 +63,14 @@ public class UserService {
 
     }
 
-    public HttpStatus login(String email, String password) {
+    public HttpStatus login(String email, String password, ClientHeadersDTO clientHeadersDTO) {
 
         Users users;
         UserDetails userDetails;
         try {
             users = userDAO.login(email, password);
             System.err.println("userService=>" + users);
-            mailService.sendMail(users.getEmail(), users.getName(), "", "loginSuccess");
+            mailService.sendMail(users.getEmail(), users.getName(), "", "loginSuccess",clientHeadersDTO);
             userDetails = userDetailsService.loadUserByUsername(users.getEmail());
             String token = jwtUtil.jwtGenerator(userDetails, users.getUserId());
             System.err.println("token=>" + token);
@@ -79,7 +80,7 @@ public class UserService {
             return new HttpStatus(404, "User doesn't exist");
         } catch (LoginException e) {
             try {
-                mailService.sendMail(email, e.getMessage(), "", "loginFail");
+                mailService.sendMail(email, e.getMessage(), "", "loginFail",clientHeadersDTO);
             } catch (IOException | MessagingException ex) {
                 System.err.println(ex.getMessage());
             }
@@ -103,7 +104,7 @@ public class UserService {
         }
     }
 
-    public HttpStatus updateProfile(UserDTO userDTO, UUID userID) {
+    public HttpStatus updateProfile(UserDTO userDTO, UUID userID, ClientHeadersDTO clientHeadersDTO) {
 
         if (userDTO.getFile() != null) {
             try {
@@ -124,7 +125,7 @@ public class UserService {
                 if (userDTO.getMediaId() != null) {
                     updates = "media";
                 }
-                mailService.sendMail(users.getEmail(), users.getName(), updates, "updateProfile");
+                mailService.sendMail(users.getEmail(), users.getName(), updates, "updateProfile",clientHeadersDTO);
             } catch (MessagingException | IOException | RuntimeException e) {
                 System.err.println(e.getMessage());
             }
@@ -159,11 +160,11 @@ public class UserService {
         }
     }
 
-    public HttpStatus generateOTP(UUID userID, String otpFor) {
+    public HttpStatus generateOTP(UUID userID, String otpFor, ClientHeadersDTO clientHeadersDTO) {
         long otp = ThreadLocalRandom.current().nextInt(100000, 999999);
         try {
             Users users = userDAO.generateOTP(otp, userID);
-            mailService.sendMail(users.getEmail(), users.getName(), String.valueOf(otp), otpFor);
+            mailService.sendMail(users.getEmail(), users.getName(), String.valueOf(otp), otpFor,clientHeadersDTO);
             return new HttpStatus(200, otp);
         } catch (NoSuchElementException e) {
             return new HttpStatus(404, "User doesn't exist");
@@ -185,10 +186,10 @@ public class UserService {
         }
     }
 
-    public HttpStatus updatePasswordWithOldPassword(UUID userID, UserDTO userDTO) {
+    public HttpStatus updatePasswordWithOldPassword(UUID userID, UserDTO userDTO, ClientHeadersDTO clientHeadersDTO) {
         try {
             Users users = userDAO.updatePasswordWithOldPassword(userID, userDTO);
-            mailService.sendMail(users.getEmail(), users.getName(), "PasswordChange", "passwordChange");
+            mailService.sendMail(users.getEmail(), users.getName(), "PasswordChange", "passwordChange",clientHeadersDTO);
             return new HttpStatus(200);
         } catch (PasswordNotMatch e) {
             String combined = e.getMessage();
@@ -201,7 +202,7 @@ public class UserService {
             System.out.println("Name: " + name);
 
             try {
-                mailService.sendMail(email, name, "PasswordChange", "failPasswordChange");
+                mailService.sendMail(email, name, "PasswordChange", "failPasswordChange",clientHeadersDTO);
             } catch (IOException | MessagingException ex) {
                 System.err.println("Mail not send");
             }

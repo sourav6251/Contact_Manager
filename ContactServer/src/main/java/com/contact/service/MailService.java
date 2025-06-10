@@ -1,5 +1,6 @@
 package com.contact.service;
 
+import com.contact.dto.ClientHeadersDTO;
 import io.github.cdimascio.dotenv.Dotenv;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -10,7 +11,11 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Service
 public class MailService {
@@ -23,14 +28,14 @@ public class MailService {
         emailID = dotenv.get("EMAIL_ID");
     }
 
-    public void sendMail(String to, String name, String data, String mailFor) throws MessagingException, IOException {
+    public void sendMail(String to, String name, String data, String mailFor, ClientHeadersDTO clientHeadersDTO) throws MessagingException, IOException {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
 
         helper.setFrom(emailID);
         helper.setTo(to);
         String subject = getSubject(mailFor);
-        String text = loadEmailTemplate(data, name, mailFor);
+        String text = loadEmailTemplate(data, name, mailFor,clientHeadersDTO);
         helper.setSubject(subject);
         helper.setText(text,true);
 
@@ -44,14 +49,27 @@ public class MailService {
         }
     }
 
-    private String loadEmailTemplate(String data, String name, String mailFor) throws IOException {
+    private String loadEmailTemplate(String data, String name, String mailFor, ClientHeadersDTO clientHeadersDTO) throws IOException {
+        Instant instant = Instant.parse(clientHeadersDTO.clientTime());
+        ZonedDateTime zdt = instant.atZone(ZoneId.of("UTC"));
+        String clientDateTime = zdt.format(DateTimeFormatter.ofPattern("MMMM dd, yyyy"))+" "+zdt.format(DateTimeFormatter.ofPattern("hh:mm a z"));
+//        String clientTime = zdt.format(DateTimeFormatter.ofPattern("hh:mm a z"));
         switch (mailFor) {
             case "otp": {
                 ClassPathResource resource = new ClassPathResource("templates/otpMail.html");
                 String content = new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
 
-                return content.replace("{{otp}}", data)
+                return content
                         .replace("{{name}}", name)
+                        .replace("{{clientDevice}}", clientHeadersDTO.clientDevice())
+                        .replace("{{clientLocation}}", clientHeadersDTO.clientLocation())
+                        .replace("{{clientIp}}", clientHeadersDTO.clientIp())
+                        .replace("{{clientTime}}", clientDateTime)
+                        .replace("{{clientOS}}", clientHeadersDTO.clientOS())
+                        .replace("{{clientBrowser}}", clientHeadersDTO.clientBrowser())
+                        .replace("{{clientUserAgent}}", clientHeadersDTO.clientUserAgent())
+                        .replace("{{clientPlatform}}", clientHeadersDTO.clientPlatform())
+                        .replace("{{otp}}", data)
                         .replace("{{time}}", LocalDateTime.now().toString())
                         ;
             }
@@ -60,9 +78,17 @@ public class MailService {
                 ClassPathResource resource = new ClassPathResource("templates/loginSuccessMail.html");
                 String content = new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
 
-                return content.replace("{{date}}", LocalDateTime.now().toString())
+                return content
                         .replace("{{name}}", name)
-//                .replace("{{supportLink}}", supportLink)
+                        .replace("{{clientDevice}}", clientHeadersDTO.clientDevice())
+                        .replace("{{clientLocation}}", clientHeadersDTO.clientLocation())
+                        .replace("{{clientIp}}", clientHeadersDTO.clientIp())
+                        .replace("{{clientTime}}", clientDateTime)
+                        .replace("{{clientOS}}", clientHeadersDTO.clientOS())
+                        .replace("{{clientBrowser}}", clientHeadersDTO.clientBrowser())
+                        .replace("{{clientUserAgent}}", clientHeadersDTO.clientUserAgent())
+                        .replace("{{clientPlatform}}", clientHeadersDTO.clientPlatform())
+                        .replace("{{email}}", "dassourav3738@gmail.com")
                         ;
             }
             case "loginFail": {
@@ -70,8 +96,16 @@ public class MailService {
                 ClassPathResource resource = new ClassPathResource("templates/loginFailMail.html");
                 String content = new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
 
-                return content.replace("{{date}}", LocalDateTime.now().toString())
+                return content
                         .replace("{{name}}", name)
+                        .replace("{{clientDevice}}", clientHeadersDTO.clientDevice())
+                        .replace("{{clientLocation}}", clientHeadersDTO.clientLocation())
+                        .replace("{{clientIp}}", clientHeadersDTO.clientIp())
+                        .replace("{{clientTime}}", clientDateTime)
+                        .replace("{{clientOS}}", clientHeadersDTO.clientOS())
+                        .replace("{{clientBrowser}}", clientHeadersDTO.clientBrowser())
+                        .replace("{{clientUserAgent}}", clientHeadersDTO.clientUserAgent())
+                        .replace("{{clientPlatform}}", clientHeadersDTO.clientPlatform())
                         ;
             }
             case "register": {
@@ -80,7 +114,16 @@ public class MailService {
 
                 return content
                         .replace("{{name}}", name)
-                        .replace("{{otpCode}}", data)
+                        .replace("{{clientDevice}}", clientHeadersDTO.clientDevice())
+                        .replace("{{clientLocation}}", clientHeadersDTO.clientLocation())
+                        .replace("{{clientIp}}", clientHeadersDTO.clientIp())
+                        .replace("{{clientTime}}", clientDateTime)
+                        .replace("{{clientOS}}", clientHeadersDTO.clientOS())
+                        .replace("{{clientBrowser}}", clientHeadersDTO.clientBrowser())
+                        .replace("{{clientUserAgent}}", clientHeadersDTO.clientUserAgent())
+                        .replace("{{clientPlatform}}", clientHeadersDTO.clientPlatform())
+
+//                        .replace("{{otpCode}}", data)
                         ;
             }
             case "passwordChange": {
@@ -89,6 +132,14 @@ public class MailService {
 
                 return content
                         .replace("{{name}}", name)
+                        .replace("{{clientDevice}}", clientHeadersDTO.clientDevice())
+                        .replace("{{clientLocation}}", clientHeadersDTO.clientLocation())
+                        .replace("{{clientIp}}", clientHeadersDTO.clientIp())
+                        .replace("{{clientTime}}", clientDateTime)
+                        .replace("{{clientOS}}", clientHeadersDTO.clientOS())
+                        .replace("{{clientBrowser}}", clientHeadersDTO.clientBrowser())
+                        .replace("{{clientUserAgent}}", clientHeadersDTO.clientUserAgent())
+                        .replace("{{clientPlatform}}", clientHeadersDTO.clientPlatform())
                         ;
             }
             case "failPasswordChange": {
@@ -105,7 +156,16 @@ public class MailService {
 
                 return content
                         .replace("{{name}}", name)
-                        .replace("{{data}}", data)
+                        .replace("{{clientDevice}}", clientHeadersDTO.clientDevice())
+                        .replace("{{clientLocation}}", clientHeadersDTO.clientLocation())
+                        .replace("{{clientIp}}", clientHeadersDTO.clientIp())
+                        .replace("{{clientTime}}", clientDateTime)
+                        .replace("{{clientOS}}", clientHeadersDTO.clientOS())
+                        .replace("{{clientBrowser}}", clientHeadersDTO.clientBrowser())
+                        .replace("{{clientUserAgent}}", clientHeadersDTO.clientUserAgent())
+                        .replace("{{clientPlatform}}", clientHeadersDTO.clientPlatform())
+
+                        .replace("{{otp}}", data)
                         ;
             }
             case "updateProfile": {

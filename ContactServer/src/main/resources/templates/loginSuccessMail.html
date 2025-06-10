@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Successful Login Detected • CollegeConnect</title>
+    <title>Successful Login Detected • PhoneBook</title>
     <style>
         @media (prefers-color-scheme: dark) {
             body {
@@ -32,14 +32,11 @@
     <tr>
         <td align="center">
             <!-- Main Card -->
-            <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 560px; background-color: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; padding: 40px 32px;">
+            <table width="100%" cellpadding="0" cellspacing="0" class="card" style="max-width: 560px; background-color: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; padding: 40px 32px;">
                 <tr>
                     <td align="center" style="padding-bottom: 32px;">
-                        <div style="background: linear-gradient(135deg, #16a34a 0%, #059669 100%); width: 56px; height: 56px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;">
-                            <img src="https://res.cloudinary.com/dkxei4b5s/image/upload/v1747053468/LOGO_tiknv0.png" style="width: 45px; height: 45px;">
-<!--                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="color: white;">-->
-<!--                                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" fill="currentColor"/>-->
-<!--                            </svg>-->
+                        <div style="background: linear-gradient(135deg, #10C48D 0%, #65E6BF 100%); width: 56px; height: 56px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;">
+                            <img src="https://ik.imagekit.io/eur1zq65p/Contact/LOGO.png" style="width: 45px; height: 45px;">
                         </div>
                         <h1 style="font-size: 24px; font-weight: 600; margin: 24px 0 8px; color: #1e293b;">Login Successful</h1>
                         <p style="margin: 0; color: #64748b;">New device connection detected</p>
@@ -49,7 +46,7 @@
                 <tr>
                     <td style="padding-bottom: 24px;">
                         <p style="margin: 0 0 16px; line-height: 1.5;">Hi <strong style="color: #1e293b;">{{name}}</strong>,</p>
-                        <p style="margin: 0 0 24px; line-height: 1.5;">Your CollegeConnect account was accessed from:</p>
+                        <p style="margin: 0 0 24px; line-height: 1.5;">Your PhoneBook account was accessed from:</p>
 
                         <!-- Security Info Box -->
                         <table width="100%" cellpadding="0" cellspacing="0" class="security-box" style="background-color: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; padding: 16px;">
@@ -64,9 +61,14 @@
                                             </td>
                                             <td style="padding-left: 12px;">
                                                 <p style="margin: 0; font-size: 14px; color: #64748b; line-height: 1.5;">
-                                                    <strong style="color: #1e293b; display: block; margin-bottom: 4px;">{{deviceInfo}}</strong>
-                                                    {{location}} • {{ipAddress}}<br>
-                                                    {{date}} at {{time}}
+                                                    <strong style="color: #1e293b; display: block; margin-bottom: 4px;">{{clientDevice}}</strong>
+                                                    Location: {{clientLocation}}<br>
+                                                    IP Address: {{clientIp}}<br>
+                                                    Time: {{clientTime}}<br>
+                                                    Operating System: {{clientOS}}<br>
+                                                    Browser: {{clientBrowser}}<br>
+                                                    User Agent: {{clientUserAgent}}<br>
+                                                    Platform: {{clientPlatform}}
                                                 </p>
                                             </td>
                                         </tr>
@@ -103,7 +105,7 @@
                         </p>
                         <p style="margin: 0; font-size: 12px; color: #94a3b8; line-height: 1.5;">
                             For your security, never share your login credentials.<br>
-                            © 2025 CollegeConnect • <a href="{{privacyLink}}" style="color: #2563eb; text-decoration: none;">Privacy Policy</a>
+                            © 2025 PhoneBook • <a href="{{privacyLink}}" style="color: #2563eb; text-decoration: none;">Privacy Policy</a>
                         </p>
                     </td>
                 </tr>
@@ -114,7 +116,7 @@
                 <tr>
                     <td class="footer" style="font-size: 12px; color: #64748b; text-align: center; line-height: 1.5;">
                         Sent to {{email}}<br>
-                        CollegeConnect, 123 Campus Drive, EduCity
+                        PhoneBook, 123 Campus Drive, EduCity
                     </td>
                 </tr>
             </table>

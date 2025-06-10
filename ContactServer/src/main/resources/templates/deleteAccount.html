@@ -92,6 +92,12 @@
         font-family: monospace;
     }
 
+    .timer {
+        color: #dc2626;
+        font-weight: 700;
+        font-size: 16px;
+    }
+
     .consequences-list {
         list-style: none;
         padding: 0;
@@ -103,12 +109,6 @@
         display: flex;
         align-items: center;
         gap: 8px;
-    }
-
-    .timer {
-        color: #dc2626;
-        font-weight: 700;
-        font-size: 16px;
     }
 
     /* Footer */
@@ -126,7 +126,7 @@
 <div class="container">
   <div class="card">
     <div class="header">
-      <img src="https://res.cloudinary.com/dkxei4b5s/image/upload/v1747053468/LOGO_tiknv0.png" alt="CollegeConnect Logo" />
+      <img src="https://ik.imagekit.io/eur1zq65p/Contact/LOGO.png" alt="PhoneBook Logo" />
       <h1>⚠️ Critical Account Deletion Request</h1>
     </div>
 
@@ -149,15 +149,20 @@
       <div class="otp-box">
         <p style="font-weight: 600; color: #b91c1c;">Account Deletion Verification Code</p>
         <div class="otp-code">{{otpCode}}</div>
-        <p class="timer">Expires in: <span id="countdown">05:00</span></p>
+        <p class="timer">Expires at: {{otpExpirationTime}}</p>
       </div>
 
       <div style="margin: 24px 0; padding: 16px; background: #f0f4ff; border-radius: 8px;">
-        <h3 style="margin-top: 0; color: #1e40af;">❗ Important Notes:</h3>
+        <h3 style="margin-top: 0; color: #1e40af;">❗ Request Details:</h3>
         <ol style="margin: 12px 0;">
-          <li>This OTP was requested on {{requestDate}}</li>
-          <li>IP Address: {{userIP}}</li>
-          <li>Device: {{deviceInfo}}</li>
+          <li>Request Time: {{clientTime}}</li>
+          <li>IP Address: {{clientIp}}</li>
+          <li>Location: {{clientLocation}}</li>
+          <li>Device: {{clientDevice}}</li>
+          <li>Operating System: {{clientOS}}</li>
+          <li>Browser: {{clientBrowser}}</li>
+          <li>User Agent: {{clientUserAgent}}</li>
+          <li>Platform: {{clientPlatform}}</li>
         </ol>
         <p style="color: #dc2626; font-weight: 500;">
           If you didn't initiate this request:<br>
@@ -175,33 +180,11 @@
     </div>
 
     <div class="footer">
-      <p>© 2025 CollegeConnect. All rights reserved.</p>
+      <p>© 2025 PhoneBook. All rights reserved.</p>
       <p style="color: #dc2626;">This is an automated security alert - DO NOT REPLY</p>
       <p>24/7 Support: {{supportPhone}} | {{supportEmail}}</p>
     </div>
   </div>
 </div>
-
-<!--<script>-->
-<!--  // Countdown timer implementation-->
-<!--  let timeLeft = 300;-->
-<!--  const timerElement = document.getElementById('countdown');-->
-
-<!--  function updateTimer() {-->
-<!--      const minutes = Math.floor(timeLeft / 60);-->
-<!--      const seconds = timeLeft % 60;-->
-<!--      timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;-->
-
-<!--      if(timeLeft <= 0) {-->
-<!--          clearInterval(timerInterval);-->
-<!--          timerElement.textContent = "EXPIRED";-->
-<!--          timerElement.style.color = '#dc2626';-->
-<!--      } else {-->
-<!--          timeLeft&#45;&#45;;-->
-<!--      }-->
-<!--  }-->
-
-<!--  const timerInterval = setInterval(updateTimer, 1000);-->
-<!--</script>-->
 </body>
 </html>

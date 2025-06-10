@@ -1,10 +1,12 @@
 package com.contact.controller;
 
+import com.contact.dto.ClientHeadersDTO;
 import com.contact.dto.UserDTO;
 import com.contact.dto.imp.OnRegister;
 import com.contact.dto.imp.Test;
 import com.contact.service.ImagekitService;
 import com.contact.service.UserService;
+import com.contact.util.ExtractClientHeaders;
 import com.contact.util.HttpStatus;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +27,7 @@ public class NonSecureController {
 
     private final UserService userService;
 
-    public NonSecureController(UserService userService) {
+    public NonSecureController(UserService userService  ) {
         this.userService = userService;
     }
 
@@ -35,18 +37,19 @@ public class NonSecureController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<Object> register(@Validated(OnRegister.class) @RequestBody UserDTO userDTO) {
+    public ResponseEntity<Object> register(@ExtractClientHeaders ClientHeadersDTO clientHeadersDTO,@Validated(OnRegister.class) @RequestBody UserDTO userDTO) {
         System.err.println("userDTO=>" + userDTO.toString());
-        HttpStatus httpStatus = userService.register(userDTO);
+        HttpStatus httpStatus = userService.register(userDTO,clientHeadersDTO);
         return ResponseEntity.status(httpStatus.statusCode()).body(httpStatus.data());
     }
 
     @GetMapping("/login")
-    public ResponseEntity<Object> login(@RequestParam("email") String email, @RequestParam("password") String password, HttpServletResponse response) {
-        HttpStatus status = userService.login(email, password);
+    public ResponseEntity<Object> login(@ExtractClientHeaders ClientHeadersDTO clientHeadersDTO, @RequestParam("email") String email, @RequestParam("password") String password, HttpServletResponse response) {
+        HttpStatus status = userService.login(email, password,clientHeadersDTO);
 //        Map<String, Object> dataMap = (Map<String, Object>) status.data();
 //        Users user = (Users) dataMap.get("user");
 //        String token = (String) dataMap.get("token");
+        System.err.println(clientHeadersDTO.toString());
         if (status.statusCode() == 200) {
 
             ResponseCookie cookie = ResponseCookie.from("AccessToken", status.cookies())

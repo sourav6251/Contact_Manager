@@ -4,6 +4,7 @@ import com.contact.dto.*;
 import com.contact.dto.imp.CreateContact;
 import com.contact.service.ContactService;
 import com.contact.service.UserService;
+import com.contact.util.ExtractClientHeaders;
 import com.contact.util.HttpStatus;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseCookie;
@@ -32,9 +33,9 @@ public class SecureController {
 
 
     @GetMapping("/generateotp/{userID}")
-    public ResponseEntity<Object> generateOTP(@PathVariable UUID userID , @RequestParam("otpFor") String otpFor) {
+    public ResponseEntity<Object> generateOTP(@ExtractClientHeaders ClientHeadersDTO clientHeadersDTO, @PathVariable UUID userID , @RequestParam("otpFor") String otpFor) {
         System.err.println(userID);
-        HttpStatus status = userService.generateOTP(userID,otpFor);
+        HttpStatus status = userService.generateOTP(userID,otpFor,clientHeadersDTO);
         return ResponseEntity.status(status.statusCode()).body(status.data());
     }
 
@@ -53,8 +54,8 @@ public class SecureController {
     }
 
     @PutMapping("/updateprofile/{userID}")
-    public ResponseEntity<Object> updateProfile(@PathVariable UUID userID, @ModelAttribute UserDTO userDTO) {
-        HttpStatus httpStatus = userService.updateProfile(userDTO, userID);
+    public ResponseEntity<Object> updateProfile(@ExtractClientHeaders ClientHeadersDTO clientHeadersDTO,@PathVariable UUID userID, @ModelAttribute UserDTO userDTO) {
+        HttpStatus httpStatus = userService.updateProfile(userDTO, userID,clientHeadersDTO);
         return ResponseEntity.status(httpStatus.statusCode()).body(httpStatus.data());
     }
 
@@ -65,8 +66,8 @@ public class SecureController {
     }
 
     @PutMapping("/updateoldpassword/{userID}")
-    public ResponseEntity<Object> updateOldPassword(@PathVariable UUID userID, @RequestBody UserDTO userDTO){
-        HttpStatus httpStatus=userService.updatePasswordWithOldPassword(userID,userDTO);
+    public ResponseEntity<Object> updateOldPassword(@ExtractClientHeaders ClientHeadersDTO clientHeadersDTO,@PathVariable UUID userID, @RequestBody UserDTO userDTO){
+        HttpStatus httpStatus=userService.updatePasswordWithOldPassword(userID,userDTO,clientHeadersDTO);
         return ResponseEntity.status(httpStatus.statusCode()).body(httpStatus.data());
 
     }
