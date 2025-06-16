@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { logout } from "@/redux/UserSlice";
 
 const DeleteAccount = () => {
-    const userID = useSelector((state: RootState) => state.user.userID);
+    const userID:any = useSelector((state: RootState) => state.user.userID);
     const dispatch=useDispatch();
     const [showOtpInput, setShowOtpInput] = useState(false);
     const [otp, setOtp] = useState(["", "", "", "", "", ""]);

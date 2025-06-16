@@ -32,6 +32,10 @@
       text-align: center;
       color: white;
     }
+    .header img {
+      max-width: 40px;
+      margin-bottom: 10px;
+    }
     .header h1 {
       margin: 0;
       font-size: 24px;
@@ -112,6 +116,7 @@
 <div class="container">
   <div class="card">
     <div class="header">
+      <img src="https://ik.imagekit.io/eur1zq65p/Contact/LOGO.png" alt="PhoneBook Logo">
       <h1>⚠️ Unauthorized Registration Attempt</h1>
     </div>
     <div class="content">
@@ -125,27 +130,47 @@
           </svg>
           Someone tried to register using your email
         </div>
-        <p>We detected an attempt to create a CollegeConnect account using your email address ({{aname}}).</p>
+        <p>We detected an attempt to create a PhoneBook account using your email address ({{aname}}).</p>
       </div>
 
       <div class="info-box">
         <div class="info-item">
           <span class="info-label">Attempt Time:</span>
-          <span>{{timestamp}}</span>
+          <span>{{clientTime}}</span>
         </div>
         <div class="info-item">
           <span class="info-label">IP Address:</span>
-          <span>{{ipAddress}}</span>
+          <span>{{clientIp}}</span>
         </div>
         <div class="info-item">
           <span class="info-label">Location:</span>
-          <span>{{location}} (approximate)</span>
+          <span>{{clientLocation}} (approximate)</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Device:</span>
+          <span>{{clientDevice}}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Operating System:</span>
+          <span>{{clientOS}}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Browser:</span>
+          <span>{{clientBrowser}}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">User Agent:</span>
+          <span>{{clientUserAgent}}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Platform:</span>
+          <span>{{clientPlatform}}</span>
         </div>
       </div>
 
       <p>If this was you, you can safely ignore this message. If you didn't attempt to register, please:</p>
 
-      <a href="{{secureAccountLink}}" class="action-button">
+      <a href="http://127.0.0.1:5236/secure" class="action-button">
         Secure Your Account
       </a>
 
@@ -153,11 +178,11 @@
       <ul style="margin-top: 0; padding-left: 20px;">
         <li>Change your password immediately if you use this email/password combination elsewhere</li>
         <li>Enable two-factor authentication for better security</li>
-        <li>Report suspicious activity to our <a href="{{supportLink}}">support team</a></li>
+        <li>Report suspicious activity to our <a href="http://127.0.0.1:5236/support">support team</a></li>
       </ul>
     </div>
     <div class="footer">
-      <p>© 2025 CollegeConnect. All rights reserved.</p>
+      <p>© 2025 PhoneBook. All rights reserved.</p>
       <p>This is an automated security message - please do not reply</p>
     </div>
   </div>

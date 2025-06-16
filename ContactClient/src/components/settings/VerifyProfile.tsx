@@ -5,6 +5,7 @@ import apiStore from "@/api/apiStore";
 import { RootState } from "@/redux/SliceStore";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 const UpdatePhoto = () => {
     const userID: string | null = useSelector(
@@ -17,12 +18,12 @@ const UpdatePhoto = () => {
     const [sendOTP, setSendOTP] = useState(false);
     const [isVerified, setIsVerfied] = useState(false);
     const generateOTP = async () => {
-        console.log("isVerified=> ",isVerified);
-        
+        console.log("isVerified=> ", isVerified);
+
         if (isVerified) {
-            alert("You aready verified");
+            toast.info("You aready verified");
         } else {
-            setSendOTP(true)
+            setSendOTP(true);
             setOTPGenerate(true);
             setCountdown(40);
             await apiStore.generateOTP(userID, "verifyProfile");
@@ -30,13 +31,19 @@ const UpdatePhoto = () => {
                 setCountdown((prev) => {
                     if (prev <= 1) {
                         clearInterval(interval);
-                        setOTPGenerate(false);
+                        setSendOTP(false);
+                        // setOTPGenerate(false);
+                        console.log("HI");
+
                         return 0;
                     }
+                    setSendOTP(true);
+                    console.log("X");
                     return prev - 1;
                 });
             }, 1000);
-            // setSendOTP(false)
+            console.log("hello");
+            setSendOTP(true);
         }
     };
 
@@ -82,6 +89,8 @@ const UpdatePhoto = () => {
                         onClick={generateOTP}
                         // disabled={true}
                         // disabled={otpGenerate}
+                        disabled={sendOTP}
+
                         className="whitespace-nowrap text-sm font-semibold px-4 py-2 bg-gray-300 dark:bg-gray-700 hover:bg-gray-400 hover:dark:bg-gray-900"
                     >
                         {otpGenerate
@@ -95,8 +104,7 @@ const UpdatePhoto = () => {
                 <Button
                     onClick={handleVerifyOtp}
                     className="flex-1 bg-gray-300 dark:bg-gray-700 hover:bg-gray-400 hover:dark:bg-gray-900"
-                    disabled={(otp.length !== 6 || isLoading)|| !sendOTP}
-                    
+                    disabled={otp.length !== 6 || isLoading || otpGenerate || isVerified}
                 >
                     {isLoading ? "Verifying..." : "Verify"}
                 </Button>

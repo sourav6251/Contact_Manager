@@ -5,6 +5,7 @@ import { UUID } from "crypto";
 import { Edit } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { Button } from "../ui/button";
 interface profile {
     // email: string,
     // mediaId:string | null,
@@ -78,6 +79,10 @@ const UpdateProfile = () => {
             return;
         }
         setUpdating(true)
+        if (updating) {
+            console.log("disabled button");
+            
+        }
         const profile: profile = {
             name: name,
             email: email,
@@ -189,13 +194,15 @@ const UpdateProfile = () => {
             </div> */}
 
             {/* Submit Button */}
-            <button
+            <Button
+
                 type="submit"
+                disabled={updating}
                 className="w-full py-3 px-6 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium tracking-wide focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
                 {updating?<span>Updating ...... </span>:<span>Update Profile</span>}
                 
-            </button>
+            </Button>
         </form>
     );
 };

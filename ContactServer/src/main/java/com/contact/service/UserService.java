@@ -51,6 +51,7 @@ public class UserService {
             String[] parts = e.getMessage().split("!");
             String email = parts[0];
             String name = parts[1];
+            System.err.println("existRegister");
             try {
                 mailService.sendMail(email, name, userDTO.getName(), "existRegister",clientHeadersDTO);
             } catch (MessagingException | IOException ex) {
@@ -133,6 +134,7 @@ public class UserService {
         } catch (NoSuchElementException e) {
             return new HttpStatus(404, e.getMessage());
         } catch (RuntimeException e) {
+            System.err.println(e.getMessage());
             return new HttpStatus(500, e.getMessage());
 
         }
@@ -206,12 +208,12 @@ public class UserService {
             } catch (IOException | MessagingException ex) {
                 System.err.println("Mail not send");
             }
-            return new HttpStatus(400, e);
+            return new HttpStatus(400,"Password  not match");
         } catch (NoSuchElementException e) {
-            return new HttpStatus(400, e);
+            return new HttpStatus(400, e.getMessage());
         } catch (RuntimeException | MessagingException | IOException e) {
             System.err.println("Mail not send");
-            return new HttpStatus(500, e);
+            return new HttpStatus(500, e.getMessage());
         }
     }
 

@@ -110,6 +110,10 @@
                 font-size: 24px;
                 letter-spacing: 4px;
             }
+            .info-item {
+                flex-direction: column;
+                gap: 4px;
+            }
         }
     </style>
 </head>
@@ -117,7 +121,7 @@
 <div class="container">
     <div class="card">
         <div class="header">
-            <img src="https://res.cloudinary.com/dkxei4b5s/image/upload/v1747053468/LOGO_tiknv0.png" alt="PhoneBook Logo" class="logo">
+            <img src="https://ik.imagekit.io/eur1zq65p/Contact/LOGO.png" alt="PhoneBook Logo" class="logo">
             <h1>🔒 Verify Your Profile</h1>
         </div>
         <div class="content">
@@ -132,22 +136,42 @@
 
             <div class="info-box">
                 <div class="info-item">
-                    <span class="info-label">Requested From:</span>
-                    <span>{{deviceInfo}}</span>
+                    <span class="info-label">Request Time:</span>
+                    <span>{{clientTime}}</span>
                 </div>
                 <div class="info-item">
                     <span class="info-label">IP Address:</span>
-                    <span>{{ipAddress}}</span>
+                    <span>{{clientIp}}</span>
                 </div>
                 <div class="info-item">
                     <span class="info-label">Location:</span>
-                    <span>{{location}}</span>
+                    <span>{{clientLocation}} (approximate)</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Device:</span>
+                    <span>{{clientDevice}}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Operating System:</span>
+                    <span>{{clientOS}}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Browser:</span>
+                    <span>{{clientBrowser}}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">User Agent:</span>
+                    <span>{{clientUserAgent}}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Platform:</span>
+                    <span>{{clientPlatform}}</span>
                 </div>
             </div>
 
             <p>Enter this code in the verification page to complete your profile verification.</p>
 
-            <a href="{{verificationLink}}" class="verify-button">
+            <a href="http://127.0.0.1:5236/verify" class="verify-button">
                 Go to Verification Page
             </a>
 
@@ -155,12 +179,12 @@
             <ul style="margin-top: 0; padding-left: 20px;">
                 <li>PhoneBook will never ask you for this OTP</li>
                 <li>Do not share this code with anyone</li>
-                <li>If you didn't request this, <a href="{{supportLink}}" style="color: #3b82f6;">contact support</a> immediately</li>
+                <li>If you didn't request this, <a href="http://127.0.0.1:5236/support" style="color: #3b82f6;">contact support</a> immediately</li>
             </ul>
         </div>
         <div class="footer">
             <p>© 2025 PhoneBook. All rights reserved.</p>
-            <p>123 Business Street, Tech City | <a href="{{privacyLink}}" style="color: #64748b;">Privacy Policy</a></p>
+            <p>123 Campus Drive, EduCity | <a href="http://127.0.0.1:5236/privacy" style="color: #64748b;">Privacy Policy</a></p>
         </div>
     </div>
 </div>

@@ -18,6 +18,7 @@ import { PageWrapper } from "@/components/layout/PageWrapper";
 import apiStore from "@/api/apiStore";
 import Contact from "@/components/contact/Contact";
 import { toast } from "sonner";
+import PagenationContect from "@/components/contact/PagenationContect";
 
 interface ContactFormData {
     file: File | null;
@@ -121,21 +122,21 @@ const ContactManager = () => {
         setIsVerfied(response);
     };
     useEffect(() => {
-        fetchContacts();
+        // fetchContacts();
         checkIsVerified();
     }, [userID]);
 
     return (
         <PageWrapper>
             <div className="bg-gray-50 dark:bg-gray-700 min-h-screen transition-colors duration-300">
-                <div className="pt-16 flex items-center justify-between px-5 pb-5">
-                    <Input
+                <div className=" flex items-center justify-start px-5 pb-5 mb-8 relative top-14">
+                    {/* <Input
                         className="w-[20%] rounded-3xl p-3 bg-white dark:bg-gray-500 text-black dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-200 border border-gray-300 dark:border-gray-700 transition-colors duration-300"
                         placeholder="Search ......"
                         id="search"
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                    />
+                    /> */}
 
                     <Dialog>
                         <DialogTrigger className="bg-transparent" asChild>
@@ -281,7 +282,9 @@ const ContactManager = () => {
                     </Dialog>
                 </div>
                 <div>
-                    {loading ? (
+
+                <PagenationContect/>
+                    {/* {loading ? (
                         <div className="text-center py-10">Loading...</div>
                     ) : contacts.length === 0 ? (
                         <div className="flex justify-center items-center py-10">
@@ -301,7 +304,7 @@ const ContactManager = () => {
                                 onContactChange={handleContactChange}
                             />
                         </>
-                    )}
+                    )} */}
                 </div>
             </div>
         </PageWrapper>

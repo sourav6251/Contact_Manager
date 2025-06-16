@@ -11,6 +11,10 @@ import com.contact.util.exception.ContactExistException;
 import com.contact.util.reposetry.ContactRepository;
 import com.contact.util.reposetry.UserRepository;
 import io.github.cdimascio.dotenv.Dotenv;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -117,6 +121,27 @@ public class ContactDAO {
 
     private Contacts contactDAOToContact(ContactDTO contactDTO) {
         return new Contacts(contactDTO.getMediaUrl(), contactDTO.getMediaId(), contactDTO.getName(), contactDTO.getEmail(), contactDTO.getPhone());
+
+    }
+
+    public Page<Contacts> showAllContactPagination(UUID userID, String query, int page, int contactNo) {
+
+        Pageable pageable = PageRequest.of(page, contactNo);
+        try {
+            Page<Contacts> contacts = contactRepository.searchContacts(userID, query, pageable);
+            System.out.println(contacts);
+            System.out.println("contacts");
+            if (contacts.hasContent()) {
+               return contacts;
+            }
+            throw new NoSuchElementException("No contact exist");
+        }
+        catch (NoSuchElementException e){
+
+            throw new NoSuchElementException("No contact exist");
+        } catch(RuntimeException e) {
+            throw new RuntimeException(e);
+        }
 
     }
 

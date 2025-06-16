@@ -6,6 +6,7 @@ import com.contact.model.Contacts;
 import com.contact.util.HttpStatus;
 import com.contact.util.exception.ContactExistException;
 import com.contact.util.exception.NotImage;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -107,6 +108,27 @@ public class ContactService {
         }catch (NoSuchElementException e){
             return new HttpStatus(400,e);
         } catch (RuntimeException e) {
+            return new HttpStatus(500);
+        }
+    }
+
+    public HttpStatus showAllContactPagination(UUID userID,String query,int page,int contactNo){
+        try{
+            Page<Contacts> contacts=contactDAO.showAllContactPagination(userID, query, page, contactNo);
+            Map<String, Object> response = new LinkedHashMap<>();
+            response.put("status", "success");
+            response.put("data", contacts.getContent());
+            response.put("currentPage", contacts.getNumber());
+            response.put("totalItems", contacts.getTotalElements());
+            response.put("totalPages", contacts.getTotalPages());
+            response.put("pageSize", contacts.getSize());
+            System.out.println(response);
+            System.out.println("nn\n\n\nresponse");
+            return new HttpStatus(200, response);
+
+        }catch (NoSuchElementException e){
+            return new HttpStatus(204,"Contact not exist");
+        } catch (Exception e) {
             return new HttpStatus(500);
         }
     }

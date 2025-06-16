@@ -19,7 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping("/api/v1")
 public class NonSecureController {
     @Autowired
@@ -92,6 +92,8 @@ public class NonSecureController {
        boolean result= imagekitService.deleteFile(ID);
         return ResponseEntity.ok(result);
     }
+
+
 
 
 }

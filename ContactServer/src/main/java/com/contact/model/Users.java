@@ -1,5 +1,6 @@
 package com.contact.model;
 
+import com.contact.util.Subscription;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -28,7 +29,7 @@ public class Users {
     private LocalDateTime otpCreate;
     @JsonIgnore
     private LocalDateTime userCreate;
-
+    private Subscription subscription;
     private LocalDateTime lastLogin;
 
 
@@ -97,6 +98,14 @@ public class Users {
 
     public long getOtp() {
         return otp;
+    }
+
+    public Subscription getSubscription() {
+        return subscription;
+    }
+
+    public void setSubscription(Subscription subscription) {
+        this.subscription = subscription;
     }
 
     public void setOtp(long otp) {

@@ -148,9 +148,18 @@ public class MailService {
 
                 return content
                         .replace("{{name}}", name)
+                        .replace("{{clientDevice}}", clientHeadersDTO.clientDevice())
+                        .replace("{{clientLocation}}", clientHeadersDTO.clientLocation())
+                        .replace("{{clientIp}}", clientHeadersDTO.clientIp())
+                        .replace("{{clientTime}}", clientDateTime)
+                        .replace("{{clientOS}}", clientHeadersDTO.clientOS())
+                        .replace("{{clientBrowser}}", clientHeadersDTO.clientBrowser())
+                        .replace("{{clientUserAgent}}", clientHeadersDTO.clientUserAgent())
+                        .replace("{{clientPlatform}}", clientHeadersDTO.clientPlatform())
+
                         ;
             }
-            case "passwordChangeAttempt": {
+            case "changePassword": {
                 ClassPathResource resource = new ClassPathResource("templates/passwordChangeAttempt.html");
                 String content = new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
 
@@ -182,6 +191,15 @@ public class MailService {
 
                 return content
                         .replace("{{name}}", name)
+                        .replace("{{clientDevice}}", clientHeadersDTO.clientDevice())
+                        .replace("{{clientLocation}}", clientHeadersDTO.clientLocation())
+                        .replace("{{clientIp}}", clientHeadersDTO.clientIp())
+                        .replace("{{clientTime}}", clientDateTime)
+                        .replace("{{clientOS}}", clientHeadersDTO.clientOS())
+                        .replace("{{clientBrowser}}", clientHeadersDTO.clientBrowser())
+                        .replace("{{clientUserAgent}}", clientHeadersDTO.clientUserAgent())
+                        .replace("{{clientPlatform}}", clientHeadersDTO.clientPlatform())
+
                         .replace("{{photo}}", media)
 //                        .replace("{{data}}", data)
                         ;
@@ -192,16 +210,35 @@ public class MailService {
                 String content = new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
 
                 return content
+                        .replace("{{name}}", name)
+                        .replace("{{clientDevice}}", clientHeadersDTO.clientDevice())
+                        .replace("{{clientLocation}}", clientHeadersDTO.clientLocation())
+                        .replace("{{clientIp}}", clientHeadersDTO.clientIp())
+                        .replace("{{clientTime}}", clientDateTime)
+                        .replace("{{clientOS}}", clientHeadersDTO.clientOS())
+                        .replace("{{clientBrowser}}", clientHeadersDTO.clientBrowser())
+                        .replace("{{clientUserAgent}}", clientHeadersDTO.clientUserAgent())
+                        .replace("{{clientPlatform}}", clientHeadersDTO.clientPlatform())
+
                         .replace("{{otpCode}}", data)
                         ;
             }
-            case "existRegister": {
+            case "existRegister": {  // todo: not working
                 System.err.println("Enter into deleteAccount Mail");
                 ClassPathResource resource = new ClassPathResource("templates/existEmailRegister.html");
                 String content = new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
 
                 return content
                         .replace("{{name}}", name)
+                        .replace("{{clientDevice}}", clientHeadersDTO.clientDevice())
+                        .replace("{{clientLocation}}", clientHeadersDTO.clientLocation())
+                        .replace("{{clientIp}}", clientHeadersDTO.clientIp())
+                        .replace("{{clientTime}}", clientDateTime)
+                        .replace("{{clientOS}}", clientHeadersDTO.clientOS())
+                        .replace("{{clientBrowser}}", clientHeadersDTO.clientBrowser())
+                        .replace("{{clientUserAgent}}", clientHeadersDTO.clientUserAgent())
+                        .replace("{{clientPlatform}}", clientHeadersDTO.clientPlatform())
+
                         .replace("{{aname}}", data)
                         ;
             }
@@ -212,6 +249,15 @@ public class MailService {
 
                 return content
                         .replace("{{name}}", name)
+                        .replace("{{clientDevice}}", clientHeadersDTO.clientDevice())
+                        .replace("{{clientLocation}}", clientHeadersDTO.clientLocation())
+                        .replace("{{clientIp}}", clientHeadersDTO.clientIp())
+                        .replace("{{clientTime}}", clientDateTime)
+                        .replace("{{clientOS}}", clientHeadersDTO.clientOS())
+                        .replace("{{clientBrowser}}", clientHeadersDTO.clientBrowser())
+                        .replace("{{clientUserAgent}}", clientHeadersDTO.clientUserAgent())
+                        .replace("{{clientPlatform}}", clientHeadersDTO.clientPlatform())
+
                         .replace("{{otpCode}}", data)
                         ;
             }

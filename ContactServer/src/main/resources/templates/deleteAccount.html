@@ -111,6 +111,66 @@
         gap: 8px;
     }
 
+    /* Request Details Section */
+    .request-details {
+        background-color: #f8fafc;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 24px;
+        margin: 24px 0;
+    }
+
+    .request-details h3 {
+        margin: 0 0 16px;
+        font-size: 16px;
+        font-weight: 600;
+        color: #1e40af;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .request-details table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .request-details th {
+        text-align: left;
+        font-weight: 600;
+        color: #64748b;
+        padding: 8px 0;
+        width: 30%;
+        font-size: 14px;
+    }
+
+    .request-details td {
+        text-align: left;
+        color: #1e293b;
+        padding: 8px 0;
+        font-size: 14px;
+    }
+
+    .request-details tr {
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .request-details tr:last-child {
+        border-bottom: none;
+    }
+
+    .action-text {
+        color: #dc2626;
+        font-weight: 500;
+        margin-top: 16px;
+        font-size: 14px;
+    }
+
+    .action-text a {
+        color: #3b82f6;
+        text-decoration: none;
+    }
+
     /* Footer */
     .footer {
         text-align: center;
@@ -119,6 +179,29 @@
         font-size: 13px;
         background-color: #f9fafb;
         border-top: 1px solid #e5e7eb;
+    }
+
+    /* Responsive Design */
+    @media only screen and (max-width: 600px) {
+        .container {
+            padding: 16px;
+        }
+        .card {
+            margin: 16px auto;
+        }
+        .header {
+            padding: 24px 16px;
+        }
+        .content {
+            padding: 24px 16px;
+        }
+        .request-details th, .request-details td {
+            font-size: 13px;
+            padding: 6px 0;
+        }
+        .request-details h3 {
+            font-size: 15px;
+        }
     }
   </style>
 </head>
@@ -152,28 +235,52 @@
         <p class="timer">Expires at: {{otpExpirationTime}}</p>
       </div>
 
-      <div style="margin: 24px 0; padding: 16px; background: #f0f4ff; border-radius: 8px;">
-        <h3 style="margin-top: 0; color: #1e40af;">❗ Request Details:</h3>
-        <ol style="margin: 12px 0;">
-          <li>Request Time: {{clientTime}}</li>
-          <li>IP Address: {{clientIp}}</li>
-          <li>Location: {{clientLocation}}</li>
-          <li>Device: {{clientDevice}}</li>
-          <li>Operating System: {{clientOS}}</li>
-          <li>Browser: {{clientBrowser}}</li>
-          <li>User Agent: {{clientUserAgent}}</li>
-          <li>Platform: {{clientPlatform}}</li>
-        </ol>
-        <p style="color: #dc2626; font-weight: 500;">
+      <div class="request-details">
+        <h3><span style="color: #1e40af;">❗</span> Request Details</h3>
+        <table>
+          <tr>
+            <th>Request Time:</th>
+            <td>{{clientTime}}</td>
+          </tr>
+          <tr>
+            <th>IP Address:</th>
+            <td>{{clientIp}}</td>
+          </tr>
+          <tr>
+            <th>Location:</th>
+            <td>{{clientLocation}} (approximate)</td>
+          </tr>
+          <tr>
+            <th>Device:</th>
+            <td>{{clientDevice}}</td>
+          </tr>
+          <tr>
+            <th>Operating System:</th>
+            <td>{{clientOS}}</td>
+          </tr>
+          <tr>
+            <th>Browser:</th>
+            <td>{{clientBrowser}}</td>
+          </tr>
+          <tr>
+            <th>User Agent:</th>
+            <td>{{clientUserAgent}}</td>
+          </tr>
+          <tr>
+            <th>Platform:</th>
+            <td>{{clientPlatform}}</td>
+          </tr>
+        </table>
+        <p class="action-text">
           If you didn't initiate this request:<br>
           1. DO NOT share this OTP with anyone<br>
-          2. Immediately contact support: {{emergencySupportLink}}<br>
+          2. Immediately contact support: <a href="http://127.0.0.1:5236/support">support team</a><br>
           3. Change your password
         </p>
       </div>
 
       <div style="text-align: center; margin-top: 32px;">
-        <a href="{{cancelLink}}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">
+        <a href="http://127.0.0.1:5236/cancel" style="color: #3b82f6; text-decoration: none; font-weight: 500;">
           ⚠️ Cancel Deletion Request
         </a>
       </div>
@@ -182,7 +289,7 @@
     <div class="footer">
       <p>© 2025 PhoneBook. All rights reserved.</p>
       <p style="color: #dc2626;">This is an automated security alert - DO NOT REPLY</p>
-      <p>24/7 Support: {{supportPhone}} | {{supportEmail}}</p>
+      <p>24/7 Support: +1-800-555-1234 | support@PhoneBook.com</p>
     </div>
   </div>
 </div>

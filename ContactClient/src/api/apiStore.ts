@@ -42,7 +42,9 @@ class APIStore {
         };
         try {
             const headers = await Axios.getClientHeaders();
-            const resonse = await Axios.axiosInstance.post("/register", data,{headers:headers});
+            const resonse = await Axios.axiosInstance.post("/register", data, {
+                headers: headers,
+            });
             console.log(resonse);
 
             toast.success("User create sucessfully");
@@ -56,10 +58,21 @@ class APIStore {
 
             return userData;
         } catch (error: any) {
-            if (error.response && error.response.status === 400) {
-                toast.error("User already exists");
+            if (error.response?.data?.newPassword) {
+                toast.warning(
+                    `Password error: ${error.response.data.newPassword}`
+                );
+            }
+            if (error.response?.data?.name) {
+                toast.warning(`Name error: ${error.response.data.name}`);
+            }
+            if (error.response?.data?.email) {
+                toast.warning(`Email error: ${error.response.data.email}`);
+            }
+            if (error.response?.data) {
+                toast.error(`${error.response.data}`);
             } else {
-                toast.error("Something went wrong");
+                toast.warning("Registration failed. Please try again.");
             }
         }
     }
@@ -126,12 +139,15 @@ class APIStore {
 
     public async verifyOTP(userID: string | null, otp: any) {
         try {
-            const response = await Axios.axiosInstanceSecure.get(`verifyotp`, {
-                params: {
-                    userID: userID,
-                    otp: otp,
-                },
-            });
+            const response = await Axios.axiosInstanceSecure.get(
+                `verifyotp/${userID}`,
+                {
+                    params: {
+                        userID: userID,
+                        otp: otp,
+                    },
+                }
+            );
             console.log("response=>", response);
 
             toast.success("Otp Verify successfully");
@@ -260,6 +276,8 @@ class APIStore {
         } catch (error: any) {
             // const status =error.response.status;
             // if (status===400) {
+            console.log("error=>", error.response);
+
             toast.error(error.response.data);
 
             // }
@@ -300,8 +318,9 @@ class APIStore {
             const headers = await Axios.getClientHeaders();
             await Axios.axiosInstanceSecure.put(
                 `updateprofile/${profile.userId}`,
-                formData,{
-                    headers:headers
+                formData,
+                {
+                    headers: headers,
                 }
             );
             toast.success("Profile Update Successfully");
@@ -320,6 +339,31 @@ class APIStore {
             return "success";
         } catch (error: any) {
             toast.error(error.response.data);
+        }
+    }
+
+    public async contactpage(
+        userID: UUID,
+        query: String,
+        page: Number,
+        contactno: Number
+    ) {
+        try{
+           const data=await Axios.axiosInstanceSecure.get("/contactpage", {
+            params: {
+                UserID: userID,
+                query: query,
+                page: page,
+                contactno: contactno,
+            },});
+            console.log(data);
+            
+        return data;
+        
+        }catch(error:any){
+            console.error("Error fetching contact page:", error);
+            toast.error("Failed to fetch contacts. Please try again.");
+            throw error; // Re-throw the error if you want to handle it in the component
         }
     }
 }

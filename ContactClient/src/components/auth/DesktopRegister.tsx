@@ -124,7 +124,7 @@ const DesktopRegister = () => {
                     </Label>
                     <Input
                         id="email"
-                        type="email"
+                        type="text"
                         className="h-8 w-full"
                         required
                         value={register.email}

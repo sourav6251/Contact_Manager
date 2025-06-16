@@ -32,25 +32,25 @@ public class UserDAO {
             int number = random.nextInt(10) + 1;
             switch (number) {
                 case 1 ->
-                        userDTO.setMediaUrl("https://res.cloudinary.com/dkxei4b5s/image/upload/v1746410084/emoji1_dvb2ef.png");
+                        userDTO.setMediaUrl("https://ik.imagekit.io/eur1zq65p/Contact/emoji3_m20ujv.png");
                 case 2 ->
-                        userDTO.setMediaUrl("https://res.cloudinary.com/dkxei4b5s/image/upload/v1746410151/emoji2_bnsus6.png");
+                        userDTO.setMediaUrl("https://ik.imagekit.io/eur1zq65p/Contact/emoji6_ya0y7h.png");
                 case 3 ->
-                        userDTO.setMediaUrl("https://res.cloudinary.com/dkxei4b5s/image/upload/v1746410265/emoji3_m20ujv.png");
+                        userDTO.setMediaUrl("https://ik.imagekit.io/eur1zq65p/Contact/emoji2_bnsus6.png");
                 case 4 ->
-                        userDTO.setMediaUrl("https://res.cloudinary.com/dkxei4b5s/image/upload/v1746410263/emoji4_es7xwx.png");
+                        userDTO.setMediaUrl("https://ik.imagekit.io/eur1zq65p/Contact/emoji1_dvb2ef.png");
                 case 5 ->
-                        userDTO.setMediaUrl("https://res.cloudinary.com/dkxei4b5s/image/upload/v1746410495/emoji5_zuifdc.png");
+                        userDTO.setMediaUrl("https://ik.imagekit.io/eur1zq65p/Contact/emoji10_y8yzyd.png");
                 case 6 ->
-                        userDTO.setMediaUrl("https://res.cloudinary.com/dkxei4b5s/image/upload/v1746410495/emoji6_ya0y7h.png");
+                        userDTO.setMediaUrl("https://ik.imagekit.io/eur1zq65p/Contact/emoji7_z7nfgm.png");
                 case 7 ->
-                        userDTO.setMediaUrl("https://res.cloudinary.com/dkxei4b5s/image/upload/v1746410495/emoji7_z7nfgm.png");
+                        userDTO.setMediaUrl("https://ik.imagekit.io/eur1zq65p/Contact/emoji8_vmvzs4.png");
                 case 8 ->
-                        userDTO.setMediaUrl("https://res.cloudinary.com/dkxei4b5s/image/upload/v1746410495/emoji8_vmvzs4.png");
+                        userDTO.setMediaUrl("https://ik.imagekit.io/eur1zq65p/Contact/emoji9_cbqsta.png");
                 case 9 ->
-                        userDTO.setMediaUrl("https://res.cloudinary.com/dkxei4b5s/image/upload/v1746410493/emoji9_cbqsta.png");
+                        userDTO.setMediaUrl("https://ik.imagekit.io/eur1zq65p/Contact/emoji5_zuifdc.png");
                 default ->
-                        userDTO.setMediaUrl("https://res.cloudinary.com/dkxei4b5s/image/upload/v1746410493/emoji10_y8yzyd.png");
+                        userDTO.setMediaUrl("https://ik.imagekit.io/eur1zq65p/Contact/emoji4_es7xwx.png");
             }
 
 
@@ -115,8 +115,10 @@ public class UserDAO {
     public Users updateProfile(UserDTO userDTO, UUID userID) {
         try {
             Users users = userRepository.findById(userID).orElseThrow(() -> new NoSuchElementException("User doesn't exist"));
-            if (userDTO.getMediaId() != null || !userDTO.getMediaId().isEmpty()) {
-                imagekitService.deleteFile(users.getMediaId());
+            if (userDTO.getMediaId() != null && !userDTO.getMediaId().isBlank()) {
+                if (users.getMediaId()!=null && !users.getMediaId().isBlank()){
+                    imagekitService.deleteFile(users.getMediaId());
+                }
                 users.setMediaUrl(userDTO.getMediaUrl());
                 users.setMediaId(userDTO.getMediaId());
             }

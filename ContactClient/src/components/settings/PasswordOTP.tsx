@@ -25,7 +25,7 @@ const PasswordOTP = () => {
         setSendOTP(true);
         setOTPGenerate(true);
         setCountdown(40);
-        await apiStore.generateOTP(userID, "changePassword");
+        await apiStore.generateOTP(userID, "changePassword");//changePassword passwordChangeAttempt
         const interval = setInterval(() => {
             setCountdown((prev) => {
                 if (prev <= 1) {

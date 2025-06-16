@@ -31,11 +31,10 @@ public class SecureController {
     }
 
 
-
     @GetMapping("/generateotp/{userID}")
-    public ResponseEntity<Object> generateOTP(@ExtractClientHeaders ClientHeadersDTO clientHeadersDTO, @PathVariable UUID userID , @RequestParam("otpFor") String otpFor) {
+    public ResponseEntity<Object> generateOTP(@ExtractClientHeaders ClientHeadersDTO clientHeadersDTO, @PathVariable UUID userID, @RequestParam("otpFor") String otpFor) {
         System.err.println(userID);
-        HttpStatus status = userService.generateOTP(userID,otpFor,clientHeadersDTO);
+        HttpStatus status = userService.generateOTP(userID, otpFor, clientHeadersDTO);
         return ResponseEntity.status(status.statusCode()).body(status.data());
     }
 
@@ -54,8 +53,8 @@ public class SecureController {
     }
 
     @PutMapping("/updateprofile/{userID}")
-    public ResponseEntity<Object> updateProfile(@ExtractClientHeaders ClientHeadersDTO clientHeadersDTO,@PathVariable UUID userID, @ModelAttribute UserDTO userDTO) {
-        HttpStatus httpStatus = userService.updateProfile(userDTO, userID,clientHeadersDTO);
+    public ResponseEntity<Object> updateProfile(@ExtractClientHeaders ClientHeadersDTO clientHeadersDTO, @PathVariable UUID userID, @ModelAttribute UserDTO userDTO) {
+        HttpStatus httpStatus = userService.updateProfile(userDTO, userID, clientHeadersDTO);
         return ResponseEntity.status(httpStatus.statusCode()).body(httpStatus.data());
     }
 
@@ -66,15 +65,15 @@ public class SecureController {
     }
 
     @PutMapping("/updateoldpassword/{userID}")
-    public ResponseEntity<Object> updateOldPassword(@ExtractClientHeaders ClientHeadersDTO clientHeadersDTO,@PathVariable UUID userID, @RequestBody UserDTO userDTO){
-        HttpStatus httpStatus=userService.updatePasswordWithOldPassword(userID,userDTO,clientHeadersDTO);
+    public ResponseEntity<Object> updateOldPassword(@ExtractClientHeaders ClientHeadersDTO clientHeadersDTO, @PathVariable UUID userID, @RequestBody UserDTO userDTO) {
+        HttpStatus httpStatus = userService.updatePasswordWithOldPassword(userID, userDTO, clientHeadersDTO);
         return ResponseEntity.status(httpStatus.statusCode()).body(httpStatus.data());
 
     }
 
     @PutMapping("/updatepassword/{userID}")
-    public ResponseEntity<Object> updatePassword(@PathVariable UUID userID, @RequestBody UserDTO userDTO){
-        HttpStatus httpStatus=userService.updatePasswordWithPassword(userID,userDTO);
+    public ResponseEntity<Object> updatePassword(@PathVariable UUID userID, @RequestBody UserDTO userDTO) {
+        HttpStatus httpStatus = userService.updatePasswordWithPassword(userID, userDTO);
         return ResponseEntity.status(httpStatus.statusCode()).body(httpStatus.data());
 
     }
@@ -97,15 +96,15 @@ public class SecureController {
 
 
     @GetMapping("/isverified/{userID}")
-    public ResponseEntity<Object> isVerifiedProfile(@PathVariable UUID userID){
-       HttpStatus httpStatus= userService.isVerifiedProfile(userID);
-       return ResponseEntity.status(httpStatus.statusCode()).body(httpStatus.data());
+    public ResponseEntity<Object> isVerifiedProfile(@PathVariable UUID userID) {
+        HttpStatus httpStatus = userService.isVerifiedProfile(userID);
+        return ResponseEntity.status(httpStatus.statusCode()).body(httpStatus.data());
     }
 
 
     @PostMapping("/createcontact/{userID}")
     public ResponseEntity<Object> createContact(@PathVariable UUID userID, @Validated(CreateContact.class) @ModelAttribute ContactDTO contactDTO) {
-        System.out.println("data=>"+contactDTO);
+        System.out.println("data=>" + contactDTO);
         HttpStatus httpStatus = contactService.createContact(userID, contactDTO);
         return ResponseEntity.status(httpStatus.statusCode()).body(httpStatus.data());
     }
@@ -124,10 +123,21 @@ public class SecureController {
     }
 
     @DeleteMapping("/deletecontact/{userID}")
-    public ResponseEntity<Object> deleteContact(@PathVariable UUID userID ,@RequestParam("contactID") UUID contactID) {
-        System.err.println("contactID=> "+contactID+ " "+userID);
+    public ResponseEntity<Object> deleteContact(@PathVariable UUID userID, @RequestParam("contactID") UUID contactID) {
+        System.err.println("contactID=> " + contactID + " " + userID);
         HttpStatus httpStatus = contactService.deleteContact(contactID);
         return ResponseEntity.status(httpStatus.statusCode()).body(httpStatus.data());
+    }
+
+    @GetMapping("/contactpage")
+    public ResponseEntity<Object> showAllContactPagination(@RequestParam("UserID") UUID userID, @RequestParam(value = "query", required = false) String Query, @RequestParam(value = "page", defaultValue = "1") int Page, @RequestParam(value = "contactno", defaultValue = "10") int ContactNo) {
+        if (Page-1 < 0 || ContactNo < 1) {
+            return ResponseEntity.badRequest().body("page No minimum 0 and and page size must greater then 1");
+
+        }
+        HttpStatus httpStatus = contactService.showAllContactPagination(userID, Query, Page-1, ContactNo);
+        return ResponseEntity.status(httpStatus.statusCode()).body(httpStatus.data());
+
     }
 
 

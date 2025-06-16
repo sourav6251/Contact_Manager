@@ -3,6 +3,7 @@ package com.contact.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -15,6 +16,9 @@ public class Contacts {
     private String name;
     private String email;
     private String phone;
+    private boolean share;
+    private LocalDateTime shareExpire;
+    private long shareOTP;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
@@ -74,6 +78,30 @@ public class Contacts {
 
     public Users getUsers() {
         return users;
+    }
+
+    public boolean isShare() {
+        return share;
+    }
+
+    public void setShare(boolean share) {
+        this.share = share;
+    }
+
+    public LocalDateTime getShareExpire() {
+        return shareExpire;
+    }
+
+    public void setShareExpire(LocalDateTime shareExpire) {
+        this.shareExpire = shareExpire;
+    }
+
+    public long getShareOTP() {
+        return shareOTP;
+    }
+
+    public void setShareOTP(long shareOTP) {
+        this.shareOTP = shareOTP;
     }
 
     public void setUsers(Users users) {

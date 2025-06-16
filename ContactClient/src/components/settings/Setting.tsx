@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import UpdatePhoto from "./UpdatePhoto";
+import UpdatePhoto from "./VerifyProfile";
 import PasswordOld from "./PasswordOld";
 import PasswordOTP from "./PasswordOTP";
 import UpdateName from "./UpdateProfile";
