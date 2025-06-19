@@ -13,6 +13,8 @@ import ContactManager from "./pages/ContactManager";
 import Profile from "./components/profile/ProfilePage";
 import TagsContact from "./components/tags/TagsContact";
 import SettingsPages from "./pages/SettingsPages";
+import ContactSharePage from "./components/contact/ContactSharePage";
+import ContactSharePageError from "./pages/ContactSharePageError";
 // import Settings from "./pages/SettingsPages";
 // import SettingsPages from "./pages/SettingsPages";
 // import Settings from "./components/settings/Settings";
@@ -23,6 +25,8 @@ function App() {
                 <Toaster />
                 <BrowserRouter>
                     <Routes>
+                    <Route path="/contact/share/:contactId" element={<ContactSharePage />} />
+                    <Route path="/contact/sharen/" element={<ContactSharePageError />} />
                         <Route element={<HeaderLayout />}>
                             {/* Public Routes */}
                             <Route path="/" element={<Landing />} />

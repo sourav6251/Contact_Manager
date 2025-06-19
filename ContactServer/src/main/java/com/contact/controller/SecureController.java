@@ -131,13 +131,25 @@ public class SecureController {
 
     @GetMapping("/contactpage")
     public ResponseEntity<Object> showAllContactPagination(@RequestParam("UserID") UUID userID, @RequestParam(value = "query", required = false) String Query, @RequestParam(value = "page", defaultValue = "1") int Page, @RequestParam(value = "contactno", defaultValue = "10") int ContactNo) {
-        if (Page-1 < 0 || ContactNo < 1) {
+        if (Page - 1 < 0 || ContactNo < 1) {
             return ResponseEntity.badRequest().body("page No minimum 0 and and page size must greater then 1");
 
         }
-        HttpStatus httpStatus = contactService.showAllContactPagination(userID, Query, Page-1, ContactNo);
+        HttpStatus httpStatus = contactService.showAllContactPagination(userID, Query, Page - 1, ContactNo);
         return ResponseEntity.status(httpStatus.statusCode()).body(httpStatus.data());
 
+    }
+
+    @GetMapping("/activatesharecontact/{userID}")
+    public ResponseEntity<Object> activateShareContact(@PathVariable UUID userID, @RequestParam("userID") UUID userId, @RequestParam("contactID") UUID contactID, @RequestParam("days") int days) {
+        HttpStatus httpStatus=contactService.activateShareContact(userId, contactID, days);
+        return ResponseEntity.status(httpStatus.statusCode()).body(httpStatus.data());
+    }
+
+    @GetMapping("/deletesharecontact/{userID}")
+    public ResponseEntity<Object> deleteShareContact(@PathVariable UUID userID, @RequestParam("userID") UUID userId, @RequestParam("contactID") UUID contactID) {
+        HttpStatus httpStatus=contactService.deleteShareContact(userId, contactID);
+        return ResponseEntity.status(httpStatus.statusCode()).body(httpStatus.data());
     }
 
 

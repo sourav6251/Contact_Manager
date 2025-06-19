@@ -65,13 +65,17 @@ const ProfilePage = () => {
 
                         {/* Profile Picture */}
                         <div className="relative mx-auto w-28 h-28 rounded-full overflow-hidden shadow-md">
-                            <img
+                            {userData.mediaUrl ? (
+                                <img
                                 src={userData.mediaUrl}
                                 alt="Profile"
                                 className="w-full h-full object-cover"
-                            />
+                                />
+                            ) : (
+                                <div className="w-full h-full bg-gray-200 dark:bg-gray-600" />
+                            )}
+                            </div>
                         </div>
-                    </div>
 
                     {/* Profile Info */}
                     <div className="pt-10 pb-6 px-6 text-center space-y-4">

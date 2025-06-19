@@ -95,6 +95,14 @@ public class ContactDTO {
         return input !=null ? input.replaceAll("\\s+",""):null;
     }
 
+    public ContactDTO(UUID contactID, String mediaUrl, String name, String email, String phone) {
+        this.contactID = contactID;
+        this.mediaUrl = mediaUrl;
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
+    }
+
     @Override
     public String toString() {
         return "ContactDTO{" +

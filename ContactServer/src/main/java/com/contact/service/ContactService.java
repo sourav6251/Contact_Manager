@@ -6,6 +6,8 @@ import com.contact.model.Contacts;
 import com.contact.util.HttpStatus;
 import com.contact.util.exception.ContactExistException;
 import com.contact.util.exception.NotImage;
+import com.contact.util.exception.NotShareContact;
+import com.contact.util.exception.OTPException;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
@@ -28,17 +30,16 @@ public class ContactService {
     public HttpStatus createContact(UUID userID, ContactDTO contactDTO) {
         String mediaID;
         String mediaURL;
-        try{
-          List<String>list=  imagekitService.uploadFile(contactDTO.getFile());
-          mediaURL=list.getFirst();
-          mediaID=list.getLast();
-        }catch (NotImage e){
-            return new HttpStatus(400,e.getMessage());
-        }
-        catch (Exception e) {
+        try {
+            List<String> list = imagekitService.uploadFile(contactDTO.getFile());
+            mediaURL = list.getFirst();
+            mediaID = list.getLast();
+        } catch (NotImage e) {
+            return new HttpStatus(400, e.getMessage());
+        } catch (Exception e) {
             return new HttpStatus(500);
         }
-        ContactDTO contactDTO1=new ContactDTO(mediaURL,mediaID,contactDTO.getName(),contactDTO.getEmail(),contactDTO.getPhone());
+        ContactDTO contactDTO1 = new ContactDTO(mediaURL, mediaID, contactDTO.getName(), contactDTO.getEmail(), contactDTO.getPhone());
         try {
             Contacts contacts = contactDAO.createContact(userID, contactDTO1);
             return new HttpStatus(200, contacts);
@@ -51,40 +52,39 @@ public class ContactService {
         }
     }
 
-    public HttpStatus updateContact(UUID userID,ContactDTO contactDTO) {
-        String mediaID=null;
-        String mediaURL=null;
-        if (contactDTO.getFile()!=null){
-            try{
-                List<String>list=  imagekitService.uploadFile(contactDTO.getFile());
-                mediaURL=list.getFirst();
-                mediaID=list.getLast();
+    public HttpStatus updateContact(UUID userID, ContactDTO contactDTO) {
+        String mediaID = null;
+        String mediaURL = null;
+        if (contactDTO.getFile() != null) {
+            try {
+                List<String> list = imagekitService.uploadFile(contactDTO.getFile());
+                mediaURL = list.getFirst();
+                mediaID = list.getLast();
                 contactDTO.setMediaUrl(mediaURL);
                 contactDTO.setMediaId(mediaID);
-            }catch (NotImage e){
-                return new HttpStatus(400,e.getMessage());
-            }
-            catch (Exception e) {
+            } catch (NotImage e) {
+                return new HttpStatus(400, e.getMessage());
+            } catch (Exception e) {
                 return new HttpStatus(500);
             }
         }
-        try{
-            Contacts contacts=contactDAO.updateContact(userID, contactDTO);
-            return new HttpStatus(200,contacts);
+        try {
+            Contacts contacts = contactDAO.updateContact(userID, contactDTO);
+            return new HttpStatus(200, contacts);
 
-        }catch (NoSuchElementException e){
-            return new HttpStatus(204,e);
+        } catch (NoSuchElementException e) {
+            return new HttpStatus(204, e);
         } catch (RuntimeException e) {
             return new HttpStatus(500);
         }
     }
 
     public HttpStatus showAllContact(UUID userID) {
-        try{
-            List<Contacts> contacts= contactDAO.showAllContact(userID);
-            return new HttpStatus(200,contacts);
-        }catch (NoSuchElementException e){
-            return new HttpStatus(204,"No data found");
+        try {
+            List<Contacts> contacts = contactDAO.showAllContact(userID);
+            return new HttpStatus(200, contacts);
+        } catch (NoSuchElementException e) {
+            return new HttpStatus(204, "No data found");
         } catch (RuntimeException e) {
             return new HttpStatus(500);
         }
@@ -92,8 +92,8 @@ public class ContactService {
 
     public HttpStatus showContacts(UUID contactID) {
         try {
-           Contacts contacts= contactDAO.showContacts(contactID);
-            return new HttpStatus(200,contacts);
+            Contacts contacts = contactDAO.showContacts(contactID);
+            return new HttpStatus(200, contacts);
         } catch (NoSuchElementException e) {
             return new HttpStatus(204, e);
         } catch (RuntimeException e) {
@@ -102,19 +102,19 @@ public class ContactService {
     }
 
     public HttpStatus deleteContact(UUID contactID) {
-        try{
+        try {
             contactDAO.deleteContact(contactID);
             return new HttpStatus(200);
-        }catch (NoSuchElementException e){
-            return new HttpStatus(400,e);
+        } catch (NoSuchElementException e) {
+            return new HttpStatus(400, e);
         } catch (RuntimeException e) {
             return new HttpStatus(500);
         }
     }
 
-    public HttpStatus showAllContactPagination(UUID userID,String query,int page,int contactNo){
-        try{
-            Page<Contacts> contacts=contactDAO.showAllContactPagination(userID, query, page, contactNo);
+    public HttpStatus showAllContactPagination(UUID userID, String query, int page, int contactNo) {
+        try {
+            Page<Contacts> contacts = contactDAO.showAllContactPagination(userID, query, page, contactNo);
             Map<String, Object> response = new LinkedHashMap<>();
             response.put("status", "success");
             response.put("data", contacts.getContent());
@@ -126,8 +126,43 @@ public class ContactService {
             System.out.println("nn\n\n\nresponse");
             return new HttpStatus(200, response);
 
-        }catch (NoSuchElementException e){
-            return new HttpStatus(204,"Contact not exist");
+        } catch (NoSuchElementException e) {
+            return new HttpStatus(204, "Contact not exist");
+        } catch (Exception e) {
+            return new HttpStatus(500);
+        }
+    }
+
+    public HttpStatus activateShareContact(UUID userID, UUID contactID, int days) {
+        try {
+            String email = contactDAO.activateShareContact(userID, contactID, days);
+            return new HttpStatus(200, email);
+        } catch (NoSuchElementException e) {
+            return new HttpStatus(204);
+        } catch (Exception e) {
+            return new HttpStatus(500);
+        }
+    }
+
+    public HttpStatus deleteShareContact(UUID userID, UUID contactID) {
+        try {
+            String email = contactDAO.deleteShareContact(userID, contactID);
+            return new HttpStatus(200, email);
+        } catch (NoSuchElementException e) {
+            return new HttpStatus(204);
+        } catch (Exception e) {
+            return new HttpStatus(500);
+        }
+    }
+
+    public HttpStatus verifyShareContact(  UUID contactID,Long otp) {
+        try {
+            ContactDTO email = contactDAO.verifyShareContact( contactID,otp);
+            return new HttpStatus(200, email);
+        } catch (NoSuchElementException e) {
+            return new HttpStatus(204);
+        } catch (NotShareContact | OTPException e) {
+            return new HttpStatus(400,e.getMessage());
         } catch (Exception e) {
             return new HttpStatus(500);
         }

@@ -18,7 +18,7 @@ public class Contacts {
     private String phone;
     private boolean share;
     private LocalDateTime shareExpire;
-    private long shareOTP;
+    private Long shareOTP;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
@@ -96,11 +96,11 @@ public class Contacts {
         this.shareExpire = shareExpire;
     }
 
-    public long getShareOTP() {
+    public Long getShareOTP() {
         return shareOTP;
     }
 
-    public void setShareOTP(long shareOTP) {
+    public void setShareOTP(Long shareOTP) {
         this.shareOTP = shareOTP;
     }
 

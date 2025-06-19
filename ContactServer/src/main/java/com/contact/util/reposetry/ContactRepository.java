@@ -29,10 +29,7 @@ public interface ContactRepository extends JpaRepository<Contacts, UUID> {
             "(:query IS NULL OR :query = '' OR " +
             "LOWER(c.name) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
             "c.phone LIKE CONCAT('%', :query, '%'))")
-    Page<Contacts> searchContacts(
-            @Param("userId") UUID userId,
-            @Param("query") String query,
-            Pageable pageable
-    );
+    Page<Contacts> searchContacts( @Param("userId") UUID userId,  @Param("query") String query,  Pageable pageable );
+
 
 }

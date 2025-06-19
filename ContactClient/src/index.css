@@ -95,13 +95,10 @@ button:hover {
   background: #818181;
 }
 
-/* Utility classes */
 /* .j, .fg {
   position: absolute;
-} */
+}  @custom-variant dark (&:is(.dark *));
 
-
-/* @custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
@@ -238,3 +235,34 @@ button:hover {
     @apply bg-background text-foreground;
   }
 } */
+
+
+.contact-table-container {
+  max-height: 450px;
+  overflow-y: auto;
+  display: block;
+}
+.contact-table-container table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.contact-table-container thead {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.contact-table-container tbody {
+  display: block;
+  overflow-y: auto;
+}
+.contact-table-container tr {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+.contact-table-container th,
+.contact-table-container td {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

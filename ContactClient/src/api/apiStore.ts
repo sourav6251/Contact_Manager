@@ -348,22 +348,95 @@ class APIStore {
         page: Number,
         contactno: Number
     ) {
-        try{
-           const data=await Axios.axiosInstanceSecure.get("/contactpage", {
-            params: {
-                UserID: userID,
-                query: query,
-                page: page,
-                contactno: contactno,
-            },});
+        try {
+            const data = await Axios.axiosInstanceSecure.get("/contactpage", {
+                params: {
+                    UserID: userID,
+                    query: query,
+                    page: page,
+                    contactno: contactno,
+                },
+            });
             console.log(data);
-            
-        return data;
-        
-        }catch(error:any){
+
+            return data;
+        } catch (error: any) {
             console.error("Error fetching contact page:", error);
             toast.error("Failed to fetch contacts. Please try again.");
             throw error; // Re-throw the error if you want to handle it in the component
+        }
+    }
+
+    public async activateShareContact(
+        userID: string,
+        contactId: string,
+        days: number
+    ) {
+        try {
+            const email = await Axios.axiosInstanceSecure.get(
+                `activatesharecontact/${userID}`,
+                {
+                    params: {
+                        userID: userID,
+                        contactID: contactId,
+                        days: days,
+                    },
+                }
+            );
+            toast.success("Contact shared successfully");
+            return email;
+        } catch (error) {
+            console.error("Error sharing contact:", error);
+            toast.error("Failed to share contact. Please try again.");
+        }
+    }
+
+    public async deleteShareContact(userID: string, contactId: string) {
+        try {
+            const response = await Axios.axiosInstanceSecure.get(
+                `deletesharecontact/${userID}`,
+                {
+                    params: {
+                        userID: userID,
+                        contactID: contactId,
+                    },
+                }
+            );
+            toast.success("Contact Deleted successfully");
+            return response;
+        } catch (error) {
+            console.error("Error sharing contact:", error);
+            toast.error("Failed to share contact. Please try again.");
+        }
+    }
+
+    public async verifyShareContact( // userID: string, 
+        contactId: string,
+        otp: string
+    ) {
+        try {
+            const resonse = await Axios.axiosInstance.get(
+                `/verifysharecontact`,
+                {
+                    params: {
+                        // userID: userID,
+                        contactID: contactId,
+                        otp: otp,
+                    },
+                }
+            );
+            console.log("resonse=>", resonse);
+            return resonse.data;
+        } catch (error: any) {
+            console.log("error=>", error);
+            console.log("error.resonse.data=>", error.response.data);
+            if(error.response.status == 400) {
+                toast.error(error.response.data);
+            }
+            console.log("error=>", error);
+            console.log("error.resonse.data=>", error.resonse.data);
+            
+
         }
     }
 }

@@ -4,6 +4,7 @@ import com.contact.dto.ClientHeadersDTO;
 import com.contact.dto.UserDTO;
 import com.contact.dto.imp.OnRegister;
 import com.contact.dto.imp.Test;
+import com.contact.service.ContactService;
 import com.contact.service.ImagekitService;
 import com.contact.service.UserService;
 import com.contact.util.ExtractClientHeaders;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -26,9 +28,11 @@ public class NonSecureController {
     private ImagekitService imagekitService;
 
     private final UserService userService;
+    private final ContactService contactService;
 
-    public NonSecureController(UserService userService  ) {
+    public NonSecureController(UserService userService , ContactService contactService ) {
         this.userService = userService;
+        this.contactService = contactService;
     }
 
     @GetMapping("/")
@@ -95,5 +99,10 @@ public class NonSecureController {
 
 
 
+    @GetMapping("/verifysharecontact")
+    public ResponseEntity<Object> verifyShareContact(@RequestParam("contactID") UUID contactID, @RequestParam("otp") Long otp) {
+        HttpStatus httpStatus=contactService.verifyShareContact( contactID,otp);
+        return ResponseEntity.status(httpStatus.statusCode()).body(httpStatus.data());
+    }
 
 }
