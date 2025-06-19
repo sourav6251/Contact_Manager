@@ -1,16 +1,13 @@
 package com.contact.dao;
 
-import com.cloudinary.Cloudinary;
-import com.cloudinary.utils.ObjectUtils;
+
 import com.contact.dto.UserDTO;
 import com.contact.service.ImagekitService;
 import com.contact.util.exception.*;
 import com.contact.model.Users;
 import com.contact.util.reposetry.UserRepository;
-import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 

@@ -222,7 +222,7 @@ const PagenationContect = () => {
       setPreviewImage(null);
       contactpage();
     } catch (error) {
-      toast.error("Failed to add contact");
+      // toast.error("Failed to add contact");
       console.error("Error saving contact:", error);
     } finally {
       setIsSubmitting(false);

@@ -184,7 +184,7 @@ public class ContactDAO {
                 .orElseThrow(() -> new NoSuchElementException("Contact not exist"));
 
         if (!contacts.isShare()) {
-            throw new NotShareContact("OTP is not shared");
+            throw new NotShareContact("Contact is not shared");
         }
 
         if (contacts.getShareOTP() == null || !Long.valueOf(contacts.getShareOTP()).equals(otp)) {
@@ -192,7 +192,7 @@ public class ContactDAO {
         }
 
         if (contacts.getShareExpire() == null || contacts.getShareExpire().isBefore(LocalDateTime.now())) {
-            throw new OTPException("OTP expired");
+            throw new OTPException("contacts share link expired");
         }
         return new ContactDTO(contacts.getContactId(), contacts.getMediaUrl(), contacts.getName(), contacts.getEmail(), contacts.getPhone());
 

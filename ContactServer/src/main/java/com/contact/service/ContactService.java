@@ -46,6 +46,13 @@ public class ContactService {
         } catch (NoSuchElementException e) {
             return new HttpStatus(400, "User doesn't exist");
         } catch (ContactExistException e) {
+            if (mediaID !=null && !mediaID.isBlank()){
+//                try{
+                    imagekitService.deleteFile(mediaID);
+//                } catch (RuntimeException ex) {
+//                    throw new RuntimeException(ex);
+//                }
+            }
             return new HttpStatus(400, e.getMessage());
         } catch (RuntimeException e) {
             return new HttpStatus(500);
@@ -159,9 +166,8 @@ public class ContactService {
         try {
             ContactDTO email = contactDAO.verifyShareContact( contactID,otp);
             return new HttpStatus(200, email);
-        } catch (NoSuchElementException e) {
-            return new HttpStatus(204);
-        } catch (NotShareContact | OTPException e) {
+        }  catch (NotShareContact |NoSuchElementException | OTPException e) {
+
             return new HttpStatus(400,e.getMessage());
         } catch (Exception e) {
             return new HttpStatus(500);

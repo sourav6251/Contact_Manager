@@ -2,7 +2,6 @@ package com.contact.util;
 
 import com.contact.dao.UserDAO;
 import com.contact.model.Users;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;

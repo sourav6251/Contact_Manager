@@ -104,7 +104,7 @@ const UpdatePhoto = () => {
                 <Button
                     onClick={handleVerifyOtp}
                     className="flex-1 bg-gray-300 dark:bg-gray-700 hover:bg-gray-400 hover:dark:bg-gray-900"
-                    disabled={otp.length !== 6 || isLoading || otpGenerate || isVerified}
+                    disabled={otp.length !== 6 || isLoading || !otpGenerate || isVerified}
                 >
                     {isLoading ? "Verifying..." : "Verify"}
                 </Button>
