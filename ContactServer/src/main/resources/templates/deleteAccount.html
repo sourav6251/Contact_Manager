@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Critical Alert: Account Deletion OTP</title>
+  <style>
+    /* Base Styles */
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        background-color: #fff5f5;
+        color: #1e293b;
+        margin: 0;
+        padding: 0;
+        line-height: 1.5;
+    }
+
+    /* Container */
+    .container {
+        max-width: 640px;
+        margin: 0 auto;
+        padding: 24px;
+    }
+
+    /* Card */
+    .card {
+        background-color: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 2px 16px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+        margin: 32px auto;
+        border: 2px solid #fee2e2;
+    }
+
+    /* Header */
+    .header {
+        background: linear-gradient(135deg, #dc2626, #b91c1c);
+        padding: 40px 24px;
+        text-align: center;
+        color: #ffffff;
+    }
+
+    .header img {
+        height: 36px;
+        margin-bottom: 16px;
+    }
+
+    .header h1 {
+        margin: 0;
+        font-size: 26px;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+    }
+
+    /* Content */
+    .content {
+        padding: 32px;
+    }
+
+    .warning-section {
+        background-color: #fef2f2;
+        border: 2px solid #fecaca;
+        border-radius: 8px;
+        padding: 20px;
+        margin: 24px 0;
+    }
+
+    .warning-icon {
+        color: #dc2626;
+        font-size: 24px;
+        margin-right: 8px;
+    }
+
+    .otp-box {
+        background-color: #fff7f7;
+        border: 2px dashed #f87171;
+        border-radius: 8px;
+        padding: 20px;
+        margin: 24px 0;
+        text-align: center;
+    }
+
+    .otp-code {
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 8px;
+        color: #dc2626;
+        margin: 20px 0;
+        padding: 15px;
+        background: #fee2e2;
+        border-radius: 8px;
+        font-family: monospace;
+    }
+
+    .timer {
+        color: #dc2626;
+        font-weight: 700;
+        font-size: 16px;
+    }
+
+    .consequences-list {
+        list-style: none;
+        padding: 0;
+        margin: 20px 0;
+    }
+
+    .consequences-list li {
+        padding: 8px 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    /* Request Details Section */
+    .request-details {
+        background-color: #f8fafc;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 24px;
+        margin: 24px 0;
+    }
+
+    .request-details h3 {
+        margin: 0 0 16px;
+        font-size: 16px;
+        font-weight: 600;
+        color: #1e40af;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .request-details table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .request-details th {
+        text-align: left;
+        font-weight: 600;
+        color: #64748b;
+        padding: 8px 0;
+        width: 30%;
+        font-size: 14px;
+    }
+
+    .request-details td {
+        text-align: left;
+        color: #1e293b;
+        padding: 8px 0;
+        font-size: 14px;
+    }
+
+    .request-details tr {
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .request-details tr:last-child {
+        border-bottom: none;
+    }
+
+    .action-text {
+        color: #dc2626;
+        font-weight: 500;
+        margin-top: 16px;
+        font-size: 14px;
+    }
+
+    .action-text a {
+        color: #3b82f6;
+        text-decoration: none;
+    }
+
+    /* Footer */
+    .footer {
+        text-align: center;
+        padding: 24px;
+        color: #64748b;
+        font-size: 13px;
+        background-color: #f9fafb;
+        border-top: 1px solid #e5e7eb;
+    }
+
+    /* Responsive Design */
+    @media only screen and (max-width: 600px) {
+        .container {
+            padding: 16px;
+        }
+        .card {
+            margin: 16px auto;
+        }
+        .header {
+            padding: 24px 16px;
+        }
+        .content {
+            padding: 24px 16px;
+        }
+        .request-details th, .request-details td {
+            font-size: 13px;
+            padding: 6px 0;
+        }
+        .request-details h3 {
+            font-size: 15px;
+        }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="card">
+    <div class="header">
+      <img src="https://ik.imagekit.io/eur1zq65p/Contact/LOGO.png" alt="PhoneBook Logo" />
+      <h1>⚠️ Critical Account Deletion Request</h1>
+    </div>
+
+    <div class="content">
+      <div class="warning-section">
+        <div style="display: flex; align-items: center; margin-bottom: 16px;">
+          <span class="warning-icon">❗</span>
+          <h2 style="margin: 0; color: #b91c1c;">Immediate Action Required</h2>
+        </div>
+        <p><strong>WARNING:</strong> This OTP will COMPLETELY DELETE your account and ALL ASSOCIATED DATA. Do not share this code with anyone.</p>
+
+        <ul class="consequences-list">
+          <li><span style="color: #dc2626;">✖</span> Permanent removal of all profile data</li>
+          <li><span style="color: #dc2626;">✖</span> Loss of academic records and connections</li>
+          <li><span style="color: #dc2626;">✖</span> Immediate service termination</li>
+          <li><span style="color: #dc2626;">✖</span> Irreversible action</li>
+        </ul>
+      </div>
+
+      <div class="otp-box">
+        <p style="font-weight: 600; color: #b91c1c;">Account Deletion Verification Code</p>
+        <div class="otp-code">{{otpCode}}</div>
+        <p class="timer">Expires at: {{otpExpirationTime}}</p>
+      </div>
+
+      <div class="request-details">
+        <h3><span style="color: #1e40af;">❗</span> Request Details</h3>
+        <table>
+          <tr>
+            <th>Request Time:</th>
+            <td>{{clientTime}}</td>
+          </tr>
+          <tr>
+            <th>IP Address:</th>
+            <td>{{clientIp}}</td>
+          </tr>
+          <tr>
+            <th>Location:</th>
+            <td>{{clientLocation}} (approximate)</td>
+          </tr>
+          <tr>
+            <th>Device:</th>
+            <td>{{clientDevice}}</td>
+          </tr>
+          <tr>
+            <th>Operating System:</th>
+            <td>{{clientOS}}</td>
+          </tr>
+          <tr>
+            <th>Browser:</th>
+            <td>{{clientBrowser}}</td>
+          </tr>
+          <tr>
+            <th>User Agent:</th>
+            <td>{{clientUserAgent}}</td>
+          </tr>
+          <tr>
+            <th>Platform:</th>
+            <td>{{clientPlatform}}</td>
+          </tr>
+        </table>
+        <p class="action-text">
+          If you didn't initiate this request:<br>
+          1. DO NOT share this OTP with anyone<br>
+          2. Immediately contact support: <a href="http://127.0.0.1:5236/support">support team</a><br>
+          3. Change your password
+        </p>
+      </div>
+
+      <div style="text-align: center; margin-top: 32px;">
+        <a href="http://127.0.0.1:5236/cancel" style="color: #3b82f6; text-decoration: none; font-weight: 500;">
+          ⚠️ Cancel Deletion Request
+        </a>
+      </div>
+    </div>
+
+    <div class="footer">
+      <p>© 2025 PhoneBook. All rights reserved.</p>
+      <p style="color: #dc2626;">This is an automated security alert - DO NOT REPLY</p>
+      <p>24/7 Support: +1-800-555-1234 | support@PhoneBook.com</p>
+    </div>
+  </div>
+</div>
+</body>
+</html>
