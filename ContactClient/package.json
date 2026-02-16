@@ -45,7 +45,7 @@
     "@react-three/rapier": "^2.1.0",
     "@reduxjs/toolkit": "^2.7.0",
     "@tailwindcss/vite": "^4.1.4",
-    "axios": "^1.8.4",
+    "axios": "^1.13.5",
     "class-variance-authority": "^0.7.1",
     "cloudinary": "^2.6.1",
     "clsx": "^2.1.1",
